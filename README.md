@@ -1,2 +1,2 @@
-# Colegio
-Plataforma Educacional
+# Plataforma Web
+Plataforma
