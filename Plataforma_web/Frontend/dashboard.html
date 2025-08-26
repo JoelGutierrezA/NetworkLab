@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - PulmoPredict</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- Header del Dashboard -->
+    <header class="dashboard-header">
+        <nav class="nav container">
+            <div class="logo">PulmoPredict</div>
+            <div class="nav-center">
+                <span class="welcome-text" id="welcomeUser">Bienvenido, Dr. García</span>
+            </div>
+            <div class="nav-actions">
+                <button class="notification-btn" title="Notificaciones">🔔</button>
+                <div class="user-menu">
+                    <button class="user-btn">👨‍⚕️</button>
+                    <div class="dropdown-menu">
+                        <a href="#perfil">Mi Perfil</a>
+                        <a href="#configuracion">Configuración</a>
+                        <hr>
+                        <a href="index.html">Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- Barra de acciones superior -->
+            <div class="action-bar">
+                <div class="page-title">
+                    <h1>Gestión de Pacientes</h1>
+                    <p>Administra los registros y análisis predictivos</p>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="newPatientBtn">
+                        <span class="btn-icon">➕</span>
+                        Nuevo Paciente
+                    </button>
+                    <button class="btn btn-secondary" id="importDataBtn">
+                        <span class="btn-icon">📊</span>
+                        Importar Datos
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estadísticas rápidas -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3>152</h3>
+                        <p>Pacientes Totales</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔍</div>
+                    <div class="stat-info">
+                        <h3>23</h3>
+                        <p>Análisis Pendientes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h3>7</h3>
+                        <p>Alto Riesgo</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3>89</h3>
+                        <p>Bajo Riesgo</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros y búsqueda -->
+            <div class="filters-section">
+                <div class="search-container">
+                    <input type="text" id="searchPatients" placeholder="Buscar paciente por nombre, RUT o ID..." class="search-input">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="todos">Todos</button>
+                    <button class="filter-btn" data-filter="alto-riesgo">Alto Riesgo</button>
+                    <button class="filter-btn" data-filter="pendientes">Pendientes</button>
+                    <button class="filter-btn" data-filter="recientes">Recientes</button>
+                </div>
+            </div>
+
+            <!-- Lista de Pacientes -->
+            <div class="patients-section">
+                <div class="patients-header">
+                    <h2>Lista de Pacientes</h2>
+                    <div class="view-options">
+                        <button class="view-btn active" data-view="list">📋</button>
+                        <button class="view-btn" data-view="cards">🗃️</button>
+                    </div>
+                </div>
+
+                <!-- Tabla de pacientes -->
+                <div class="patients-table-container">
+                    <table class="patients-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Paciente</th>
+                                <th>Edad</th>
+                                <th>Última Evaluación</th>
+                                <th>Riesgo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                            <tr class="patient-row" data-patient-id="001">
+                                <td><strong>#001</strong></td>
+                                <td>
+                                    <div class="patient-info">
+                                        <div class="patient-name">María González Pérez</div>
+                                        <div class="patient-rut">12.345.678-9</div>
+                                    </div>
+                                </td>
+                                <td>67 años</td>
+                                <td>15/08/2025</td>
+                                <td><span class="risk-badge high">Alto</span></td>
+                                <td><span class="status-badge pending">Pendiente</span></td>
+                                <td class="actions-cell">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn analyze" title="Analizar">🔍</button>
+                                    <button class="action-btn edit" title="Editar">✏️</button>
+                                </td>
+                            </tr>
+                            <tr class="patient-row" data-patient-id="002">
+                                <td><strong>#002</strong></td>
+                                <td>
+                                    <div class="patient-info">
+                                        <div class="patient-name">Carlos Rodríguez Silva</div>
+                                        <div class="patient-rut">98.765.432-1</div>
+                                    </div>
+                                </td>
+                                <td>54 años</td>
+                                <td>20/08/2025</td>
+                                <td><span class="risk-badge low">Bajo</span></td>
+                                <td><span class="status-badge completed">Completado</span></td>
+                                <td class="actions-cell">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn analyze" title="Analizar">🔍</button>
+                                    <button class="action-btn edit" title="Editar">✏️</button>
+                                </td>
+                            </tr>
+                            <tr class="patient-row" data-patient-id="003">
+                                <td><strong>#003</strong></td>
+                                <td>
+                                    <div class="patient-info">
+                                        <div class="patient-name">Ana Martínez López</div>
+                                        <div class="patient-rut">11.222.333-4</div>
+                                    </div>
+                                </td>
+                                <td>72 años</td>
+                                <td>18/08/2025</td>
+                                <td><span class="risk-badge medium">Medio</span></td>
+                                <td><span class="status-badge in-progress">En Proceso</span></td>
+                                <td class="actions-cell">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn analyze" title="Analizar">🔍</button>
+                                    <button class="action-btn edit" title="Editar">✏️</button>
+                                </td>
+                            </tr>
+                            <tr class="patient-row" data-patient-id="004">
+                                <td><strong>#004</strong></td>
+                                <td>
+                                    <div class="patient-info">
+                                        <div class="patient-name">Roberto Fernández</div>
+                                        <div class="patient-rut">55.444.333-2</div>
+                                    </div>
+                                </td>
+                                <td>61 años</td>
+                                <td>22/08/2025</td>
+                                <td><span class="risk-badge low">Bajo</span></td>
+                                <td><span class="status-badge completed">Completado</span></td>
+                                <td class="actions-cell">
+                                    <button class="action-btn view" title="Ver detalles">👁️</button>
+                                    <button class="action-btn analyze" title="Analizar">🔍</button>
+                                    <button class="action-btn edit" title="Editar">✏️</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                <div class="pagination">
+                    <button class="pagination-btn" disabled>← Anterior</button>
+                    <span class="pagination-info">Página 1 de 5 (152 pacientes)</span>
+                    <button class="pagination-btn">Siguiente →</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para detalles del paciente -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalles del Paciente</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="patientDetails">
+                    <!-- Contenido dinámico del paciente seleccionado -->
+                    <div class="patient-details-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando información del paciente...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeModal">Cerrar</button>
+                <button class="btn btn-primary" id="analyzePatient">Realizar Análisis</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="dashboard.js"></script>
+</body>
+</html>
