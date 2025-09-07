@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import { testConnection } from './config/database';
 import authRoutes from './routes/authRoutes';
+import equipmentRoutes from './routes/equipmentRoutes';
 import userRoutes from './routes/userRoutes';
 dotenv.config();
 
@@ -14,18 +15,26 @@ app.use(cors());
 app.use(express.json());
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
+app.use('/api', equipmentRoutes);
 
 // Rutas
 app.use('/api', userRoutes); // ← Usar rutas
 console.log('🔄 Rutas cargadas:');
 console.log('- POST /api/users');
-console.log('- GET /api/users/:id'); 
+console.log('- GET /api/users/:id');
 console.log('- GET /api/users');
+console.log('🔄 Rutas cargadas:');
+console.log('- POST /api/equipment');
+console.log('- GET /api/equipment');
+console.log('- GET /api/equipment/:id');
+console.log('- PUT /api/equipment/:id');
+console.log('- DELETE /api/equipment/:id');
+console.log('- GET /api/laboratories/:labId/equipment');  
 
 // Rutas básicas
 app.get('/api/health', (req: any, res: any) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     message: 'Server is running',
     timestamp: new Date().toISOString()
   });
@@ -46,7 +55,7 @@ app.get('/api/test-db', async (req: any, res: any) => {
 });
 
 // Iniciar servidor
-app.listen(PORT, async () => {
+app.listen(Number(PORT), '0.0.0.0', async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Testing database connection...`);
   
