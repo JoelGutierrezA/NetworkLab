@@ -1,0 +1,185 @@
+<!-- Header -->
+<header class="header">
+    <nav class="nav container">
+        <a routerLink="/" class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                    <path d="M2 17L12 22L22 17"/>
+                    <path d="M2 12L12 17L22 12"/>
+                </svg>
+            </div>
+            NetworkLab
+        </a>
+        <ul class="nav-links" [class.active]="isMenuActive">
+            <li><a (click)="scrollTo('inicio')">Inicio</a></li>
+            <li><a (click)="scrollTo('caracteristicas')">Características</a></li>
+            <li><a (click)="scrollTo('como-funciona')">Cómo Funciona</a></li>
+            <li><a (click)="scrollTo('contacto')">Contacto</a></li>
+        </ul>
+        <div class="mobile-menu-btn" (click)="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <a class="login-btn" (click)="goToLogin()">Iniciar Sesión</a>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero" id="inicio">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="fade-in-up">Conectando la Comunidad Científica</h1>
+            <p class="fade-in-up">Plataforma colaborativa que une laboratorios, investigadores y científicos de todo el mundo. Comparte conocimiento, conecta con expertos y acelera la innovación científica.</p>
+            <div class="cta-buttons fade-in-up">
+                <a class="btn btn-primary" routerLink="/login">
+                    <span class="material-icons">science</span>
+                    Comenzar Colaboración
+                </a>
+                <a class="btn btn-secondary" (click)="scrollTo('como-funciona')">
+                    <span class="material-icons">play_arrow</span>
+                    Ver Cómo Funciona
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features" id="caracteristicas">
+    <div class="container">
+        <h2 class="scroll-reveal">Características Principales</h2>
+        <div class="features-grid">
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <span class="material-icons" style="color: white;">hub</span>
+                </div>
+                <h3>Red Colaborativa</h3>
+                <p>Conecta con laboratorios y científicos de todo el mundo. Forma equipos interdisciplinarios y comparte recursos de investigación.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <span class="material-icons" style="color: white;">share</span>
+                </div>
+                <h3>Intercambio de Conocimiento</h3>
+                <p>Comparte publicaciones, datos experimentales y metodologías con la comunidad científica global de forma segura.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <span class="material-icons" style="color: white;">analytics</span>
+                </div>
+                <h3>Análisis Colaborativo</h3>
+                <p>Herramientas avanzadas de análisis de datos que permiten colaboración en tiempo real entre equipos distribuidos.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <span class="material-icons" style="color: white;">verified_user</span>
+                </div>
+                <h3>Verificación de Expertos</h3>
+                <p>Sistema de verificación de credenciales académicas y profesionales para garantizar la calidad de la colaboración.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <span class="material-icons" style="color: white;">security</span>
+                </div>
+                <h3>Seguridad Avanzada</h3>
+                <p>Protección de datos de investigación con encriptación de extremo a extremo y control de acceso granular.</p>
+            </div>
+            <div class="feature-card scroll-reveal">
+                <div class="feature-icon">
+                    <span class="material-icons" style="color: white;">speed</span>
+                </div>
+                <h3>Comunicación Instantánea</h3>
+                <p>Chat en tiempo real, videoconferencias integradas y herramientas de colaboración sincrónica y asincrónica.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item scroll-reveal">
+                <h3>15,000+</h3>
+                <p>Científicos Conectados</p>
+            </div>
+            <div class="stat-item scroll-reveal">
+                <h3>500+</h3>
+                <p>Laboratorios Activos</p>
+            </div>
+            <div class="stat-item scroll-reveal">
+                <h3>2,500+</h3>
+                <p>Proyectos Colaborativos</p>
+            </div>
+            <div class="stat-item scroll-reveal">
+                <h3>50+</h3>
+                <p>Países Participantes</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works -->
+<section class="how-it-works" id="como-funciona">
+    <div class="container">
+        <h2 class="scroll-reveal">Cómo Funciona NetworkLab</h2>
+        <div class="steps">
+            <div class="step scroll-reveal">
+                <div class="step-number">1</div>
+                <h3>Registro y Verificación</h3>
+                <p>Crea tu perfil profesional y verifica tus credenciales académicas. Conecta con tu institución y especialización científica.</p>
+            </div>
+            <div class="step scroll-reveal">
+                <div class="step-number">2</div>
+                <h3>Búsqueda y Conexión</h3>
+                <p>Encuentra expertos en tu área, laboratorios complementarios y proyectos de investigación afines usando nuestro algoritmo de matching.</p>
+            </div>
+            <div class="step scroll-reveal">
+                <div class="step-number">3</div>
+                <h3>Colaboración Activa</h3>
+                <p>Inicia proyectos colaborativos, comparte recursos, publica resultados y participa en discusiones científicas especializadas.</p>
+            </div>
+            <div class="step scroll-reveal">
+                <div class="step-number">4</div>
+                <h3>Impacto Global</h3>
+                <p>Amplifica el alcance de tu investigación, acelera el descubrimiento científico y contribuye al avance del conocimiento mundial.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer" id="contacto">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>NetworkLab</h4>
+                <p>Plataforma colaborativa que conecta la comunidad científica global para acelerar el descubrimiento e innovación.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <a (click)="scrollTo('inicio')">Inicio</a>
+                <a (click)="scrollTo('caracteristicas')">Características</a>
+                <a (click)="scrollTo('como-funciona')">Cómo Funciona</a>
+                <a (click)="scrollTo('contacto')">Contacto</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <a [href]="'mailto:info@networklab.com'">info&#64;networklab.com</a>
+                <a href="tel:+56123456789">+56 1 2345 6789</a>
+                <p>Santiago, Chile</p>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a>Términos de Uso</a>
+                <a>Política de Privacidad</a>
+                <a>Código de Ética</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 NetworkLab. Todos los derechos reservados. | Conectando Ciencia Global</p>
+        </div>
+    </div>
+</footer>
