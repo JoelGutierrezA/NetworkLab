@@ -22,7 +22,10 @@
             <span></span>
             <span></span>
         </div>
-        <a class="login-btn" (click)="goToLogin()">Iniciar Sesión</a>
+        <div class="auth-buttons">
+            <a class="login-btn" (click)="goToLogin()">Iniciar Sesión</a>
+            <a class="register-btn" routerLink="/register">Crear Cuenta</a>
+        </div>
     </nav>
 </header>
 
@@ -40,6 +43,10 @@
                 <a class="btn btn-secondary" (click)="scrollTo('como-funciona')">
                     <span class="material-icons">play_arrow</span>
                     Ver Cómo Funciona
+                </a>
+                <a class="register-btn" routerLink="/register">
+                    <span class="material-icons">person_add</span>
+                    Crear Cuenta
                 </a>
             </div>
         </div>

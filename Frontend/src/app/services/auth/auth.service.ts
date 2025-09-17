@@ -23,6 +23,29 @@ export interface LoginResponse {
   };
 }
 
+// Interfaces para el registro
+export interface RegisterRequest {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: {
+      id: number;
+      email: string;
+      first_name: string;
+      last_name: string;
+      role: string;
+    };
+    token: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,6 +61,18 @@ export class AuthService {
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
         }
+      })
+    );
+  }
+
+  // MÉTODO REGISTER
+  register(userData: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/auth/register`, userData).pipe(
+      tap((response: RegisterResponse) => {
+        /*if (response.success) {
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }*/
       })
     );
   }
@@ -67,6 +102,18 @@ export class AuthService {
   getUser(): any {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  }
+
+  // Método adicional para verificar roles
+  hasRole(role: string): boolean {
+    const user = this.getUser();
+    return user && user.role === role;
+  }
+
+  // Método para obtener el rol actual
+  getCurrentRole(): string | null {
+    const user = this.getUser();
+    return user ? user.role : null;
   }
 
   logout(): void {

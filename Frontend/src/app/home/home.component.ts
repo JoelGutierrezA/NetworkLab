@@ -1,14 +1,13 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-
-
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
+
 export class HomeComponent implements OnInit {
   isMenuActive = false;
 
@@ -18,9 +17,14 @@ export class HomeComponent implements OnInit {
     this.initAnimations();
   }
 
-  goToLogin() { // AÑADE ESTE MÉTODO
+  goToLogin() {
     this.router.navigate(['/login']);
   }
+
+  navigateToRegister(): void {
+    this.router.navigate(['/register']);
+  }
+
 
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
@@ -28,16 +32,20 @@ export class HomeComponent implements OnInit {
     this.handleHeaderScroll();
   }
 
-  toggleMenu(): void {
+  toggleMenu() {
     this.isMenuActive = !this.isMenuActive;
   }
 
-  scrollTo(sectionId: string): void {
-    const element = document.getElementById(sectionId);
+  scrollTo(section: string) {
+    const element = document.getElementById(section);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      element.scrollIntoView({ behavior: 'smooth' });
     }
-    this.isMenuActive = false;
+  }
+
+  // Agrega esta función para el botón "Crear Cuenta"
+  goToSignup() {
+    this.router.navigate(['/signup']); // O la ruta que uses para registro
   }
 
   private initAnimations(): void {

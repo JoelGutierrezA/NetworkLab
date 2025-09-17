@@ -1,3 +1,5 @@
+@import url('../../shared/header.css');
+
 * {
     margin: 0;
     padding: 0;
@@ -9,6 +11,7 @@
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding-top: 80px;
 }
 
 /* Header */
@@ -127,7 +130,6 @@
     display: flex;
     align-items: center;
     padding: 2rem 0;
-    margin-top: 35px;
 }
 
 .login-content {
