@@ -46,8 +46,7 @@ export class AuthController {
             first_name: newUser.first_name,
             last_name: newUser.last_name,
             role: newUser.role
-            },
-            token
+            }
         }
         });
 
@@ -127,10 +126,10 @@ export class AuthController {
         const authHeader = req.headers.authorization;
         
         if (!authHeader) {
-            return res.status(401).json({
-                success: false,
-                message: 'Token de refresco requerido en header Authorization'
-            });
+        return res.status(401).json({
+            success: false,
+            message: 'Token de refresco requerido en header Authorization'
+        });
         }
 
         // Verificar que sea formato "Bearer TOKEN"
@@ -143,7 +142,7 @@ export class AuthController {
 
         const oldToken = authHeader.substring(7); // Remover "Bearer "
 
-         // 2. Decodificar el token
+        // 2. Decodificar el token
         const decoded = AuthUtils.decodeToken(oldToken);
         
         if (!decoded || !decoded.userId) {
@@ -165,8 +164,8 @@ export class AuthController {
 
         // 4. Generar NUEVO token
         const newToken = AuthUtils.generateToken(
-        user.id!, 
-        user.email, 
+        user.id!,
+        user.email,
         user.role
         );
 
@@ -193,6 +192,75 @@ export class AuthController {
         res.status(500).json({
         success: false,
         message: 'Error al refrescar el token'
+        });
+    }
+    }
+
+    // Verificar token (endpoint adicional para verificar validez del token)
+    static async verifyToken(req: Request, res: Response) {
+    try {
+        const authHeader = req.headers.authorization;
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({
+            success: false,
+            message: 'Token requerido'
+        });
+        }
+
+        const token = authHeader.substring(7);
+        const decoded = AuthUtils.decodeToken(token);
+
+        if (!decoded || !decoded.userId) {
+        return res.status(401).json({
+            success: false,
+            message: 'Token inválido'
+        });
+        }
+
+        // Verificar si el usuario aún existe en la base de datos
+        const user = await UserModel.findById(decoded.userId);
+        if (!user) {
+        return res.status(401).json({
+            success: false,
+            message: 'Usuario no encontrado'
+        });
+        }
+
+        res.json({
+        success: true,
+        message: 'Token válido',
+        data: {
+            user: {
+            id: user.id,
+            email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            role: user.role
+            }
+        }
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+        success: false,
+        message: 'Error al verificar el token'
+        });
+    }
+    }
+
+    // Logout (opcional - normalmente se maneja del lado del cliente)
+    static async logout(req: Request, res: Response) {
+    try {
+        res.json({
+        success: true,
+        message: 'Logout exitoso'
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+        success: false,
+        message: 'Error en logout'
         });
     }
     }
