@@ -12,12 +12,33 @@ Resolver tres problemas críticos en laboratorios de investigación:
 ## 🏗️ Arquitectura
 
 ### Backend
-- **Node.js** + Express + TypeScript
-- **MySQL** - Base de datos relacional
-- **JWT** - Autenticación segura
-- **bcrypt** - Hashing de contraseñas
+- **Node.js + Express + TypeScript**
+- **MySQL** (mysql2/promise)
+- **JWT + bcrypt** para autenticación
+- **Dotenv** para configuración
+- **Morgan** para logs
 
 ### Frontend (En desarrollo)
 - **Angular** + TypeScript
 - **Angular Material** - Componentes UI
 - **RxJS** - Programación reactiva
+
+## 🚀 Instalación y Uso
+
+### Clonar el repositorio
+-git clone https://github.com/JoelGutierrezA/NetworkLab.git
+-cd NetworkLab
+
+### Backend
+-cd Backend
+-npm install
+-npm run dev
+
+### Frontend
+-cd Frontend
+-npm install
+-ng serve
+
+#### 👨‍💻 Autor
+- Joel Gutiérrez A.
+- jgutiale@gmail.com
