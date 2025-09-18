@@ -26,18 +26,18 @@ Resolver tres problemas críticos en laboratorios de investigación:
 ## 🚀 Instalación y Uso
 
 ### Clonar el repositorio
--git clone https://github.com/JoelGutierrezA/NetworkLab.git
--cd NetworkLab
+- git clone https://github.com/JoelGutierrezA/NetworkLab.git
+- cd NetworkLab
 
 ### Backend
--cd Backend
--npm install
--npm run dev
+- cd Backend
+- npm install
+- npm run dev
 
 ### Frontend
--cd Frontend
--npm install
--ng serve
+- cd Frontend
+- npm install
+- ng serve
 
 #### 👨‍💻 Autor
 - Joel Gutiérrez A.
