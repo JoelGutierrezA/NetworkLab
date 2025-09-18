@@ -1,11 +1,18 @@
 import { Router } from 'express';
-import { UserController } from '../controllers/userController';
+import { getUsers, UserController } from '../controllers/userController';
 
 const router = Router();
 
-// Rutas de usuarios
+// Crear usuario
 router.post('/users', UserController.createUser);
+
+// Obtener usuario por ID
 router.get('/users/:id', UserController.getUserById);
-router.get('/users', UserController.getUserByEmail);
+
+// Obtener usuario por email (usando query param ?email=)
+router.get('/users/email/:email', UserController.getUserByEmail);
+
+// Listar todos los usuarios
+router.get('/users', getUsers);
 
 export default router;

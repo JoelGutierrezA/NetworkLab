@@ -1,11 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FooterComponent } from '../components/shared/footer/footer.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  imports: [
+    CommonModule,
+    FooterComponent
+  ]
 })
 
 export class HomeComponent implements OnInit {
@@ -25,6 +31,12 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/register']);
   }
 
+scrollTo(section: string) {
+  const el = document.getElementById(section);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+}
 
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
@@ -34,13 +46,6 @@ export class HomeComponent implements OnInit {
 
   toggleMenu() {
     this.isMenuActive = !this.isMenuActive;
-  }
-
-  scrollTo(section: string) {
-    const element = document.getElementById(section);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
   }
 
   // Agrega esta función para el botón "Crear Cuenta"

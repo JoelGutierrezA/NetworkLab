@@ -54,13 +54,17 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {}
 
-  login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
-      tap((response: any) => {
-        if (response.success) {
-          localStorage.setItem('token', response.data.token);
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-        }
+  login(dto: { email: string; password: string }) {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      data: { user: { id: number; email: string; role: string }, token: string };
+    }>(`${this.apiUrl}/auth/login`, dto).pipe(
+      tap(res => {
+        const token = res.data.token;
+        const role  = res.data.user.role; // 👈 viene en la respuesta del backend
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
       })
     );
   }
@@ -69,10 +73,6 @@ export class AuthService {
   register(userData: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.apiUrl}/auth/register`, userData).pipe(
       tap((response: RegisterResponse) => {
-        /*if (response.success) {
-          localStorage.setItem('token', response.data.token);
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-        }*/
       })
     );
   }

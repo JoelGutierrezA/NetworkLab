@@ -1,10 +1,16 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HeaderDashboardComponent } from '../shared/header-dashboard/header-dashboard.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  imports: [
+  CommonModule,
+  HeaderDashboardComponent
+]
 })
 export class DashboardComponent implements OnInit {
   user: any = {
