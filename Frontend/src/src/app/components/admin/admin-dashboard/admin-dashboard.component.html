@@ -1,0 +1,114 @@
+<div class="dashboard-page">
+  <app-header-dashboard></app-header-dashboard>
+
+    <div class="admin-dashboard container dashboard-layout">
+    <!-- Columna izquierda -->
+    <div class="dashboard-left">
+      <!-- Fila de estadísticas -->
+      <div class="stats-grid">
+        <!-- Total de usuarios -->
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <h2>{{ totalUsuarios }}</h2>
+            <p>Total de Usuarios</p>
+          </div>
+        </div>
+
+        <!-- Usuarios del último mes -->
+        <div class="stat-card">
+          <div class="stat-icon">🆕</div>
+          <div class="stat-info">
+            <h2>{{ usuariosUltimoMes }}</h2>
+            <p>Usuarios Último Mes</p>
+          </div>
+        </div>
+
+        <!-- Tarjeta vacía -->
+        <div class="stat-card empty">
+          <div class="stat-info">
+            <h2>-</h2>
+            <p>Disponible</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de usuarios -->
+    <div class="users-list-card">
+      <h3>Usuarios Registrados</h3>
+
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Registrado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of usuarios">
+            <td>{{ user.id }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.created_at | date:'shortDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Paginación -->
+      <div class="pagination-controls">
+        <button (click)="prevPage()" [disabled]="currentPage === 0">⬅️ Anterior</button>
+        <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="(currentPage + 1) * pageSize >= totalUsuarios">Siguiente ➡️</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Columna derecha -->
+    <div class="dashboard-right">
+      <div class="info-panel">
+        <h3>Información</h3>
+        <p>(por ahora en blanco)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>NetworkLab</h4>
+          <p>Plataforma colaborativa que conecta la comunidad científica global</p>
+        </div>
+        <div class="footer-section">
+          <h4>Enlaces Rápidos</h4>
+          <a>Inicio</a>
+          <a>Características</a>
+          <a>Cómo Funciona</a>
+          <a>Contacto</a>
+        </div>
+        <div class="footer-section">
+          <h4>Contacto</h4>
+          <a [href]="'mailto:info&#64;networklab.com'">info&#64;networklab.com</a>
+          <a href="tel:+56123456789">+56 1 2345 6789</a>
+          <p>Santiago, Chile</p>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <a>Términos de Uso</a>
+          <a>Política de Privacidad</a>
+          <a>Código de Ética</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 NetworkLab. Todos los derechos reservados. | Conectando Ciencia Global</p>
+      </div>
+    </div>
+  </footer>
+</div>
