@@ -1,52 +1,18 @@
-/* Botones de autenticación en el header */
-.auth-buttons {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.login-btn {
-    text-decoration: none;
-    font-weight: 500;
-    padding: 10px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.register-btn {
-    background: #667eea;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.register-btn:hover {
-    background: #764ba2;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-/* Botón en la hero section (mantener consistente) */
+/* Hero CTA button (variación específica del home) */
 .cta-buttons .register-btn {
-    background: #4CAF50;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
+  background: #4CAF50;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .cta-buttons .register-btn:hover {
-    background: #3e8e41;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  background: #3e8e41;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }

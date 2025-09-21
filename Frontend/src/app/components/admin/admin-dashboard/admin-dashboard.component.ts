@@ -19,16 +19,13 @@ export class AdminDashboardComponent implements OnInit {
   pageSize = 5;
   currentPage = 0;
 
-  constructor(private userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   loadUsuarios() {
-  this.userService.getUsers(this.pageSize, this.currentPage * this.pageSize).subscribe({
-    next: (data) => {
-      this.usuarios = data.users;
-      this.totalUsuarios = data.total;
-    },
-    error: (err) => console.error('❌ Error cargando usuarios:', err)
-  });
+  this.userService.getUsuarios(this.currentPage, this.pageSize).subscribe(response => {
+  this.usuarios = response.usuarios;
+  this.totalUsuarios = response.total;
+});
 }
 
 ngOnInit(): void {

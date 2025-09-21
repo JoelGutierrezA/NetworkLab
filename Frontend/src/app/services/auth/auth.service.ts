@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AuthResponse } from '../../models/auth-response.model';
 
 export interface LoginRequest {
   email: string;
@@ -52,22 +54,13 @@ export interface RegisterResponse {
 export class AuthService {
   private readonly apiUrl = environment.apiUrl;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient,
+              private readonly router: Router
+  ) {}
 
-  login(dto: { email: string; password: string }) {
-    return this.http.post<{
-      success: boolean;
-      message: string;
-      data: { user: { id: number; email: string; role: string }, token: string };
-    }>(`${this.apiUrl}/auth/login`, dto).pipe(
-      tap(res => {
-        const token = res.data.token;
-        const role  = res.data.user.role; // 👈 viene en la respuesta del backend
-        localStorage.setItem('token', token);
-        localStorage.setItem('role', role);
-      })
-    );
-  }
+  login(dto: { email: string; password: string }): Observable<AuthResponse> {
+  return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, dto);
+}
 
   // MÉTODO REGISTER
   register(userData: RegisterRequest): Observable<RegisterResponse> {
@@ -99,9 +92,9 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  getUser(): any {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+  getUser() {
+  const userData = localStorage.getItem('user');
+  return userData ? JSON.parse(userData) : null;
   }
 
   // Método adicional para verificar roles
@@ -119,6 +112,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {

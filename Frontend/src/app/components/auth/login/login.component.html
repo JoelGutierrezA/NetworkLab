@@ -1,159 +1,138 @@
-<div class="login-page">
-  <!-- Header -->
-  <header class="header">
-      <nav class="nav container">
-          <a routerLink="/home" class="logo">
-              <div class="logo-icon">
-                  <svg viewBox="0 0 24 24">
-                      <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
-                      <path d="M2 17L12 22L22 17"/>
-                      <path d="M2 12L12 17L22 12"/>
-                  </svg>
-              </div>
-              NetworkLab
-          </a>
-          <ul class="nav-links">
-              <li><a (click)="scrollTo('inicio')">Inicio</a></li>
-              <li><a (click)="scrollTo('caracteristicas')">Características</a></li>
-              <li><a (click)="scrollTo('como-funciona')">Cómo Funciona</a></li>
-              <li><a (click)="scrollTo('contacto')">Contacto</a></li>
-          </ul>
-          <div class="nav-auth">
-              <a class="login-link" routerLink="/login">Iniciar Sesión</a>
-              <a class="register-btn" routerLink="/register">Crear Cuenta</a>
-          </div>
-          <div class="mobile-menu-btn">
-              <span></span>
-              <span></span>
-              <span></span>
-          </div>
-      </nav>
-  </header>
+<!-- Header público -->
+<app-header-public></app-header-public>
 
+<div class="login-page">
   <!-- Login Section -->
   <section class="login-section">
-      <div class="container">
-          <div class="login-content">
-              <!-- Login Container -->
-              <div class="login-container">
-                  <div class="login-header">
-                      <div class="login-icon">
-                          <svg viewBox="0 0 24 24">
-                              <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
-                              <path d="M2 17L12 22L22 17"/>
-                              <path d="M2 12L12 17L22 12"/>
-                          </svg>
-                      </div>
-                      <h1>Iniciar Sesión</h1>
-                      <p>Accede a tu cuenta de NetworkLab</p>
-                  </div>
+    <div class="container">
+      <div class="login-content">
 
-                  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                      <div class="form-group">
-                          <label for="email">Correo Electrónico</label>
-                          <input
-                              type="email"
-                              id="email"
-                              formControlName="email"
-                              placeholder="usuario@networklab.com"
-                              required
-                          >
-                          <div class="input-icon">📧</div>
-                      </div>
-
-                      <div class="form-group">
-                          <label for="password">Contraseña</label>
-                          <input
-                              type="password"
-                              id="password"
-                              formControlName="password"
-                              placeholder="••••••••"
-                              required
-                          >
-                          <div class="input-icon">🔒</div>
-                      </div>
-
-                      <div class="form-options">
-                          <label class="checkbox-container">
-                              <input type="checkbox" formControlName="remember">
-                              <span class="checkmark"></span>
-                              Recordar sesión
-                          </label>
-                          <a class="forgot-link">¿Olvidaste tu contraseña?</a>
-                      </div>
-
-                      <button type="submit" class="login-btn" [disabled]="!loginForm.valid">
-                          <span>Iniciar Sesión</span>
-                          <div class="btn-loader"></div>
-                      </button>
-
-                      <div class="divider">
-                          <span>o</span>
-                      </div>
-
-                      <div class="auth-links">
-                          <p>¿No tienes cuenta?</p>
-                          <a routerLink="/register" class="create-account-link">
-                              Crear cuenta nueva
-                              <span class="link-arrow">→</span>
-                          </a>
-                      </div>
-                  </form>
-
-                  <div class="login-footer">
-                      <div class="security-info">
-                          <div class="security-icon">🛡️</div>
-                          <p>Tu información está protegida con cifrado de nivel científico</p>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Sidebar -->
-              <div class="login-sidebar">
-                  <div class="sidebar-content">
-                      <h3>Conectando la Comunidad Científica</h3>
-                      <p>Accede a nuestra plataforma colaborativa para investigadores y científicos de todo el mundo.</p>
-
-                      <div class="features-list">
-                          <div class="feature-item">
-                              <span class="feature-icon">🔬</span>
-                              <span>Colaboración entre Laboratorios</span>
-                          </div>
-                          <div class="feature-item">
-                              <span class="feature-icon">📊</span>
-                              <span>Comparte Datos de Investigación</span>
-                          </div>
-                          <div class="feature-item">
-                              <span class="feature-icon">⚡</span>
-                              <span>Comunicación en Tiempo Real</span>
-                          </div>
-                          <div class="feature-item">
-                              <span class="feature-icon">🔒</span>
-                              <span>Seguridad de Nivel Científico</span>
-                          </div>
-                      </div>
-
-                      <div class="stats-mini">
-                          <div class="stat">
-                              <strong>15,000+</strong>
-                              <span>Científicos</span>
-                          </div>
-                          <div class="stat">
-                              <strong>500+</strong>
-                              <span>Laboratorios</span>
-                          </div>
-                          <div class="stat">
-                              <strong>50+</strong>
-                              <span>Países</span>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+        <!-- Login Container -->
+        <div class="login-container">
+          <div class="login-header">
+            <div class="login-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                <path d="M2 17L12 22L22 17"/>
+                <path d="M2 12L12 17L22 12"/>
+              </svg>
+            </div>
+            <h1>Iniciar Sesión</h1>
+            <p>Accede a tu cuenta de NetworkLab</p>
           </div>
+
+          <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">Correo Electrónico</label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="usuario@networklab.com"
+                required
+              >
+              <div class="input-icon">📧</div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+              <label for="password">Contraseña</label>
+              <input
+                type="password"
+                id="password"
+                formControlName="password"
+                placeholder="••••••••"
+                required
+              >
+              <div class="input-icon">🔒</div>
+            </div>
+
+            <!-- Opciones -->
+            <div class="form-options">
+              <label class="checkbox-container">
+                <input type="checkbox" formControlName="remember">
+                <span class="checkmark"></span>
+                Recordar sesión
+              </label>
+              <a class="forgot-link">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <!-- Botón login -->
+            <button type="submit" class="login-btn" [disabled]="!loginForm.valid">
+              <span>Iniciar Sesión</span>
+              <div class="btn-loader"></div>
+            </button>
+
+            <div class="divider">
+              <span>o</span>
+            </div>
+
+            <!-- Crear cuenta -->
+            <div class="auth-links">
+              <p>¿No tienes cuenta?</p>
+              <a routerLink="/register" class="create-account-link">
+                Crear cuenta nueva
+                <span class="link-arrow">→</span>
+              </a>
+            </div>
+          </form>
+
+          <!-- Footer de login -->
+          <div class="login-footer">
+            <div class="security-info">
+              <div class="security-icon">🛡️</div>
+              <p>Tu información está protegida con cifrado de nivel científico</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="login-sidebar">
+          <div class="sidebar-content">
+            <h3>Conectando la Comunidad Científica</h3>
+            <p>Accede a nuestra plataforma colaborativa para investigadores y científicos de todo el mundo.</p>
+
+            <div class="features-list">
+              <div class="feature-item">
+                <span class="feature-icon">🔬</span>
+                <span>Colaboración entre Laboratorios</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">📊</span>
+                <span>Comparte Datos de Investigación</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">⚡</span>
+                <span>Comunicación en Tiempo Real</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">🔒</span>
+                <span>Seguridad de Nivel Científico</span>
+              </div>
+            </div>
+
+            <div class="stats-mini">
+              <div class="stat">
+                <strong>15,000+</strong>
+                <span>Científicos</span>
+              </div>
+              <div class="stat">
+                <strong>500+</strong>
+                <span>Laboratorios</span>
+              </div>
+              <div class="stat">
+                <strong>50+</strong>
+                <span>Países</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
+    </div>
   </section>
 
-  <!-- Footer -->
-  <app-footer></app-footer>
-
+<!-- Footer -->
+<app-footer></app-footer>
 </div>

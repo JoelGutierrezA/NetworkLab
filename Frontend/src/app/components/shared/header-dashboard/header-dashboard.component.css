@@ -1,69 +1,190 @@
-.user-menu {
-  position: relative;
-  display: inline-block;
+
+/* Contenedor principal del header */
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  position: fixed;     /* mantiene fixed */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  padding: 12px 0;     /* el padding lateral lo aporta .container global */
+  box-sizing: border-box;
 }
 
+/* Contenedor interior (usa el .container GLOBAL que tienes en styles.css) */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Branding */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e3a8a;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+
+/* Links */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+.nav-links a {
+  color: #4a5568;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  position: relative;
+  cursor: pointer;
+}
+.nav-links a:hover { color: #667eea; }
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* CTA */
+.login-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  cursor: pointer;
+}
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Menú de usuario */
+.user-container {
+  position: relative; /* referencia para el dropdown */
+  display: inline-block;
+}
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+}
 .user-btn {
   background: none;
   border: none;
   cursor: pointer;
   padding: 6px;
   border-radius: 50%;
-  transition: background 0.2s;
+  transition: background 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.user-btn:hover { background: rgba(0, 0, 0, 0.05); }
+.user-icon { width: 28px; height: 28px; color: #334155; }
 
-.user-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.user-icon {
-  width: 28px;
-  height: 28px;
-  color: #334155; /* gris oscuro */
-}
-
-.dropdown {
+.dropdown-menu {
   position: absolute;
+  top: 100%;
   right: 0;
-  top: 45px;
   background: #fff;
-  color: #1e293b;
   border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   min-width: 190px;
-  box-shadow: 0 6px 20px rgba(0,0,0,.15);
-  overflow: hidden;
   z-index: 1000;
 }
-
 .dropdown-header {
   padding: 12px 14px;
   font-weight: 600;
   background: #f1f5f9;
   border-bottom: 1px solid #e2e8f0;
 }
-
 .dropdown-item {
   display: block;
-  padding: 10px 14px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #374151;
   text-decoration: none;
-  color: #334155;
-  transition: background 0.2s;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
 }
-
-.dropdown-item:hover {
-  background: #f8fafc;
-}
-
+.dropdown-item:hover { background: #f3f4f6; }
 .dropdown-divider {
   height: 1px;
   background: #e2e8f0;
   margin: 4px 0;
 }
+.logout-btn { color: #dc2626; font-weight: 500; }
 
-.logout {
-  color: #dc2626;
-  font-weight: 500;
+/* Mobile */
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 5px;
+}
+.mobile-menu-btn span {
+  width: 25px;
+  height: 3px;
+  background: #4a5568;
+  margin: 3px 0;
+  transition: 0.3s;
+  border-radius: 2px;
+}
+
+/* Responsive específico del header */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  .nav-links.active { display: flex; }
+  .mobile-menu-btn { display: flex; }
 }

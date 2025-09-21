@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FooterComponent } from '../components/shared/footer/footer.component';
+import { HeaderPublicComponent } from '../components/shared/header-public/header-public.component';
 
 @Component({
   selector: 'app-home',
@@ -10,7 +11,8 @@ import { FooterComponent } from '../components/shared/footer/footer.component';
   styleUrls: ['./home.component.css'],
   imports: [
     CommonModule,
-    FooterComponent
+    FooterComponent,
+    HeaderPublicComponent
   ]
 })
 

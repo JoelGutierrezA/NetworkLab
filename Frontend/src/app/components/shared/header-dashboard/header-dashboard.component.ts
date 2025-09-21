@@ -1,29 +1,36 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-header-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './header-dashboard.component.html',
   styleUrls: ['./header-dashboard.component.css']
 })
-export class HeaderDashboardComponent {
-  user = {
-    name: localStorage.getItem('first_name') || 'Usuario'
-  };
 
-  menuOpen = false;
+export class HeaderDashboardComponent implements OnInit {
+  userName: string = 'Usuario';
+  isDropdownOpen: boolean = false;
+  user: any = null;
 
-  constructor(private readonly router: Router) {}
+  constructor(private readonly authService: AuthService) {}
 
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
+  ngOnInit(): void {
+    this.user = this.authService.getUser();
+    if (this.user) {
+      this.userName = this.user.role === 'admin' ? 'Admin' : this.user.first_name;
+    }
   }
 
-  logout() {
-    localStorage.clear();
-    this.router.navigate(['/login']);
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }
+

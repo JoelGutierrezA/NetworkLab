@@ -1,0 +1,65 @@
+.header-public {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 0;
+}
+
+.header-public .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-public .logo {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #1f2937;
+  text-decoration: none;
+}
+
+.header-public .logo-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+}
+
+.header-public .nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.header-public .nav-links a {
+  text-decoration: none;
+  color: #374151;
+  transition: color 0.2s ease;
+}
+
+.header-public .nav-links a:hover {
+  color: #2563eb;
+}
+
+.header-public .nav-auth {
+  display: flex;
+  gap: 1rem;
+}
+
+.header-public .login-link,
+.header-public .register-link {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.header-public .register-link {
+  padding: 6px 12px;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+}

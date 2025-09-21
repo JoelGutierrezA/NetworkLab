@@ -1,39 +1,42 @@
 <div class="dashboard-page">
   <app-header-dashboard></app-header-dashboard>
 
-    <div class="admin-dashboard container">
-    <!-- Fila de estadísticas -->
-    <div class="stats-grid">
-      <!-- Total de usuarios -->
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div class="stat-info">
-          <h2>{{ totalUsuarios }}</h2>
-          <p>Total de Usuarios</p>
+    <div class="admin-dashboard container dashboard-layout">
+    <!-- Columna izquierda -->
+    <div class="dashboard-left">
+      <!-- Fila de estadísticas -->
+      <div class="stats-grid">
+        <!-- Total de usuarios -->
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <h2>{{ totalUsuarios }}</h2>
+            <p>Total de Usuarios</p>
+          </div>
+        </div>
+
+        <!-- Usuarios del último mes -->
+        <div class="stat-card">
+          <div class="stat-icon">🆕</div>
+          <div class="stat-info">
+            <h2>{{ usuariosUltimoMes }}</h2>
+            <p>Usuarios Último Mes</p>
+          </div>
+        </div>
+
+        <!-- Tarjeta vacía -->
+        <div class="stat-card empty">
+          <div class="stat-info">
+            <h2>-</h2>
+            <p>Disponible</p>
+          </div>
         </div>
       </div>
 
-      <!-- Usuarios del último mes -->
-      <div class="stat-card">
-        <div class="stat-icon">🆕</div>
-        <div class="stat-info">
-          <h2>{{ usuariosUltimoMes }}</h2>
-          <p>Usuarios Último Mes</p>
-        </div>
-      </div>
-
-      <!-- Tarjeta vacía -->
-      <div class="stat-card empty">
-        <div class="stat-info">
-          <h2>-</h2>
-          <p>Disponible</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lista de usuarios -->
+      <!-- Lista de usuarios -->
     <div class="users-list-card">
       <h3>Usuarios Registrados</h3>
+
       <table class="users-table">
         <thead>
           <tr>
@@ -56,13 +59,24 @@
           </tr>
         </tbody>
       </table>
-        <div class="pagination-controls">
-          <button (click)="prevPage()" [disabled]="currentPage === 0">⬅️ Anterior</button>
-          <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
-          <button (click)="nextPage()" [disabled]="(currentPage + 1) * pageSize >= totalUsuarios">Siguiente ➡️</button>
-        </div>
+
+      <!-- Paginación -->
+      <div class="pagination-controls">
+        <button (click)="prevPage()" [disabled]="currentPage === 0">⬅️ Anterior</button>
+        <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="(currentPage + 1) * pageSize >= totalUsuarios">Siguiente ➡️</button>
+      </div>
     </div>
+  </div>
+
+    <!-- Columna derecha -->
+    <div class="dashboard-right">
+      <div class="info-panel">
+        <h3>Información</h3>
+        <p>(por ahora en blanco)</p>
+      </div>
     </div>
+  </div>
 
   <!-- Footer -->
   <footer class="footer">

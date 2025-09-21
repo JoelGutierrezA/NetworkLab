@@ -1,56 +1,36 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { AuthResponse } from '../../../models/auth-response.model';
 import { AuthService } from '../../../services/auth/auth.service';
 import { FooterComponent } from '../../shared/footer/footer.component';
-
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  data: {
-    user: {
-      id: number;
-      email: string;
-      first_name: string;
-      last_name: string;
-      role: string;
-    };
-    token: string;
-  };
-}
+import { HeaderPublicComponent } from '../../shared/header-public/header-public.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterModule,
-    FooterComponent
-  ],
-  providers: [AuthService],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    FooterComponent,
+    HeaderPublicComponent,
+  ]
 })
 
-export class LoginComponent {
-  loginForm: FormGroup;
-  hidePassword = true;
-  isLoading = false;
-  errorMessage = '';
+export class LoginComponent implements OnInit {
+  loginForm!: FormGroup;
+  errorMessage: string | null = null;
 
   constructor(
-  private readonly fb: FormBuilder,
-  private readonly router: Router,
-  private readonly authService: AuthService
-  ) {
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
+
+  ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
@@ -58,46 +38,44 @@ export class LoginComponent {
     });
   }
 
-  togglePassword() {
-    this.hidePassword = !this.hidePassword;
+  goToRegister(): void {
+  this.router.navigate(['/register']);
   }
 
   onSubmit(): void {
-  if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) return;
 
-  this.authService.login(this.loginForm.value).subscribe({
-    next: () => {
-      const role = localStorage.getItem('role');
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response: AuthResponse) => {
+        console.log('✅ Respuesta backend:', response);
 
-      if (role === 'admin') {
-        this.router.navigate(['/admin-dashboard']);
-      } else {
+        if (!response?.success) {
+          this.errorMessage = 'Credenciales inválidas';
+          return;
+        }
+
+        // Guardar credenciales
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+
+        // 🔎 Debug y normalización del rol
+        const rawRole = response.user?.role ?? '';
+        console.log('🔎 role recibido =', `[${rawRole}]`, 'typeof =', typeof rawRole);
+
+        const role = String(rawRole).trim().toLowerCase();
+        localStorage.setItem('role', role); // por si algún guard usa 'role' directo
+
+        // Redirección según rol
         this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('❌ Error en login:', err);
+        this.errorMessage = 'Error al intentar iniciar sesión. Intenta de nuevo.';
       }
-    },
-    error: (err) => {
-      console.error('Error en login', err);
-        }
-      });
-    }
-
-  loginWithGoogle() {
-    console.log('Login with Google');
-  }
-
-  loginWithMicrosoft() {
-    console.log('Login with Microsoft');
-  }
-
-  // Métodos simples para el header
-  scrollTo(sectionId: string): void {
-    this.router.navigate(['/home']).then(() => {
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
     });
   }
 }
+
+
+
+

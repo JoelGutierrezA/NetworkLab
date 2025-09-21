@@ -51,7 +51,7 @@ import { Router } from '@angular/router';
   `]
 })
 export class AccessDeniedComponent {
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   goToDashboard(): void {
     this.router.navigate(['/dashboard']);

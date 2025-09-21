@@ -17,102 +17,6 @@ body {
     padding: 0 20px;
 }
 
-/* Header */
-.header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 24px;
-    font-weight: 700;
-    color: #1e3a8a;
-    text-decoration: none;
-}
-
-.logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.logo-icon svg {
-    width: 24px;
-    height: 24px;
-    fill: white;
-}
-
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 2rem;
-}
-
-.nav-links a {
-    color: #4a5568;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-    position: relative;
-    cursor: pointer;
-}
-
-.nav-links a:hover {
-    color: #667eea;
-}
-
-.nav-links a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -5px;
-    left: 0;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    transition: width 0.3s ease;
-}
-
-.nav-links a:hover::after {
-    width: 100%;
-}
-
-.login-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    cursor: pointer;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -337,13 +241,7 @@ body {
     line-height: 1.7;
 }
 
-/* Footer */
-.footer {
-    background: #1a202c;
-    color: white;
-    padding: 60px 0 20px;
-}
-
+/* Footer - SOLO LO GENERAL */
 .footer-content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -351,102 +249,15 @@ body {
     margin-bottom: 2rem;
 }
 
-.footer-section h4 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #667eea;
-}
-
-.footer-section p {
-    color: #a0aec0;
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
+.footer-section p,
 .footer-section a {
-    color: #a0aec0;
-    text-decoration: none;
-    display: block;
-    margin-bottom: 0.5rem;
+    line-height: 1.6;
     transition: color 0.3s ease;
     cursor: pointer;
 }
 
-.footer-section a:hover {
-    color: #667eea;
-}
-
 .footer-bottom {
-    border-top: 1px solid #2d3748;
-    padding-top: 2rem;
     text-align: center;
-    color: #718096;
-}
-
-/* Mobile Menu */
-.mobile-menu-btn {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.mobile-menu-btn span {
-    width: 25px;
-    height: 3px;
-    background: #4a5568;
-    margin: 3px 0;
-    transition: 0.3s;
-    border-radius: 2px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: white;
-        flex-direction: column;
-        padding: 1rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav-links.active {
-        display: flex;
-    }
-
-    .mobile-menu-btn {
-        display: flex;
-    }
-
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-
-    .hero p {
-        font-size: 1.1rem;
-    }
-
-    .cta-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .steps {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Animations */

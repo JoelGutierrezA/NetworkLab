@@ -1,33 +1,5 @@
 <!-- Header -->
-<header class="header">
-    <nav class="nav container">
-        <a routerLink="/" class="logo">
-            <div class="logo-icon">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
-                    <path d="M2 17L12 22L22 17"/>
-                    <path d="M2 12L12 17L22 12"/>
-                </svg>
-            </div>
-            NetworkLab
-        </a>
-        <ul class="nav-links" [class.active]="isMenuActive">
-            <li><a (click)="scrollTo('inicio')">Inicio</a></li>
-            <li><a (click)="scrollTo('caracteristicas')">Características</a></li>
-            <li><a (click)="scrollTo('como-funciona')">Cómo Funciona</a></li>
-            <li><a (click)="scrollTo('contacto')">Contacto</a></li>
-        </ul>
-        <div class="mobile-menu-btn" (click)="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <div class="auth-buttons">
-            <a class="login-btn" (click)="goToLogin()">Iniciar Sesión</a>
-            <a class="register-btn" routerLink="/register">Crear Cuenta</a>
-        </div>
-    </nav>
-</header>
+<app-header-public></app-header-public>
 
 <!-- Hero Section -->
 <section class="hero" id="inicio">

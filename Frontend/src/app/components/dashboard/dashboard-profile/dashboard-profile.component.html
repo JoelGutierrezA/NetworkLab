@@ -1,0 +1,29 @@
+<app-header-dashboard></app-header-dashboard>
+
+<section class="page">
+  <!-- Bloque de tarjetas de Perfil -->
+  <div class="services">
+    <a class="service-card" routerLink="/dashboard-suppliers">Perfil 1</a>
+    <a class="service-card" routerLink="/equipment">Perfil 2</a>
+    <a class="service-card" routerLink="/profile">Perfil 3</a>
+  </div>
+
+  <!-- Cambio de Contraseña -->
+  <div class="info-panel">
+  <h3>Cambiar Contraseña</h3>
+  <form (ngSubmit)="onChangePassword()" #passwordForm="ngForm">
+    <div>
+      <label>Contraseña Actual</label>
+      <input type="password" [(ngModel)]="oldPassword" name="oldPassword" required />
+    </div>
+    <div>
+      <label>Nueva Contraseña</label>
+      <input type="password" [(ngModel)]="newPassword" name="newPassword" required minlength="6" />
+    </div>
+    <button type="submit" [disabled]="passwordForm.invalid">Actualizar</button>
+  </form>
+  <p *ngIf="message">{{ message }}</p>
+</div>
+</section>
+
+<app-footer></app-footer>

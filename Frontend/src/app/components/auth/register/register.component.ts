@@ -1,12 +1,14 @@
-import { CommonModule } from '@angular/common'; // ← Importar CommonModule
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field'; // ← Si usas Angular Material
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
+import { FooterComponent } from '../../shared/footer/footer.component';
+import { HeaderPublicComponent } from '../../shared/header-public/header-public.component';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +19,9 @@ import { AuthService } from '../../../services/auth/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatCardModule,
-    MatIconModule
+    MatIconModule,
+    HeaderPublicComponent,
+    FooterComponent
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
@@ -29,9 +33,9 @@ export class RegisterComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {
     this.registerForm = this.fb.group({});
   }

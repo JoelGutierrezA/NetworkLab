@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,18 @@ export class UserService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getUsers(limit = 10, offset = 0): Observable<any> {
-  return this.http.get<any>(`${this.apiUrl}/users?limit=${limit}&offset=${offset}`);
+  // Obtener lista de usuarios con paginación
+  getUsuarios(page: number, pageSize: number): Observable<{ usuarios: User[], total: number }> {
+    return this.http.get<{ usuarios: User[], total: number }>(
+      `${this.apiUrl}/users?page=${page}&pageSize=${pageSize}`
+    );
+  }
+
+  // Cambiar contraseña de un usuario
+  changePassword(id: number, oldPassword: string, newPassword: string) {
+    return this.http.put<{ success: boolean; message: string }>(
+      `${this.apiUrl}/users/${id}/password`,
+      { oldPassword, newPassword }
+    );
   }
 }

@@ -12,9 +12,6 @@
 }
 
 .footer-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 32px;
   margin-bottom: 24px;
 }
 
@@ -29,10 +26,7 @@
 .footer-section a {
   font-size: 0.9rem;
   color: #cbd5e1;
-  text-decoration: none;
-  display: block;
   margin-bottom: 8px;
-  transition: color 0.3s ease;
 }
 
 .footer-section a:hover {
@@ -42,7 +36,6 @@
 .footer-bottom {
   border-top: 1px solid #1e293b;
   padding-top: 16px;
-  text-align: center;
   font-size: 0.85rem;
   color: #94a3b8;
 }

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FooterComponent } from '../shared/footer/footer.component';
 import { HeaderDashboardComponent } from '../shared/header-dashboard/header-dashboard.component';
 
 @Component({
@@ -9,7 +10,7 @@ import { HeaderDashboardComponent } from '../shared/header-dashboard/header-dash
   styleUrls: ['./dashboard.component.css'],
   imports: [
   CommonModule,
-  HeaderDashboardComponent
+  HeaderDashboardComponent, FooterComponent
 ]
 })
 export class DashboardComponent implements OnInit {
@@ -20,7 +21,7 @@ export class DashboardComponent implements OnInit {
     avatar: '👨‍🔬'
   };
 
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   ngOnInit(): void {
     // Cargar datos del usuario desde localStorage

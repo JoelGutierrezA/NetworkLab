@@ -4,28 +4,25 @@
 
     <ul class="nav-links">
       <li><a routerLink="/dashboard" class="nav-link">Inicio</a></li>
-      <li><a routerLink="/services" class="nav-link">Servicios</a></li>
-      <li><a routerLink="/marketplace" class="nav-link">Marketplace</a></li>
-      <li><a routerLink="/profile" class="nav-link">Perfil</a></li>
+      <li><a routerLink="/dashboard-services" class="nav-link">Servicios</a></li>
+      <li><a routerLink="/dashboard-suppliers" class="nav-link">Marketplace</a></li>
+      <li><a routerLink="/dashboard-profile" class="nav-link">Perfil</a></li>
+      <a *ngIf="user?.role === 'admin'" routerLink="/admin-dashboard">Dashboard</a>
     </ul>
 
     <!-- Menú de usuario -->
-    <div class="user-menu">
-      <button class="user-btn" (click)="toggleMenu()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="user-icon" viewBox="0 0 24 24" fill="currentColor">
-          <circle cx="12" cy="7" r="5"/>
-          <path d="M12 14c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z"/>
-        </svg>
+    <div class="user-container">
+      <button class="user-menu" (click)="toggleDropdown()">
+        <span class="user-avatar">👤</span>
+        <span class="user-name">{{ userName }}</span>
       </button>
 
-      <div class="dropdown" *ngIf="menuOpen">
-        <div class="dropdown-header">
-          {{ user.name }}
-        </div>
-        <a routerLink="/profile" class="dropdown-item">Mi Perfil</a>
+      <!-- Dropdown -->
+      <div class="dropdown-menu" *ngIf="isDropdownOpen">
+        <a routerLink="/dashboard-profile" class="dropdown-item">Mi Perfil</a>
         <a routerLink="/settings" class="dropdown-item">Configuración</a>
         <div class="dropdown-divider"></div>
-        <a (click)="logout()" class="dropdown-item logout">Cerrar Sesión</a>
+        <a (click)="logout()" class="dropdown-item logout-btn">Cerrar Sesión</a>
       </div>
     </div>
   </nav>

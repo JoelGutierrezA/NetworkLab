@@ -1,18 +1,15 @@
 import { Router } from 'express';
-import { getUsers, UserController } from '../controllers/userController';
+import { createUser, getUserById, getUsers, login, updatePassword } from '../controllers/userController';
 
 const router = Router();
 
-// Crear usuario
-router.post('/users', UserController.createUser);
+// Rutas de autenticación
+router.post('/login', login);
 
-// Obtener usuario por ID
-router.get('/users/:id', UserController.getUserById);
-
-// Obtener usuario por email (usando query param ?email=)
-router.get('/users/email/:email', UserController.getUserByEmail);
-
-// Listar todos los usuarios
+// Rutas de usuarios
+router.post('/users', createUser);
 router.get('/users', getUsers);
+router.get('/users/:id', getUserById);
+router.put('/users/:id/password', updatePassword);
 
 export default router;
