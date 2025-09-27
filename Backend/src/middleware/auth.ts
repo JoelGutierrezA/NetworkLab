@@ -77,3 +77,20 @@ export class AuthUtils {
     next();
     };
 };
+
+export const requireSelfOrAdmin = (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as any).user;
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'No autenticado' });
+    }
+
+    const paramId = String(req.params.id);
+    const sameUser = String(user.id) === paramId; // 👈 aquí usamos id
+    const isAdmin = user.role === 'admin';
+
+    if (!sameUser && !isAdmin) {
+        return res.status(403).json({ success: false, message: 'No autorizado' });
+    }
+
+    next();
+};

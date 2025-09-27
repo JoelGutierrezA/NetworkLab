@@ -1,38 +1,24 @@
-<footer class="footer" id="contacto">
-  <div class="container">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>NetworkLab</h4>
-        <p>
-          Plataforma colaborativa que conecta la comunidad científica global
-          para acelerar el descubrimiento e innovación.
-        </p>
+<footer class="footer-public">
+  <div class="footer-public-container">
+    <div class="footer-public-content">
+      <div class="footer-public-section">
+        <h4>Acerca de</h4>
+        <p>Conectando la comunidad científica con herramientas colaborativas.</p>
       </div>
-      <div class="footer-section">
-        <h4>Enlaces Rápidos</h4>
-        <a (click)="scrollTo('inicio')">Inicio</a>
-        <a (click)="scrollTo('caracteristicas')">Características</a>
-        <a (click)="scrollTo('como-funciona')">Cómo Funciona</a>
-        <a (click)="scrollTo('contacto')">Contacto</a>
+      <div class="footer-public-section">
+        <h4>Enlaces</h4>
+        <a routerLink="/home">Inicio</a>
+        <a routerLink="/features">Características</a>
+        <a routerLink="/contact">Contacto</a>
       </div>
-      <div class="footer-section">
-        <h4>Contacto</h4>
-        <a [href]="'mailto:info@networklab.com'">info&#64;networklab.com</a>
-        <a href="tel:+56123456789">+56 1 2345 6789</a>
-        <p>Santiago, Chile</p>
-      </div>
-      <div class="footer-section">
-        <h4>Legal</h4>
-        <a>Términos de Uso</a>
-        <a>Política de Privacidad</a>
-        <a>Código de Ética</a>
+      <div class="footer-public-section">
+        <h4>Soporte</h4>
+        <a routerLink="/help">Ayuda</a>
+        <a routerLink="/privacy">Privacidad</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>
-        &copy; 2025 NetworkLab. Todos los derechos reservados. |
-        Conectando Ciencia Global
-      </p>
+    <div class="footer-public-bottom">
+      © 2025 NetworkLab. Todos los derechos reservados.
     </div>
   </div>
 </footer>

@@ -4,7 +4,7 @@
   padding: 1rem 0;
 }
 
-.header-public .header-container {
+.header-public-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,7 +13,7 @@
   padding: 0 20px;
 }
 
-.header-public .logo {
+.header-public-logo {
   display: flex;
   align-items: center;
   font-weight: 600;
@@ -22,13 +22,13 @@
   text-decoration: none;
 }
 
-.header-public .logo-icon {
+.header-public-logo-icon {
   width: 32px;
   height: 32px;
   margin-right: 8px;
 }
 
-.header-public .nav-links {
+.header-public-nav-links {
   list-style: none;
   display: flex;
   gap: 1.5rem;
@@ -36,28 +36,28 @@
   padding: 0;
 }
 
-.header-public .nav-links a {
+.header-public-nav-links a {
   text-decoration: none;
   color: #374151;
   transition: color 0.2s ease;
 }
 
-.header-public .nav-links a:hover {
+.header-public-nav-links a:hover {
   color: #2563eb;
 }
 
-.header-public .nav-auth {
+.header-public-auth {
   display: flex;
   gap: 1rem;
 }
 
-.header-public .login-link,
-.header-public .register-link {
+.login-link,
+.register-link {
   text-decoration: none;
   font-weight: 500;
 }
 
-.header-public .register-link {
+.register-link {
   padding: 6px 12px;
   background: #2563eb;
   color: white;

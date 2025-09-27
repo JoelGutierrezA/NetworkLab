@@ -1,41 +1,51 @@
-.footer {
-  background: #0f172a; /* similar al header oscuro */
-  color: #e5e7eb;
-  padding: 40px 0;
-  margin-top: 40px;
+.footer-public {
+  background: #1a202c;
+  color: white;
+  padding: 3rem 0 1rem;
 }
 
-.footer .container {
+.footer-public-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-.footer-content {
-  margin-bottom: 24px;
+.footer-public-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
-.footer-section h4 {
-  font-size: 1.1rem;
+.footer-public-section h4 {
+  font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 12px;
-  color: #fff;
+  margin-bottom: 1rem;
+  color: #667eea;
 }
 
-.footer-section p,
-.footer-section a {
-  font-size: 0.9rem;
-  color: #cbd5e1;
-  margin-bottom: 8px;
+.footer-public-section p {
+  color: #a0aec0;
+  margin-bottom: 1rem;
+  line-height: 1.6;
 }
 
-.footer-section a:hover {
-  color: #60a5fa; /* azul */
+.footer-public-section a {
+  color: #a0aec0;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+  cursor: pointer;
 }
 
-.footer-bottom {
-  border-top: 1px solid #1e293b;
-  padding-top: 16px;
-  font-size: 0.85rem;
-  color: #94a3b8;
+.footer-public-section a:hover {
+  color: #667eea;
+}
+
+.footer-public-bottom {
+  border-top: 1px solid #2d3748;
+  padding-top: 2rem;
+  text-align: center;
+  color: #718096;
 }

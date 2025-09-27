@@ -86,7 +86,8 @@ export const login = async (req: Request, res: Response) => {
     try {
     // Buscar usuario y rol asociado
     const [rows]: any = await pool.query(
-        `SELECT u.id, u.email, u.password_hash, u.first_name, u.last_name, r.name as role
+        `SELECT u.id, u.email, u.password_hash, u.first_name, u.last_name,
+        COALESCE(r.name, 'student') as role
         FROM users u
         LEFT JOIN institution_users iu ON iu.user_id = u.id
         LEFT JOIN roles r ON r.id = iu.role_id
@@ -109,7 +110,7 @@ export const login = async (req: Request, res: Response) => {
     // Generar token con rol incluido
     const token = jwt.sign(
         { id: user.id, role: user.role },
-        process.env.JWT_SECRET as string,
+        process.env.JWT_SECRET || "",
         { expiresIn: "1h" }
     );
 
@@ -123,11 +124,11 @@ export const login = async (req: Request, res: Response) => {
         first_name: user.first_name,
         last_name: user.last_name,
         role: user.role || "student",
-        },
+    },
     });
     } catch (error) {
-    console.error("❌ Error en login:", error);
-    return res.status(500).json({ success: false, message: "Error en el servidor" });
+        console.error("❌ Error en login:", error);
+        return res.status(500).json({ success: false, message: "Error en el servidor" });
     }
 };
 

@@ -1,174 +1,116 @@
-<!-- Header -->
+<!-- Header Público -->
 <app-header-public></app-header-public>
 
 <div class="register-page">
-    <!-- Register Section -->
-    <section class="register-section">
-        <div class="container">
-            <div class="register-content">
-                <!-- Register Container -->
-                <div class="register-container">
-                    <div class="register-header">
-                        <div class="register-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
-                                <path d="M2 17L12 22L22 17"/>
-                                <path d="M2 12L12 17L22 12"/>
-                            </svg>
-                        </div>
-                        <h1>Crear Cuenta</h1>
-                        <p>Únete a la comunidad científica de NetworkLab</p>
-                    </div>
+  <!-- Register Section -->
+  <section class="register-section">
+    <div class="register-container-wrapper">
+      <div class="register-content">
 
-                    <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-                        <div class="form-group">
-                            <label for="firstName">Nombre</label>
-                            <input
-                                type="text"
-                                id="firstName"
-                                formControlName="firstName"
-                                placeholder="Tu nombre"
-                                required
-                            >
-                            <div class="input-icon">👤</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="lastName">Apellido</label>
-                            <input
-                                type="text"
-                                id="lastName"
-                                formControlName="lastName"
-                                placeholder="Tu apellido"
-                                required
-                            >
-                            <div class="input-icon">👤</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Correo Electrónico</label>
-                            <input
-                                type="email"
-                                id="email"
-                                formControlName="email"
-                                placeholder="usuario@networklab.com"
-                                required
-                            >
-                            <div class="input-icon">📧</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Contraseña</label>
-                            <input
-                                type="password"
-                                id="password"
-                                formControlName="password"
-                                placeholder="Mínimo 6 caracteres"
-                                required
-                            >
-                            <div class="input-icon">🔒</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirmPassword">Confirmar Contraseña</label>
-                            <input
-                                type="password"
-                                id="confirmPassword"
-                                formControlName="confirmPassword"
-                                placeholder="Repite tu contraseña"
-                                required
-                            >
-                            <div class="input-icon">🔒</div>
-                        </div>
-
-                        <div class="form-options">
-                            <label class="checkbox-container">
-                                <input type="checkbox" formControlName="terms" required>
-                                <span class="checkmark"></span>
-                                Acepto los <a class="terms-link">Términos de Servicio</a> y la <a class="terms-link">Política de Privacidad</a>
-                            </label>
-                        </div>
-
-                        <button type="submit" class="register-btn" [disabled]="!registerForm.valid || isLoading">
-                            <span>Crear Cuenta</span>
-                            @if (isLoading) {
-                              <div class="btn-loader"></div>
-                            }
-                        </button>
-    <!-- Mensaje de error general -->
-    <div *ngIf="errorMessage" class="error-message">
-      ⚠️ {{ errorMessage }}
-    </div>
-
-    <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <!-- ... resto del formulario ... -->
-    </form>
-                        <div class="divider">
-                            <span>o</span>
-                        </div>
-
-                        <div class="auth-links">
-                            <p>¿Ya tienes una cuenta?</p>
-                            <a (click)="navigateToLogin()" class="login-link" style="cursor: pointer;">
-                                Iniciar sesión
-                                <span class="link-arrow">→</span>
-                            </a>
-                        </div>
-                    </form>
-
-                    <div class="register-footer">
-                        <div class="security-info">
-                            <div class="security-icon">🛡️</div>
-                            <p>Tu información está protegida con cifrado de nivel científico</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sidebar (Mismo que el login) -->
-                <div class="register-sidebar">
-                    <div class="sidebar-content">
-                        <h3>Únete a la Comunidad Científica</h3>
-                        <p>Regístrate para acceder a herramientas colaborativas y conectar con investigadores de todo el mundo.</p>
-
-                        <div class="features-list">
-                            <div class="feature-item">
-                                <span class="feature-icon">🔬</span>
-                                <span>Colaboración entre Laboratorios</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">📊</span>
-                                <span>Comparte Datos de Investigación</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">⚡</span>
-                                <span>Comunicación en Tiempo Real</span>
-                            </div>
-                            <div class="feature-item">
-                                <span class="feature-icon">🔒</span>
-                                <span>Seguridad de Nivel Científico</span>
-                            </div>
-                        </div>
-
-                        <div class="stats-mini">
-                            <div class="stat">
-                                <strong>15,000+</strong>
-                                <span>Científicos</span>
-                            </div>
-                            <div class="stat">
-                                <strong>500+</strong>
-                                <span>Laboratorios</span>
-                            </div>
-                            <div class="stat">
-                                <strong>50+</strong>
-                                <span>Países</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Register Form Container -->
+        <div class="register-box">
+          <div class="register-header">
+            <div class="register-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                <path d="M2 17L12 22L22 17"/>
+                <path d="M2 12L12 17L22 12"/>
+              </svg>
             </div>
-        </div>
-    </section>
+            <h1>Crear Cuenta</h1>
+            <p>Únete a la comunidad científica de NetworkLab</p>
+          </div>
 
-<!-- Footer -->
-<app-footer></app-footer>
+          <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+            <div class="register-form-group">
+              <label for="firstName">Nombre</label>
+              <input type="text" id="firstName" formControlName="firstName" placeholder="Tu nombre" required>
+              <div class="register-input-icon">👤</div>
+            </div>
+
+            <div class="register-form-group">
+              <label for="lastName">Apellido</label>
+              <input type="text" id="lastName" formControlName="lastName" placeholder="Tu apellido" required>
+              <div class="register-input-icon">👤</div>
+            </div>
+
+            <div class="register-form-group">
+              <label for="email">Correo Electrónico</label>
+              <input type="email" id="email" formControlName="email" placeholder="usuario@networklab.com" required>
+              <div class="register-input-icon">📧</div>
+            </div>
+
+            <div class="register-form-group">
+              <label for="password">Contraseña</label>
+              <input type="password" id="password" formControlName="password" placeholder="Mínimo 6 caracteres" required>
+              <div class="register-input-icon">🔒</div>
+            </div>
+
+            <div class="register-form-group">
+              <label for="confirmPassword">Confirmar Contraseña</label>
+              <input type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Repite tu contraseña" required>
+              <div class="register-input-icon">🔒</div>
+            </div>
+
+            <div class="register-form-options">
+              <label class="register-checkbox">
+                <input type="checkbox" formControlName="terms" required>
+                <span class="checkmark"></span>
+                Acepto los <a class="register-terms-link">Términos</a> y la <a class="register-terms-link">Política</a>
+              </label>
+            </div>
+
+            <button type="submit" class="register-btn" [disabled]="!registerForm.valid || isLoading">
+              <span>Crear Cuenta</span>
+              <div *ngIf="isLoading" class="register-btn-loader"></div>
+            </button>
+
+            <div *ngIf="errorMessage" class="register-error">
+              ⚠️ {{ errorMessage }}
+            </div>
+
+            <div class="register-divider"><span>o</span></div>
+
+            <div class="register-auth-links">
+              <p>¿Ya tienes cuenta?</p>
+              <a (click)="navigateToLogin()" class="register-login-link">Iniciar sesión →</a>
+            </div>
+          </form>
+
+          <div class="register-footer-box">
+            <div class="register-security">
+              <div class="register-security-icon">🛡️</div>
+              <p>Tu información está protegida con cifrado de nivel científico</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Register Sidebar -->
+        <div class="register-sidebar">
+          <div class="register-sidebar-content">
+            <h3>Únete a la Comunidad Científica</h3>
+            <p>Regístrate para acceder a herramientas colaborativas y conectar con investigadores de todo el mundo.</p>
+
+            <div class="register-features">
+              <div class="register-feature">🔬 Colaboración entre Laboratorios</div>
+              <div class="register-feature">📊 Comparte Datos de Investigación</div>
+              <div class="register-feature">⚡ Comunicación en Tiempo Real</div>
+              <div class="register-feature">🔒 Seguridad de Nivel Científico</div>
+            </div>
+
+            <div class="register-stats">
+              <div><strong>15,000+</strong><span>Científicos</span></div>
+              <div><strong>500+</strong><span>Laboratorios</span></div>
+              <div><strong>50+</strong><span>Países</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
 </div>
