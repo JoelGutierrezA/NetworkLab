@@ -164,6 +164,11 @@
   font-weight: 600;
 }
 
+.form-control select {
+  appearance: none;
+  background-color: #fff;
+}
+
 .form-control {
   width: 100%;
   padding: 12px 14px;
@@ -257,3 +262,4 @@
 @media (max-width: 520px) {
   .stats-row { grid-template-columns: 1fr; }
 }
+

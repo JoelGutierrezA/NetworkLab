@@ -165,4 +165,45 @@ export const updatePassword = async (req: Request, res: Response) => {
     }
 };
 
+// Actualizar institución de un usuario
+export const updateUserInstitution = async (req: Request, res: Response) => {
+    const { id } = req.params; // id del usuario
+    const { institutionId, roleId } = req.body; // roleId opcional, por defecto student (4)
 
+    try {
+    // Limpiar instituciones anteriores (si solo puede tener una)
+        await pool.query('DELETE FROM institution_users WHERE user_id = ?', [id]);
+
+    // Insertar nueva relación
+        await pool.query(
+            'INSERT INTO institution_users (user_id, institution_id, role_id) VALUES (?, ?, ?)',
+            [id, institutionId, roleId || 4] // 4 = student
+        );
+
+        res.json({ success: true, message: 'Institución actualizada correctamente' });
+        } catch (error) {
+        console.error('❌ Error actualizando institución:', error);
+        res.status(500).json({ success: false, message: 'Error actualizando institución' });
+        }
+};
+
+// Eliminar usuario (solo admin)
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+    // Verificar si existe
+    const [rows]: any = await pool.query("SELECT id FROM users WHERE id = ?", [id]);
+        if (!rows.length) {
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    // Eliminar usuario
+    await pool.query("DELETE FROM users WHERE id = ?", [id]);
+
+    return res.json({ success: true, message: "Usuario eliminado correctamente" });
+            } catch (error) {
+    console.error("❌ Error eliminando usuario:", error);
+    return res.status(500).json({ success: false, message: "Error en el servidor" });
+    }
+};

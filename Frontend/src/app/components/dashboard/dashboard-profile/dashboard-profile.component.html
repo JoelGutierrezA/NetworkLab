@@ -11,7 +11,7 @@
       <div class="identity-texts">
         <h1 class="display-name">{{ firstName }} {{ lastName }}</h1>
         <div class="email">{{ email }}</div>
-        <span class="role-pill">Admin</span>
+        <span class="role-pill">{{ role }}</span>
       </div>
     </div>
 
@@ -102,6 +102,21 @@
             [disabled]="!isEditing"
           />
         </div>
+
+        <div class="form-field">
+          <label>Institución</label>
+          <select
+            class="form-control"
+            [(ngModel)]="selectedInstitution"
+            name="institution"
+            [disabled]="!isEditing"
+          >
+            <option *ngFor="let inst of institutions" [value]="inst.id">
+              {{ inst.name }}
+            </option>
+          </select>
+        </div>
+
 
         <div class="form-field form-field--full">
           <label>Biografía</label>

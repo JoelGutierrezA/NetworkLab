@@ -25,4 +25,17 @@ export class UserService {
       { oldPassword, newPassword }
     );
   }
+
+  updateUserInstitution(userId: number, institutionId: number, roleId?: number) {
+    return this.http.put<{ success: boolean; message: string }>(
+      `${this.apiUrl}/users/${userId}/institution`,
+      { institutionId, roleId }
+    );
+  }
+
+  getInstitutions() {
+    return this.http.get<{ success: boolean; institutions: any[] }>(
+      `${this.apiUrl}/institutions`
+    );
+  }
 }

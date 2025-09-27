@@ -1,9 +1,12 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 import { testConnection } from './config/database';
 import authRoutes from './routes/authRoutes';
 import equipmentRoutes from './routes/equipmentRoutes';
+import institutionRoutes from './routes/institutionRoutes';
 import userRoutes from './routes/userRoutes';
 dotenv.config();
 
@@ -16,9 +19,10 @@ app.use(express.json());
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', equipmentRoutes);
+app.use('/api', institutionRoutes);
 
 // Rutas
-app.use('/api', userRoutes); // ← Usar rutas
+app.use('/api', userRoutes);
 console.log('🔄 Rutas cargadas:');
 console.log('- POST /api/users');
 console.log('- GET /api/users/:id');
@@ -29,7 +33,7 @@ console.log('- GET /api/equipment');
 console.log('- GET /api/equipment/:id');
 console.log('- PUT /api/equipment/:id');
 console.log('- DELETE /api/equipment/:id');
-console.log('- GET /api/laboratories/:labId/equipment');  
+console.log('- GET /api/laboratories/:labId/equipment');
 
 // Rutas básicas
 app.get('/api/health', (req: any, res: any) => {
@@ -66,3 +70,33 @@ app.listen(Number(PORT), '0.0.0.0', async () => {
     console.log('❌ Database connection failed');
   }
 });
+
+// Swagger setup
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'NetworkLab API',
+      version: '1.0.0',
+      description: 'Documentación de la API de NetworkLab'
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
+    security: [
+      {
+        bearerAuth: []
+      }
+    ]
+  },
+  apis: ['./src/routes/*.ts'],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

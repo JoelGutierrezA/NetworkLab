@@ -18,6 +18,7 @@ type TabKey = 'info' | 'security' | 'activity' | 'notifications';
   templateUrl: './dashboard-profile.component.html',
   styleUrls: ['./dashboard-profile.component.css'],
 })
+
 export class DashboardProfileComponent implements OnInit {
   // Tabs
   activeTab: TabKey = 'info';
@@ -32,6 +33,7 @@ export class DashboardProfileComponent implements OnInit {
   email = '';
   phone = '';
   bio = '';
+  role: string = '';
 
   // Seguridad: modelo del formulario
   oldPassword = '';
@@ -43,11 +45,28 @@ export class DashboardProfileComponent implements OnInit {
 
   constructor(private readonly userService: UserService) {}
 
-  ngOnInit(): void {
-    this.loadUserFromStorage();
-  }
+  institutions: any[] = [];
 
-  // ================= Helper: cargar usuario =================
+  ngOnInit(): void {
+  const userData = JSON.parse(localStorage.getItem('user') || '{}');
+  this.firstName = userData.first_name;
+  this.lastName = userData.last_name;
+  this.email = userData.email;
+  this.role = userData.role;
+  this.selectedInstitution = userData.institution_id || null;
+
+  // Cargar instituciones desde backend
+  this.userService.getInstitutions().subscribe({
+    next: (res: { success: boolean; institutions: any[] }) => {
+      if (res.success) {
+        this.institutions = res.institutions;
+      }
+    },
+    error: (err: any) => console.error('❌ Error cargando instituciones', err)
+  });
+}
+
+  // Cargar Usuario
   private loadUserFromStorage(): void {
     try {
       const raw = localStorage.getItem('user');
@@ -74,16 +93,22 @@ export class DashboardProfileComponent implements OnInit {
     this.bio = '';
   }
 
+  // Instituciones
+  private resetSecurityFeedback(): void {
+    this.successMsg = '';
+    this.errorMsg = '';
+    this.isSubmitting = false;
+  }
+
   // ================= Tabs =================
   setTab(tab: TabKey): void {
     this.activeTab = tab;
-    // Al cambiar de pestaña de seguridad, limpiamos mensajes/estado
     if (tab !== 'security') {
       this.resetSecurityFeedback();
     }
   }
 
-  // ================= Info: editar/guardar =================
+  // Editar/guardar perfil
   toggleEdit(): void {
     if (!this.isEditing) {
       this.snapshot = {
@@ -111,21 +136,40 @@ export class DashboardProfileComponent implements OnInit {
   }
 
   saveProfile(): void {
-    // Aquí iría tu request al backend para actualizar datos de perfil
     try {
+      // Recuperar usuario de localStorage
       const raw = localStorage.getItem('user');
       const u = raw ? JSON.parse(raw) : {};
+
+      // Actualizar campos locales
       u.first_name = this.firstName;
       u.last_name = this.lastName;
       u.email = this.email;
       u.phone = this.phone;
       u.bio = this.bio;
+      u.institution_id = this.selectedInstitution;
+
+      // Guardar en localStorage
       localStorage.setItem('user', JSON.stringify(u));
-    } catch {}
+
+      // Llamar backend para actualizar institución
+      if (this.selectedInstitution) {
+        this.userService
+          .updateUserInstitution(u.id, this.selectedInstitution)
+          .subscribe({
+            next: (res) => console.log('✅', res.message),
+            error: (err) => console.error('❌ Error actualizando institución', err)
+          });
+      }
+    } catch (error) {
+      console.error('❌ Error guardando perfil', error);
+    }
+
     this.isEditing = false;
   }
 
-  // ================= Seguridad: cambio de contraseña =================
+
+  // Seguridad: cambio de contraseña
   changePassword(): void {
     this.resetSecurityFeedback();
 
@@ -183,9 +227,7 @@ export class DashboardProfileComponent implements OnInit {
     }
   }
 
-  private resetSecurityFeedback(): void {
-    this.successMsg = '';
-    this.errorMsg = '';
-    this.isSubmitting = false;
-  }
+
+selectedInstitution: number | null = null;
+
 }

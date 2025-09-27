@@ -1,21 +1,39 @@
+<!-- HEADER del dashboard -->
 <app-header-dashboard></app-header-dashboard>
 
-<section class="page">
-  <!-- Bloque de tarjetas de servicios -->
-  <div class="services">
-    <a class="service-card" routerLink="/dashboard-suppliers">Servicio 1</a>
-    <a class="service-card" routerLink="/equipment">Servicio 2</a>
-    <a class="service-card" routerLink="/profile">Servicio 3</a>
-  </div>
+<div class="services-wrapper">
+  <!-- Sidebar de filtros -->
+  <aside class="filters">
+    <h3>🔍 Filtros</h3>
+    <input type="text" placeholder="Buscar servicio..." [(ngModel)]="searchTerm" class="filter-input" />
 
-  <!-- Bloque de información -->
-  <div class="info">
-    <h2>Información</h2>
-    <p>
-      Aquí puedes mostrar un resumen de los servicios disponibles, anuncios, o
-      cualquier información relevante para los usuarios.
-    </p>
-  </div>
-</section>
+    <label>Categoría</label>
+    <select [(ngModel)]="selectedCategory">
+      <option value="">Todas</option>
+      <option value="laboratorio">Laboratorio</option>
+      <option value="clínico">Clínico</option>
+      <option value="alimentos">Alimentos</option>
+    </select>
 
+    <label>Proveedor</label>
+    <select [(ngModel)]="selectedProvider">
+      <option value="">Todos</option>
+      <option *ngFor="let provider of providers">{{ provider }}</option>
+    </select>
+
+    <button class="btn-primary" (click)="applyFilters()">Aplicar</button>
+  </aside>
+
+  <!-- Columna central: servicios -->
+  <main class="services-list">
+    <div class="service-card" *ngFor="let service of filteredServices">
+      <h4>{{ service.name }}</h4>
+      <p>{{ service.description }}</p>
+      <span class="provider">Ofrecido por: {{ service.provider }}</span>
+      <button class="btn-secondary">Ver más</button>
+    </div>
+  </main>
+</div>
+
+<!-- FOOTER -->
 <app-footer></app-footer>

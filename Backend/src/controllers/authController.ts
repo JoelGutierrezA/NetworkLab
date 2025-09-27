@@ -4,9 +4,7 @@ import { UserModel } from '../models/User';
 import { AuthUtils } from '../utils/AuthUtils';
 
 export class AuthController {
-    // =========================
-    // Helper: obtener rol por user_id
-    // =========================
+    // Obtener rol por user_id
     private static async getRole(userId: number): Promise<string> {
     const [rows]: any = await pool.query(
         `SELECT r.name AS role
@@ -19,9 +17,7 @@ export class AuthController {
     return (rows?.[0]?.role ?? 'student').toString();
     }
 
-    // =========================
     // Registrar nuevo usuario
-    // =========================
     static async register(req: Request, res: Response) {
     try {
         const { email, password, first_name, last_name, phone, bio } = req.body;
@@ -40,13 +36,12 @@ export class AuthController {
 
         // Crear usuario (el trigger AFTER INSERT lo inserta en institution_users con role_id=1 -> student)
         const newUser = await UserModel.create({
-        email,
-        password_hash,
-        first_name,
-        last_name,
-        phone,
-        bio,
-        role: 'student' // 👈 requerido por la interfaz User (TypeScript)
+            email,
+            password_hash,
+            first_name,
+            last_name,
+            phone,
+            bio
         });
 
 
@@ -77,9 +72,7 @@ export class AuthController {
     }
     }
 
-    // =========================
     // Login de usuario
-    // =========================
     static async login(req: Request, res: Response) {
     console.log('🔐 Login attempt:', req.body);
 
@@ -135,9 +128,7 @@ export class AuthController {
     }
     }
 
-    // =========================
     // Refresh token
-    // =========================
     static async refreshToken(req: Request, res: Response) {
     console.log('🔄 Refresh token attempt');
     console.log('Headers:', req.headers);
@@ -206,9 +197,7 @@ export class AuthController {
     }
     }
 
-    // =========================
     // Verificar token
-    // =========================
     static async verifyToken(req: Request, res: Response) {
     try {
         const authHeader = req.headers.authorization;
@@ -262,9 +251,7 @@ export class AuthController {
     }
     }
 
-    // =========================
     // Logout (opcional: cliente lo maneja)
-    // =========================
     static async logout(_req: Request, res: Response) {
     try {
         return res.json({
