@@ -39,173 +39,246 @@
     <button class="tab" [class.active]="activeTab === 'security'" (click)="setTab('security')">
       Seguridad
     </button>
-    <button class="tab" [class.active]="activeTab === 'activity'" (click)="setTab('activity')">
-      Actividad
-    </button>
-    <button class="tab" [class.active]="activeTab === 'notifications'" (click)="setTab('notifications')">
-      Notificaciones
-    </button>
-  </div>
 
-  <!-- =================== TAB: INFORMACIÓN =================== -->
-  <div class="profile-section-card" *ngIf="activeTab === 'info'">
-    <div class="section-header">
-      <h3 class="section-title">Información del perfil</h3>
-
-      <button class="btn-edit" type="button" (click)="toggleEdit()">
-        {{ isEditing ? 'Dejar de editar' : 'Editar perfil' }}
+    <!-- Si es admin, mostramos Instituciones y Usuarios -->
+    <ng-container *ngIf="role === 'admin'; else userTabs">
+      <button class="tab" [class.active]="activeTab === 'institutions'" (click)="setTab('institutions')">
+        Instituciones
       </button>
-    </div>
+      <button class="tab" [class.active]="activeTab === 'users'" (click)="setTab('users')">
+        Usuarios
+      </button>
+    </ng-container>
 
-    <form (ngSubmit)="saveProfile()">
-      <div class="grid-2">
-        <div class="form-field">
-          <label>Nombre</label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="firstName"
-            name="firstName"
-            [disabled]="!isEditing"
-          />
-        </div>
-
-        <div class="form-field">
-          <label>Apellido</label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="lastName"
-            name="lastName"
-            [disabled]="!isEditing"
-          />
-        </div>
-
-        <div class="form-field">
-          <label>Correo</label>
-          <input
-            type="email"
-            class="form-control"
-            [(ngModel)]="email"
-            name="email"
-            [disabled]="!isEditing"
-          />
-        </div>
-
-        <div class="form-field">
-          <label>Teléfono</label>
-          <input
-            type="tel"
-            class="form-control"
-            [(ngModel)]="phone"
-            name="phone"
-            [disabled]="!isEditing"
-          />
-        </div>
-
-        <div class="form-field">
-          <label>Institución</label>
-          <select
-            class="form-control"
-            [(ngModel)]="selectedInstitution"
-            name="institution"
-            [disabled]="!isEditing"
-          >
-            <option *ngFor="let inst of institutions" [value]="inst.id">
-              {{ inst.name }}
-            </option>
-          </select>
-        </div>
-
-
-        <div class="form-field form-field--full">
-          <label>Biografía</label>
-          <textarea
-            class="form-control"
-            rows="5"
-            [(ngModel)]="bio"
-            name="bio"
-            placeholder="Cuéntanos sobre tus líneas de investigación…"
-            [disabled]="!isEditing"
-          ></textarea>
-        </div>
-      </div>
-
-      <div class="form-actions" *ngIf="isEditing">
-        <button type="button" class="btn-secondary" (click)="cancelEdit()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn-primary">
-          Guardar cambios
-        </button>
-      </div>
-    </form>
+    <!-- Si NO es admin, mostramos Actividad y Notificaciones -->
+    <ng-template #userTabs>
+      <button class="tab" [class.active]="activeTab === 'activity'" (click)="setTab('activity')">
+        Actividad
+      </button>
+      <button class="tab" [class.active]="activeTab === 'notifications'" (click)="setTab('notifications')">
+        Notificaciones
+      </button>
+    </ng-template>
   </div>
 
-  <!-- =================== TAB: SEGURIDAD =================== -->
+  <!-- Información -->
+  <div class="profile-section-card" *ngIf="activeTab === 'info'">
+    <div class="profile-section-card" *ngIf="activeTab === 'info'">
+      <div class="section-header">
+        <h3 class="section-title">Información del perfil</h3>
+
+        <button class="btn-edit" type="button" (click)="toggleEdit()">
+          {{ isEditing ? 'Dejar de editar' : 'Editar perfil' }}
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveProfile()">
+        <div class="grid-2">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="firstName"
+              name="firstName"
+              [disabled]="!isEditing"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Apellido</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="lastName"
+              name="lastName"
+              [disabled]="!isEditing"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Correo</label>
+            <input
+              type="email"
+              class="form-control"
+              [(ngModel)]="email"
+              name="email"
+              [disabled]="!isEditing"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Teléfono</label>
+            <input
+              type="tel"
+              class="form-control"
+              [(ngModel)]="phone"
+              name="phone"
+              [disabled]="!isEditing"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Institución</label>
+            <select
+              class="form-control"
+              [(ngModel)]="selectedInstitution"
+              name="institution"
+              [disabled]="!isEditing"
+            >
+              <option *ngFor="let inst of institutions" [value]="inst.id">
+                {{ inst.name }}
+              </option>
+            </select>
+          </div>
+
+
+          <div class="form-field form-field--full">
+            <label>Biografía</label>
+            <textarea
+              class="form-control"
+              rows="5"
+              [(ngModel)]="bio"
+              name="bio"
+              placeholder="Cuéntanos sobre tus líneas de investigación…"
+              [disabled]="!isEditing"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions" *ngIf="isEditing">
+          <button type="button" class="btn-secondary" (click)="cancelEdit()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary">
+            Guardar cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Seguridad -->
   <div class="profile-section-card" *ngIf="activeTab === 'security'">
-    <div class="section-header">
-      <h3 class="section-title">Seguridad</h3>
+    <div class="profile-section-card" *ngIf="activeTab === 'security'">
+      <div class="section-header">
+        <h3 class="section-title">Seguridad</h3>
+      </div>
+
+      <form (ngSubmit)="changePassword()">
+        <div class="grid-2">
+          <div class="form-field form-field--full">
+            <label>Contraseña actual</label>
+            <input
+              type="password"
+              class="form-control"
+              [(ngModel)]="oldPassword"
+              name="oldPassword"
+              autocomplete="current-password"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Nueva contraseña</label>
+            <input
+              type="password"
+              class="form-control"
+              [(ngModel)]="newPassword"
+              name="newPassword"
+              autocomplete="new-password"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Confirmar nueva contraseña</label>
+            <input
+              type="password"
+              class="form-control"
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              autocomplete="new-password"
+            />
+          </div>
+        </div>
+
+        <div class="feedback" *ngIf="successMsg || errorMsg">
+          <div class="alert success" *ngIf="successMsg">{{ successMsg }}</div>
+          <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Guardando…' : 'Actualizar contraseña' }}
+          </button>
+        </div>
+      </form>
     </div>
-
-    <form (ngSubmit)="changePassword()">
-      <div class="grid-2">
-        <div class="form-field form-field--full">
-          <label>Contraseña actual</label>
-          <input
-            type="password"
-            class="form-control"
-            [(ngModel)]="oldPassword"
-            name="oldPassword"
-            autocomplete="current-password"
-          />
-        </div>
-
-        <div class="form-field">
-          <label>Nueva contraseña</label>
-          <input
-            type="password"
-            class="form-control"
-            [(ngModel)]="newPassword"
-            name="newPassword"
-            autocomplete="new-password"
-          />
-        </div>
-
-        <div class="form-field">
-          <label>Confirmar nueva contraseña</label>
-          <input
-            type="password"
-            class="form-control"
-            [(ngModel)]="confirmPassword"
-            name="confirmPassword"
-            autocomplete="new-password"
-          />
-        </div>
-      </div>
-
-      <div class="feedback" *ngIf="successMsg || errorMsg">
-        <div class="alert success" *ngIf="successMsg">{{ successMsg }}</div>
-        <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Guardando…' : 'Actualizar contraseña' }}
-        </button>
-      </div>
-    </form>
   </div>
 
-  <!-- =================== PLACEHOLDERS (si se usan luego) =================== -->
-  <div class="profile-section-card" *ngIf="activeTab === 'activity'">
+  <!-- Instituciones -->
+  <div class="profile-section-card" *ngIf="activeTab === 'institutions'">
+    <div class="section-header">
+      <h3 class="section-title">Gestión de Instituciones</h3>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="form-field form-field--full" style="margin-bottom: 15px;">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar institución..."
+        [(ngModel)]="institutionSearch"
+        (input)="filterInstitutions()"
+      />
+    </div>
+
+  <!-- Listado de instituciones -->
+  <table class="institutions-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let inst of getPagedInstitutions()">
+        <td>{{ inst.id }}</td>
+        <td>{{ inst.name }}</td>
+        <td>
+        <a class="btn-icon" [routerLink]="['/dashboard-profile/institution', inst.id]">
+          🔍
+        </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Controles de paginación -->
+  <div class="pagination-controls">
+    <button class="btn-secondary" (click)="prevPage()" [disabled]="page === 1">⬅ Anterior</button>
+    <span>Página {{ page }} de {{ totalPages }}</span>
+    <button class="btn-primary" (click)="nextPage()" [disabled]="page === totalPages">Siguiente ➡</button>
+  </div>
+  </div>
+
+  <!-- Usuarios -->
+  <div class="profile-section-card" *ngIf="activeTab === 'users' && role === 'admin'">
+    <div class="section-header">
+      <h3 class="section-title">Gestión de Usuarios</h3>
+    </div>
+    <p class="placeholder">Aquí administraremos los usuarios: asignar roles, editar y gestionar cuentas.</p>
+  </div>
+
+  <!-- PLACEHOLDERS -->
+  <div class="profile-section-card" *ngIf="activeTab === 'activity' && role !== 'admin'">
     <div class="section-header">
       <h3 class="section-title">Actividad</h3>
     </div>
     <p class="placeholder">Aquí podrás ver y filtrar la actividad reciente de tu cuenta.</p>
   </div>
 
-  <div class="profile-section-card" *ngIf="activeTab === 'notifications'">
+  <div class="profile-section-card" *ngIf="activeTab === 'notifications' && role !== 'admin'">
     <div class="section-header">
       <h3 class="section-title">Notificaciones</h3>
     </div>

@@ -6,15 +6,11 @@ export class RoleGuard implements CanActivate {
   constructor(private readonly router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
-    // Puede venir como un string único...
     const expectedRole = route.data['expectedRole'];
-    // ...o como un arreglo de roles permitidos
     const allowedRoles: string[] | undefined = route.data['allowedRoles'];
 
-    // 1) intenta leer el rol plano
     let role: string | null = localStorage.getItem('role');
 
-    // 2) si no existe, intenta desde el objeto user
     if (!role) {
       try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -39,8 +35,8 @@ export class RoleGuard implements CanActivate {
       return true;
     }
 
-    // si no cumple, lo mando al dashboard normal
-    this.router.navigate(['/dashboard']);
+    // 🚨 Si no cumple, manda a AccessDenied (no al dashboard)
+    this.router.navigate(['/access-denied']);
     return false;
-    }
+  }
 }

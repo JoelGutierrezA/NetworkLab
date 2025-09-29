@@ -1,0 +1,104 @@
+<!-- HEADER -->
+<app-header-dashboard></app-header-dashboard>
+
+<div class="detail-wrapper" *ngIf="institution">
+  <h2>Detalle de Institución</h2>
+
+  <form (ngSubmit)="saveChanges()">
+    <div class="grid-2">
+      <div class="form-field">
+        <label>Nombre</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="institution.name"
+          name="name"
+          [disabled]="!isEditing"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Tipo</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="institution.type"
+          name="type"
+          [disabled]="!isEditing"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Website</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="institution.website"
+          name="website"
+          [disabled]="!isEditing"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Ciudad</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="institution.city"
+          name="city"
+          [disabled]="!isEditing"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>País</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="institution.country"
+          name="country"
+          [disabled]="!isEditing"
+        />
+      </div>
+
+      <div class="form-field form-field--full">
+        <label>Dirección</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="institution.address"
+          name="address"
+          [disabled]="!isEditing"
+        />
+      </div>
+
+      <div class="form-field form-field--full">
+        <label>Descripción</label>
+        <textarea
+          class="form-control"
+          [(ngModel)]="institution.description"
+          name="description"
+          [disabled]="!isEditing"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="goBack()">Volver</button>
+      <button
+        type="button"
+        class="btn-secondary"
+        *ngIf="!isEditing"
+        (click)="toggleEdit()"
+      >
+        Editar
+      </button>
+      <button type="submit" class="btn-primary" *ngIf="isEditing">Guardar</button>
+      <button type="button" class="btn-danger" (click)="deleteInstitution()">Eliminar</button>
+    </div>
+  </form>
+</div>
+
+<!-- FOOTER -->
+<app-footer></app-footer>

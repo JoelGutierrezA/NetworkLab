@@ -77,6 +77,47 @@ router.post('/institutions', authenticateToken, requireRole(['admin']), async (r
 /**
  * @openapi
  * /api/institutions/{id}:
+ *   get:
+ *     summary: Obtener institución por ID
+ *     tags:
+ *       - Institutions
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Detalle de la institución
+ *       404:
+ *         description: Institución no encontrada
+ */
+router.get('/institutions/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [rows]: any = await pool.query(
+        `SELECT id, name, type, description, website, logo_url, country, city, address, created_at
+            FROM institutions
+            WHERE id = ?`,
+        [id]
+        );
+
+        if (!rows || rows.length === 0) {
+        return res.status(404).json({ success: false, message: 'Institución no encontrada' });
+        }
+
+        res.json({ success: true, institution: rows[0] });
+    } catch (error) {
+        console.error('❌ Error obteniendo institución:', error);
+        res.status(500).json({ success: false, message: 'Error obteniendo institución' });
+    }
+});
+
+/**
+ * @openapi
+ * /api/institutions/{id}:
  *   put:
  *     summary: Editar el nombre de una institución
  *     tags:

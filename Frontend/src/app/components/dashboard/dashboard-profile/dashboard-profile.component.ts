@@ -1,41 +1,49 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 
-// Ajusta estas rutas si tu estructura difiere
+// Componentes compartidos
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderDashboardComponent } from '../../shared/header-dashboard/header-dashboard.component';
 
-// Servicios (ajusta rutas si es necesario)
+// Servicios
 import { UserService } from '../../../services/user.service';
 
-type TabKey = 'info' | 'security' | 'activity' | 'notifications';
+// TabKey extendido (para admins y usuarios comunes)
+type TabKey =
+  | 'info'
+  | 'security'
+  | 'institutions'
+  | 'users'
+  | 'activity'
+  | 'notifications';
 
 @Component({
   selector: 'app-dashboard-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderDashboardComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, HeaderDashboardComponent, FooterComponent, RouterModule,],
   templateUrl: './dashboard-profile.component.html',
   styleUrls: ['./dashboard-profile.component.css'],
 })
-
 export class DashboardProfileComponent implements OnInit {
   // Tabs
   activeTab: TabKey = 'info';
 
-  // Estado de edición (Info)
+  // Estado de edición (perfil)
   isEditing = false;
   private snapshot: any = null;
 
-  // Datos usuario (Info)
+  // Datos de usuario
   firstName = '';
   lastName = '';
   email = '';
   phone = '';
   bio = '';
   role: string = '';
+  selectedInstitution: number | null = null;
 
-  // Seguridad: modelo del formulario
+  // Seguridad
   oldPassword = '';
   newPassword = '';
   confirmPassword = '';
@@ -43,64 +51,58 @@ export class DashboardProfileComponent implements OnInit {
   successMsg = '';
   errorMsg = '';
 
-  constructor(private readonly userService: UserService) {}
-
+  // Instituciones
   institutions: any[] = [];
+  filteredInstitutions: any[] = [];
+  institutionSearch: string = '';
+
+  // Paginación
+  page: number = 1;
+  pageSize: number = 5;
+  totalPages: number = 1;
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly router: Router
+  ) {}
 
   ngOnInit(): void {
-  const userData = JSON.parse(localStorage.getItem('user') || '{}');
-  this.firstName = userData.first_name;
-  this.lastName = userData.last_name;
-  this.email = userData.email;
-  this.role = userData.role;
-  this.selectedInstitution = userData.institution_id || null;
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    this.firstName = userData.first_name;
+    this.lastName = userData.last_name;
+    this.email = userData.email;
+    this.role = userData.role;
+    this.selectedInstitution = userData.institution_id || null;
 
-  // Cargar instituciones desde backend
-  this.userService.getInstitutions().subscribe({
-    next: (res: { success: boolean; institutions: any[] }) => {
-      if (res.success) {
-        this.institutions = res.institutions;
-      }
-    },
-    error: (err: any) => console.error('❌ Error cargando instituciones', err)
-  });
-}
-
-  // Cargar Usuario
-  private loadUserFromStorage(): void {
-    try {
-      const raw = localStorage.getItem('user');
-      if (raw) {
-        const u = JSON.parse(raw);
-        this.firstName = u.first_name ?? 'Admin';
-        this.lastName = u.last_name ?? 'NetworkLab';
-        this.email = u.email ?? 'admin@networklab.com';
-        this.phone = u.phone ?? '+569 0000 0000';
-        this.bio = u.bio ?? '';
-      } else {
-        this.setFallback();
-      }
-    } catch {
-      this.setFallback();
-    }
-  }
-
-  private setFallback(): void {
-    this.firstName = 'Admin';
-    this.lastName = 'NetworkLab';
-    this.email = 'admin@networklab.com';
-    this.phone = '+569 0000 0000';
-    this.bio = '';
+    this.loadInstitutions();
   }
 
   // Instituciones
-  private resetSecurityFeedback(): void {
-    this.successMsg = '';
-    this.errorMsg = '';
-    this.isSubmitting = false;
+  loadInstitutions(): void {
+    this.userService.getInstitutions().subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.institutions = res.institutions;
+          this.filteredInstitutions = [...this.institutions];
+        }
+      },
+      error: (err: any) => console.error('❌ Error cargando instituciones', err),
+    });
   }
 
-  // ================= Tabs =================
+  filterInstitutions(): void {
+    const term = this.institutionSearch.toLowerCase();
+    this.filteredInstitutions = this.institutions.filter(
+      (i) =>
+        i.name.toLowerCase().includes(term)
+    );
+  }
+
+  viewInstitution(id: number): void {
+    this.router.navigate(['/dashboard-profile/institution', id]);
+  }
+
+  // Tabs
   setTab(tab: TabKey): void {
     this.activeTab = tab;
     if (tab !== 'security') {
@@ -108,7 +110,7 @@ export class DashboardProfileComponent implements OnInit {
     }
   }
 
-  // Editar/guardar perfil
+  // Perfil
   toggleEdit(): void {
     if (!this.isEditing) {
       this.snapshot = {
@@ -137,11 +139,9 @@ export class DashboardProfileComponent implements OnInit {
 
   saveProfile(): void {
     try {
-      // Recuperar usuario de localStorage
       const raw = localStorage.getItem('user');
       const u = raw ? JSON.parse(raw) : {};
 
-      // Actualizar campos locales
       u.first_name = this.firstName;
       u.last_name = this.lastName;
       u.email = this.email;
@@ -149,16 +149,14 @@ export class DashboardProfileComponent implements OnInit {
       u.bio = this.bio;
       u.institution_id = this.selectedInstitution;
 
-      // Guardar en localStorage
       localStorage.setItem('user', JSON.stringify(u));
 
-      // Llamar backend para actualizar institución
       if (this.selectedInstitution) {
-        this.userService
-          .updateUserInstitution(u.id, this.selectedInstitution)
+        this.userService.updateInstitution(u.id, { institutionId: this.selectedInstitution })
           .subscribe({
-            next: (res) => console.log('✅', res.message),
-            error: (err) => console.error('❌ Error actualizando institución', err)
+            next: (res: any) => console.log('✅', res.message),
+            error: (err: any) =>
+              console.error('❌ Error actualizando institución', err),
           });
       }
     } catch (error) {
@@ -168,12 +166,10 @@ export class DashboardProfileComponent implements OnInit {
     this.isEditing = false;
   }
 
-
-  // Seguridad: cambio de contraseña
+  // Seguridad
   changePassword(): void {
     this.resetSecurityFeedback();
 
-    // Validaciones básicas en cliente
     if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
       this.errorMsg = 'Completa todos los campos.';
       return;
@@ -195,25 +191,29 @@ export class DashboardProfileComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    this.userService.changePassword(userId, this.oldPassword, this.newPassword).subscribe({
-      next: (res) => {
-        this.isSubmitting = false;
-        if (res?.success) {
-          this.successMsg = res.message || 'Contraseña actualizada correctamente.';
-          this.oldPassword = '';
-          this.newPassword = '';
-          this.confirmPassword = '';
-        } else {
-          this.errorMsg = res?.message || 'No se pudo actualizar la contraseña.';
-        }
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.errorMsg =
-          err?.error?.message ||
-          'Ocurrió un error al actualizar la contraseña. Intenta nuevamente.';
-      },
-    });
+    this.userService
+      .changePassword(userId, this.oldPassword, this.newPassword)
+      .subscribe({
+        next: (res: any) => {
+          this.isSubmitting = false;
+          if (res?.success) {
+            this.successMsg =
+              res.message || 'Contraseña actualizada correctamente.';
+            this.oldPassword = '';
+            this.newPassword = '';
+            this.confirmPassword = '';
+          } else {
+            this.errorMsg =
+              res?.message || 'No se pudo actualizar la contraseña.';
+          }
+        },
+        error: (err: any) => {
+          this.isSubmitting = false;
+          this.errorMsg =
+            err?.error?.message ||
+            'Ocurrió un error al actualizar la contraseña. Intenta nuevamente.';
+        },
+      });
   }
 
   private getUserId(): number | null {
@@ -227,7 +227,30 @@ export class DashboardProfileComponent implements OnInit {
     }
   }
 
+  private resetSecurityFeedback(): void {
+    this.successMsg = '';
+    this.errorMsg = '';
+    this.isSubmitting = false;
+  }
 
-selectedInstitution: number | null = null;
+  // Paginación
+  getPagedInstitutions(): any[] {
+    this.totalPages = Math.ceil(
+      this.filteredInstitutions.length / this.pageSize
+    );
+    const start = (this.page - 1) * this.pageSize;
+    return this.filteredInstitutions.slice(start, start + this.pageSize);
+  }
 
+  nextPage(): void {
+    if (this.page < this.totalPages) {
+      this.page++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.page > 1) {
+      this.page--;
+    }
+  }
 }
