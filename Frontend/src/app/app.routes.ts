@@ -10,6 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
 import { DashboardProfileComponent } from './components/dashboard/dashboard-profile/dashboard-profile.component';
 import { InstitutionComponent } from './components/dashboard/dashboard-profile/institution-detail/institution.component';
+import { UserComponent } from './components/dashboard/dashboard-profile/user-detail/user.component';
 import { DashboardServicesComponent } from './components/dashboard/dashboard-services/dashboard-services.component';
 import { DashboardSuppliersComponent } from './components/dashboard/dashboard-suppliers/dashboard-suppliers.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -54,6 +55,13 @@ export const routes: Routes = [
   {
     path: 'dashboard-profile/institution/:id',
     component: InstitutionComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'admin' }
+  },
+
+  {
+    path: 'dashboard-profile/user/:id',
+    component: UserComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { expectedRole: 'admin' }
   },

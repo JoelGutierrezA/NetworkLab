@@ -156,8 +156,7 @@ router.get('/users/:id', getUserById);
  *       403:
  *         description: No autorizado
  */
-router.put(
-    '/users/:id/password', authenticateToken, requireSelfOrAdmin, changePasswordValidator, validate, updatePassword);
+router.put('/users/:id/password', authenticateToken, requireSelfOrAdmin, changePasswordValidator, validate, updatePassword);
 
 /**
  * @openapi

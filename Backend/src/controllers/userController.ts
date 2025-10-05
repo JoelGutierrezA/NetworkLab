@@ -31,31 +31,44 @@ export const createUser = async (req: Request, res: Response) => {
 // Obtener todos los usuarios
 export const getUsers = async (req: Request, res: Response) => {
     try {
-    const page = parseInt((req.query.page as string) ?? '0') || 0;       // página actual (0-based)
-    const pageSize = parseInt((req.query.pageSize as string) ?? '5') || 5; // tamaño de página
-    const offset = page * pageSize;
+    const page = parseInt((req.query.page as string) ?? '1');       // página actual (1-based)
+    const pageSize = parseInt((req.query.pageSize as string) ?? '10'); // tamaño de página
+    const offset = (page - 1) * pageSize;
 
+    // Consulta principal con join a instituciones y roles
     const [rows]: any = await pool.query(
-        `SELECT u.id, u.email, u.first_name, u.last_name, u.created_at, 
-                COALESCE(r.name, 'student') AS role
+        `SELECT
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        COALESCE(r.name, 'student') AS role,
+        i.name AS institution_name,
+        u.created_at
         FROM users u
         LEFT JOIN institution_users iu ON iu.user_id = u.id
         LEFT JOIN roles r ON r.id = iu.role_id
-        ORDER BY u.id
+        LEFT JOIN institutions i ON i.id = iu.institution_id
+        ORDER BY u.id ASC
         LIMIT ? OFFSET ?`,
         [pageSize, offset]
     );
 
-
-    const [countRows]: any = await pool.query("SELECT COUNT(*) AS count FROM users");
+    // Total de usuarios
+    const [countRows]: any = await pool.query('SELECT COUNT(*) AS count FROM users');
+    const total = countRows[0].count;
 
     res.json({
+        success: true,
         usuarios: rows,
-        total: countRows[0].count
+        total,
     });
     } catch (error) {
-    console.error("❌ Error obteniendo usuarios:", error);
-    res.status(500).json({ success: false, message: "Error obteniendo usuarios" });
+    console.error('❌ Error obteniendo usuarios:', error);
+    res.status(500).json({
+        success: false,
+        message: 'Error obteniendo usuarios',
+    });
     }
     };
 

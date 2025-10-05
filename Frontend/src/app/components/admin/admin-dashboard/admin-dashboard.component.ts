@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../../models/user.model';
 import { UserService } from '../../../services/user.service';
+import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderDashboardComponent } from '../../shared/header-dashboard/header-dashboard.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule,HeaderDashboardComponent],
+  imports: [CommonModule,HeaderDashboardComponent, FooterComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })

@@ -36,9 +36,6 @@
     <button class="tab" [class.active]="activeTab === 'info'" (click)="setTab('info')">
       Información
     </button>
-    <button class="tab" [class.active]="activeTab === 'security'" (click)="setTab('security')">
-      Seguridad
-    </button>
 
     <!-- Si es admin, mostramos Instituciones y Usuarios -->
     <ng-container *ngIf="role === 'admin'; else userTabs">
@@ -47,6 +44,9 @@
       </button>
       <button class="tab" [class.active]="activeTab === 'users'" (click)="setTab('users')">
         Usuarios
+      </button>
+      <button class="tab" [class.active]="activeTab === 'metrics'" (click)="setTab('metrics')">
+        Métricas
       </button>
     </ng-container>
 
@@ -61,158 +61,118 @@
     </ng-template>
   </div>
 
-  <!-- Información -->
+  <!-- Información de Perfil -->
   <div class="profile-section-card" *ngIf="activeTab === 'info'">
-    <div class="profile-section-card" *ngIf="activeTab === 'info'">
-      <div class="section-header">
-        <h3 class="section-title">Información del perfil</h3>
+    <!-- BLOQUE 1: DATOS PERSONALES -->
+    <div class="section-header">
+      <h3 class="section-title">Información del perfil</h3>
+      <button class="btn-edit" type="button" (click)="toggleEdit()">
+        {{ isEditing ? 'Dejar de editar' : 'Editar perfil' }}
+      </button>
+    </div>
 
-        <button class="btn-edit" type="button" (click)="toggleEdit()">
-          {{ isEditing ? 'Dejar de editar' : 'Editar perfil' }}
+    <form (ngSubmit)="saveProfile()">
+      <div class="grid-2">
+        <div class="form-field">
+          <label>Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="firstName" name="firstName" [disabled]="!isEditing" />
+        </div>
+
+        <div class="form-field">
+          <label>Apellido</label>
+          <input type="text" class="form-control" [(ngModel)]="lastName" name="lastName" [disabled]="!isEditing" />
+        </div>
+
+        <div class="form-field">
+          <label>Correo</label>
+          <input type="email" class="form-control" [(ngModel)]="email" name="email" [disabled]="!isEditing" />
+        </div>
+
+        <div class="form-field">
+          <label>Teléfono</label>
+          <input type="tel" class="form-control" [(ngModel)]="phone" name="phone" [disabled]="!isEditing" />
+        </div>
+
+        <div class="form-field">
+          <label>Institución</label>
+          <select class="form-control" [(ngModel)]="selectedInstitution" name="institution" [disabled]="!isEditing">
+            <option *ngFor="let inst of institutions" [value]="inst.id">{{ inst.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-field form-field--full">
+          <label>Biografía</label>
+          <textarea
+            class="form-control"
+            rows="5"
+            [(ngModel)]="bio"
+            name="bio"
+            placeholder="Cuéntanos sobre tus líneas de investigación…"
+            [disabled]="!isEditing"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions" *ngIf="isEditing">
+        <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar cambios</button>
+      </div>
+    </form>
+
+    <!-- BLOQUE 2: CAMBIO DE CONTRASEÑA -->
+    <div class="section-divider"></div>
+
+    <div class="section-header">
+      <h3 class="section-title">Actualizar contraseña</h3>
+    </div>
+
+    <form (ngSubmit)="changePassword()">
+      <div class="grid-2">
+        <div class="form-field form-field--full">
+          <label>Contraseña actual</label>
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="oldPassword"
+            name="oldPassword"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <div class="form-field">
+          <label>Nueva contraseña</label>
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="newPassword"
+            name="newPassword"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="form-field">
+          <label>Confirmar nueva contraseña</label>
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            autocomplete="new-password"
+          />
+        </div>
+      </div>
+
+      <div class="feedback" *ngIf="successMsg || errorMsg">
+        <div class="alert success" *ngIf="successMsg">{{ successMsg }}</div>
+        <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Guardando…' : 'Actualizar contraseña' }}
         </button>
       </div>
-
-      <form (ngSubmit)="saveProfile()">
-        <div class="grid-2">
-          <div class="form-field">
-            <label>Nombre</label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="firstName"
-              name="firstName"
-              [disabled]="!isEditing"
-            />
-          </div>
-
-          <div class="form-field">
-            <label>Apellido</label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="lastName"
-              name="lastName"
-              [disabled]="!isEditing"
-            />
-          </div>
-
-          <div class="form-field">
-            <label>Correo</label>
-            <input
-              type="email"
-              class="form-control"
-              [(ngModel)]="email"
-              name="email"
-              [disabled]="!isEditing"
-            />
-          </div>
-
-          <div class="form-field">
-            <label>Teléfono</label>
-            <input
-              type="tel"
-              class="form-control"
-              [(ngModel)]="phone"
-              name="phone"
-              [disabled]="!isEditing"
-            />
-          </div>
-
-          <div class="form-field">
-            <label>Institución</label>
-            <select
-              class="form-control"
-              [(ngModel)]="selectedInstitution"
-              name="institution"
-              [disabled]="!isEditing"
-            >
-              <option *ngFor="let inst of institutions" [value]="inst.id">
-                {{ inst.name }}
-              </option>
-            </select>
-          </div>
-
-
-          <div class="form-field form-field--full">
-            <label>Biografía</label>
-            <textarea
-              class="form-control"
-              rows="5"
-              [(ngModel)]="bio"
-              name="bio"
-              placeholder="Cuéntanos sobre tus líneas de investigación…"
-              [disabled]="!isEditing"
-            ></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions" *ngIf="isEditing">
-          <button type="button" class="btn-secondary" (click)="cancelEdit()">
-            Cancelar
-          </button>
-          <button type="submit" class="btn-primary">
-            Guardar cambios
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Seguridad -->
-  <div class="profile-section-card" *ngIf="activeTab === 'security'">
-    <div class="profile-section-card" *ngIf="activeTab === 'security'">
-      <div class="section-header">
-        <h3 class="section-title">Seguridad</h3>
-      </div>
-
-      <form (ngSubmit)="changePassword()">
-        <div class="grid-2">
-          <div class="form-field form-field--full">
-            <label>Contraseña actual</label>
-            <input
-              type="password"
-              class="form-control"
-              [(ngModel)]="oldPassword"
-              name="oldPassword"
-              autocomplete="current-password"
-            />
-          </div>
-
-          <div class="form-field">
-            <label>Nueva contraseña</label>
-            <input
-              type="password"
-              class="form-control"
-              [(ngModel)]="newPassword"
-              name="newPassword"
-              autocomplete="new-password"
-            />
-          </div>
-
-          <div class="form-field">
-            <label>Confirmar nueva contraseña</label>
-            <input
-              type="password"
-              class="form-control"
-              [(ngModel)]="confirmPassword"
-              name="confirmPassword"
-              autocomplete="new-password"
-            />
-          </div>
-        </div>
-
-        <div class="feedback" *ngIf="successMsg || errorMsg">
-          <div class="alert success" *ngIf="successMsg">{{ successMsg }}</div>
-          <div class="alert error" *ngIf="errorMsg">{{ errorMsg }}</div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
-            {{ isSubmitting ? 'Guardando…' : 'Actualizar contraseña' }}
-          </button>
-        </div>
-      </form>
-    </div>
+    </form>
   </div>
 
   <!-- Instituciones -->
@@ -221,7 +181,6 @@
       <h3 class="section-title">Gestión de Instituciones</h3>
     </div>
 
-    <!-- Barra de búsqueda -->
     <div class="form-field form-field--full" style="margin-bottom: 15px;">
       <input
         type="text"
@@ -232,34 +191,30 @@
       />
     </div>
 
-  <!-- Listado de instituciones -->
-  <table class="institutions-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let inst of getPagedInstitutions()">
-        <td>{{ inst.id }}</td>
-        <td>{{ inst.name }}</td>
-        <td>
-        <a class="btn-icon" [routerLink]="['/dashboard-profile/institution', inst.id]">
-          🔍
-        </a>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <table class="institutions-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inst of getPagedInstitutions()">
+          <td>{{ inst.id }}</td>
+          <td>{{ inst.name }}</td>
+          <td>
+            <a class="btn-icon" [routerLink]="['/dashboard-profile/institution', inst.id]">🔍</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-  <!-- Controles de paginación -->
-  <div class="pagination-controls">
-    <button class="btn-secondary" (click)="prevPage()" [disabled]="page === 1">⬅ Anterior</button>
-    <span>Página {{ page }} de {{ totalPages }}</span>
-    <button class="btn-primary" (click)="nextPage()" [disabled]="page === totalPages">Siguiente ➡</button>
-  </div>
+    <div class="pagination-controls">
+      <button class="btn-secondary" (click)="prevPage()" [disabled]="page === 1">⬅ Anterior</button>
+      <span>Página {{ page }} de {{ totalPages }}</span>
+      <button class="btn-primary" (click)="nextPage()" [disabled]="page === totalPages">Siguiente ➡</button>
+    </div>
   </div>
 
   <!-- Usuarios -->
@@ -267,22 +222,84 @@
     <div class="section-header">
       <h3 class="section-title">Gestión de Usuarios</h3>
     </div>
-    <p class="placeholder">Aquí administraremos los usuarios: asignar roles, editar y gestionar cuentas.</p>
+
+    <div class="form-field form-field--full" style="margin-bottom: 15px;">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar usuario..."
+        [(ngModel)]="userSearch"
+        (input)="filterUsers()"
+      />
+    </div>
+
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Institución</th>
+          <th>Registrado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of getPagedUsers()">
+          <td>{{ user.id }}</td>
+          <td>{{ user.first_name }}</td>
+          <td>{{ user.last_name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.institution_name || '—' }}</td>
+          <td>{{ user.created_at | date: 'shortDate' }}</td>
+          <td>
+            <a class="btn-icon" [routerLink]="['/dashboard-profile/user', user.id]">🔍</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination-controls">
+      <button class="btn-secondary" (click)="prevUserPage()" [disabled]="userPage === 1">⬅ Anterior</button>
+      <span>Página {{ userPage }} de {{ userTotalPages }}</span>
+      <button class="btn-primary" (click)="nextUserPage()" [disabled]="userPage === userTotalPages">Siguiente ➡</button>
+    </div>
   </div>
 
-  <!-- PLACEHOLDERS -->
-  <div class="profile-section-card" *ngIf="activeTab === 'activity' && role !== 'admin'">
+  <!-- MÉTRICAS -->
+  <div class="profile-section-card" *ngIf="activeTab === 'metrics' && role === 'admin'">
     <div class="section-header">
-      <h3 class="section-title">Actividad</h3>
+      <h3 class="section-title">Métricas generales</h3>
     </div>
-    <p class="placeholder">Aquí podrás ver y filtrar la actividad reciente de tu cuenta.</p>
-  </div>
 
-  <div class="profile-section-card" *ngIf="activeTab === 'notifications' && role !== 'admin'">
-    <div class="section-header">
-      <h3 class="section-title">Notificaciones</h3>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <h4>Total de usuarios</h4>
+        <p>{{ users.length }}</p>
+      </div>
+      <div class="metric-card">
+        <h4>Total de instituciones</h4>
+        <p>{{ institutions.length }}</p>
+      </div>
+      <div class="metric-card">
+        <h4>Total de laboratorios</h4>
+        <p>{{ totalLaboratories }}</p>
+      </div>
     </div>
-    <p class="placeholder">Configura tus preferencias de notificación aquí.</p>
+
+    <div class="charts-container">
+      <div class="chart-box">
+        <h4>Usuarios por institución</h4>
+        <canvas id="usersByInstitution"></canvas>
+      </div>
+      <div class="chart-box">
+        <h4>Roles de usuarios</h4>
+        <canvas id="rolesChart"></canvas>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -4,6 +4,7 @@
 <div class="detail-wrapper" *ngIf="institution">
   <h2>Detalle de Institución</h2>
 
+  <!-- FORMULARIO EN DOS COLUMNAS -->
   <form (ngSubmit)="saveChanges()">
     <div class="grid-2">
       <div class="form-field">
@@ -61,7 +62,7 @@
         />
       </div>
 
-      <div class="form-field form-field--full">
+      <div class="form-field">
         <label>Dirección</label>
         <input
           type="text"
@@ -71,16 +72,16 @@
           [disabled]="!isEditing"
         />
       </div>
+    </div>
 
-      <div class="form-field form-field--full">
-        <label>Descripción</label>
-        <textarea
-          class="form-control"
-          [(ngModel)]="institution.description"
-          name="description"
-          [disabled]="!isEditing"
-        ></textarea>
-      </div>
+    <div class="form-field form-field--full">
+      <label>Descripción</label>
+      <textarea
+        class="form-control"
+        [(ngModel)]="institution.description"
+        name="description"
+        [disabled]="!isEditing"
+      ></textarea>
     </div>
 
     <!-- BOTONES -->
@@ -95,9 +96,128 @@
         Editar
       </button>
       <button type="submit" class="btn-primary" *ngIf="isEditing">Guardar</button>
-      <button type="button" class="btn-danger" (click)="deleteInstitution()">Eliminar</button>
+      <button
+        type="button"
+        class="btn-danger"
+        (click)="deleteInstitution()"
+      >
+        Eliminar
+      </button>
     </div>
   </form>
+
+  <!-- SECCIÓN DE LABORATORIOS -->
+  <div class="labs-section">
+    <div class="section-header">
+      <h3>Laboratorios Asociados</h3>
+      <button class="btn-primary" (click)="toggleAddLabForm()">+ Agregar</button>
+    </div>
+
+    <!-- FORMULARIO NUEVO LABORATORIO -->
+    <div *ngIf="showAddLabForm" class="add-lab-form">
+      <h4>Nuevo Laboratorio</h4>
+      <form (ngSubmit)="addLaboratory()">
+        <div class="grid-2">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newLab.name"
+              name="name"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Descripción</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newLab.description"
+              name="description"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Ubicación</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newLab.location"
+              name="location"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Correo de contacto</label>
+            <input
+              type="email"
+              class="form-control"
+              [(ngModel)]="newLab.contact_email"
+              name="contact_email"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>Sitio web</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newLab.website"
+              name="website"
+            />
+          </div>
+
+          <div class="form-field form-field--full">
+            <label>Áreas de investigación</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newLab.research_areas"
+              name="research_areas"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="toggleAddLabForm()"
+          >
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- TABLA DE LABORATORIOS -->
+    <table class="labs-table" *ngIf="laboratories.length > 0">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Ubicación</th>
+          <th>Áreas de Investigación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let lab of laboratories">
+          <td>{{ lab.name }}</td>
+          <td>{{ lab.description }}</td>
+          <td>{{ lab.location }}</td>
+          <td>{{ lab.research_areas }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="laboratories.length === 0" class="no-labs">
+      <p>Esta institución aún no tiene laboratorios registrados.</p>
+    </div>
+  </div>
 </div>
 
 <!-- FOOTER -->

@@ -22,6 +22,21 @@ export class InstitutionComponent implements OnInit {
   institution: any = null;
   isEditing: boolean = false;
 
+  // Estado para mostrar u ocultar el formulario
+  showAddLabForm: boolean = false;
+
+  // Modelo del nuevo laboratorio
+  newLab = {
+    name: '',
+    description: '',
+    location: '',
+    contact_email: '',
+    website: '',
+    research_areas: ''
+  };
+
+  laboratories: any[] = [];
+
   constructor(
     private readonly userService: UserService,
     private readonly route: ActivatedRoute,
@@ -39,7 +54,8 @@ export class InstitutionComponent implements OnInit {
     this.userService.getInstitutionById(id).subscribe({
       next: (res) => {
         if (res.success) {
-          this.institution = res.institution;
+          this.institution = res['institution'];
+          this.loadLaboratories(id);
         }
       },
       error: (err) => console.error('❌ Error cargando institución', err),
@@ -77,6 +93,39 @@ export class InstitutionComponent implements OnInit {
         this.router.navigate(['/dashboard-profile']);
       },
       error: (err) => console.error('❌ Error eliminando institución', err),
+    });
+  }
+
+  loadLaboratories(id: number): void {
+    this.userService.getLaboratoriesByInstitution(id).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.laboratories = res.laboratories;
+        }
+      },
+      error: (err) => console.error('❌ Error cargando laboratorios', err),
+    });
+  }
+
+  // Mostrar/ocultar formulario
+  toggleAddLabForm(): void {
+    this.showAddLabForm = !this.showAddLabForm;
+  }
+
+  // Guardar laboratorio nuevo
+  addLaboratory(): void {
+    if (!this.institution?.id) return;
+
+    this.userService.createLaboratory(this.institution.id, this.newLab).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          console.log('✅ Laboratorio agregado correctamente');
+          this.loadLaboratories(this.institution.id); // refresca la lista
+          this.toggleAddLabForm(); // cierra el formulario
+          this.newLab = { name: '', description: '', location: '', contact_email: '', website: '', research_areas: '' };
+        }
+      },
+      error: (err) => console.error('❌ Error creando laboratorio', err),
     });
   }
 }

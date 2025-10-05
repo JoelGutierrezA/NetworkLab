@@ -211,4 +211,157 @@ router.delete('/institutions/:id', authenticateToken, requireRole(['admin']), as
     }
 });
 
+/**
+ * @openapi
+ * /api/institutions/{id}/laboratories:
+ *   get:
+ *     summary: Obtener laboratorios asociados a una institución
+ *     tags:
+ *       - Laboratories
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de laboratorios
+ */
+router.get('/institutions/:id/laboratories', async (req, res) => {
+    try {
+    const { id } = req.params;
+
+    const [rows]: any = await pool.query(
+        `SELECT id, name, description, location, contact_email, website, research_areas 
+        FROM laboratories
+        WHERE institution_id = ?`,
+        [id]
+    );
+
+    res.json({ success: true, laboratories: rows });
+    } catch (error) {
+    console.error('❌ Error obteniendo laboratorios:', error);
+    res.status(500).json({
+        success: false,
+        message: 'Error obteniendo laboratorios asociados a la institución',
+    });
+    }
+});
+
+/**
+ * @openapi
+ * /api/laboratories/{id}:
+ *   get:
+ *     summary: Obtener detalle de un laboratorio
+ *     tags:
+ *       - Laboratories
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Detalle del laboratorio
+ */
+router.get('/laboratories/:id', async (req, res) => {
+    try {
+    const { id } = req.params;
+
+    const [rows]: any = await pool.query(
+        `SELECT id, name, description, location, contact_email, website, research_areas, institution_id 
+        FROM laboratories 
+        WHERE id = ?`,
+        [id]
+    );
+
+    if (rows.length === 0) {
+        return res
+        .status(404)
+        .json({ success: false, message: 'Laboratorio no encontrado' });
+    }
+
+    res.json({ success: true, laboratory: rows[0] });
+    } catch (error) {
+    console.error('❌ Error obteniendo laboratorio:', error);
+    res
+        .status(500)
+        .json({ success: false, message: 'Error obteniendo laboratorio' });
+    }
+});
+
+/**
+ * @openapi
+ * /api/institutions/{id}/laboratories:
+ *   post:
+ *     summary: Crear un nuevo laboratorio asociado a una institución
+ *     tags:
+ *       - Laboratories
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               contact_email:
+ *                 type: string
+ *               website:
+ *                 type: string
+ *               research_areas:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Laboratorio creado correctamente
+ *       400:
+ *         description: Faltan campos obligatorios
+ */
+router.post('/institutions/:id/laboratories', authenticateToken, requireRole(['admin']), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description, location, contact_email, website, research_areas } = req.body;
+
+        if (!name || !description) {
+            return res.status(400).json({
+                success: false,
+                message: 'El nombre y la descripción son obligatorios.',
+            });
+        }
+
+        const [result]: any = await pool.query(
+            `INSERT INTO laboratories (name, description, institution_id, location, contact_email, website, research_areas)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [name, description, id, location, contact_email, website, research_areas]
+        );
+
+        res.json({
+            success: true,
+            id: result.insertId,
+            message: 'Laboratorio creado correctamente',
+        });
+    } catch (error) {
+        console.error('❌ Error creando laboratorio:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error creando laboratorio',
+        });
+    }
+});
+
 export default router;
