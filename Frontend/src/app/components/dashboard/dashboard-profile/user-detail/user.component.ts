@@ -20,6 +20,7 @@ import { UserService } from '../../../../services/user.service';
 export class UserComponent implements OnInit {
   user: any = null;
   isEditing = false;
+  originalUser: any = null;
 
   constructor(
     private readonly userService: UserService,
@@ -46,6 +47,9 @@ export class UserComponent implements OnInit {
   }
 
   toggleEdit(): void {
+    if (!this.isEditing && this.user) {
+      this.originalUser = JSON.parse(JSON.stringify(this.user));
+    }
     this.isEditing = !this.isEditing;
   }
 
@@ -56,6 +60,7 @@ export class UserComponent implements OnInit {
       next: (res: any) => {
         console.log('✅ Usuario actualizado', res);
         this.isEditing = false;
+        this.originalUser = null;
       },
       error: (err) => console.error('❌ Error actualizando usuario', err),
     });
@@ -72,6 +77,14 @@ export class UserComponent implements OnInit {
       },
       error: (err) => console.error('❌ Error eliminando usuario', err),
     });
+  }
+
+  cancelEdit(): void {
+    if (this.originalUser) {
+      this.user = JSON.parse(JSON.stringify(this.originalUser));
+      this.originalUser = null;
+    }
+    this.isEditing = false;
   }
 
   goBack(): void {

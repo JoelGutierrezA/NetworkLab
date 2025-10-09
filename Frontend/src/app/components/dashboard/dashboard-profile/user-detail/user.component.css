@@ -5,6 +5,32 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.action-top-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: absolute;
+  right: 28px;
+  top: 28px;
+  z-index: 30;
+}
+
+@media (max-width: 600px) {
+  .action-top-right {
+    position: static;
+    margin-top: 12px;
+    justify-content: flex-end;
+  }
 }
 
 .detail-wrapper .form-field {

@@ -2,14 +2,25 @@
 <app-header-dashboard></app-header-dashboard>
 
 <div class="detail-wrapper" *ngIf="institution">
-  <h2>Detalle de Institución</h2>
+  <div class="detail-header">
+    <h2>Detalle de Institución</h2>
+    <div class="action-top-right">
+      <button type="button" class="btn-secondary" *ngIf="!isEditing" (click)="goBack()">Volver</button>
+      <button type="button" class="btn-secondary" *ngIf="!isEditing" (click)="toggleEdit()">Editar</button>
 
-  <!-- FORMULARIO EN DOS COLUMNAS -->
-  <form (ngSubmit)="saveChanges()">
+      <button type="button" class="btn-primary" *ngIf="isEditing" (click)="saveChanges()">Guardar</button>
+      <button type="button" class="btn-secondary" *ngIf="isEditing" (click)="cancelEdit()">Cancelar</button>
+      <button type="button" class="btn-danger" *ngIf="isEditing" (click)="openDeleteConfirm()">Eliminar</button>
+    </div>
+  </div>
+
+  <div class="form-container">
+
     <div class="grid-2">
       <div class="form-field">
-        <label>Nombre</label>
+        <label for="institution-name">Nombre</label>
         <input
+          id="institution-name"
           type="text"
           class="form-control"
           [(ngModel)]="institution.name"
@@ -19,8 +30,9 @@
       </div>
 
       <div class="form-field">
-        <label>Tipo</label>
+        <label for="institution-type">Tipo</label>
         <input
+          id="institution-type"
           type="text"
           class="form-control"
           [(ngModel)]="institution.type"
@@ -30,8 +42,9 @@
       </div>
 
       <div class="form-field">
-        <label>Website</label>
+        <label for="institution-website">Website</label>
         <input
+          id="institution-website"
           type="text"
           class="form-control"
           [(ngModel)]="institution.website"
@@ -41,8 +54,9 @@
       </div>
 
       <div class="form-field">
-        <label>Ciudad</label>
+        <label for="institution-city">Ciudad</label>
         <input
+          id="institution-city"
           type="text"
           class="form-control"
           [(ngModel)]="institution.city"
@@ -52,8 +66,9 @@
       </div>
 
       <div class="form-field">
-        <label>País</label>
+        <label for="institution-country">País</label>
         <input
+          id="institution-country"
           type="text"
           class="form-control"
           [(ngModel)]="institution.country"
@@ -63,8 +78,9 @@
       </div>
 
       <div class="form-field">
-        <label>Dirección</label>
+        <label for="institution-address">Dirección</label>
         <input
+          id="institution-address"
           type="text"
           class="form-control"
           [(ngModel)]="institution.address"
@@ -75,36 +91,18 @@
     </div>
 
     <div class="form-field form-field--full">
-      <label>Descripción</label>
+      <label for="institution-description">Descripción</label>
       <textarea
+        id="institution-description"
         class="form-control"
         [(ngModel)]="institution.description"
         name="description"
         [disabled]="!isEditing"
       ></textarea>
     </div>
+  </div>
 
-    <!-- BOTONES -->
-    <div class="form-actions">
-      <button type="button" class="btn-secondary" (click)="goBack()">Volver</button>
-      <button
-        type="button"
-        class="btn-secondary"
-        *ngIf="!isEditing"
-        (click)="toggleEdit()"
-      >
-        Editar
-      </button>
-      <button type="submit" class="btn-primary" *ngIf="isEditing">Guardar</button>
-      <button
-        type="button"
-        class="btn-danger"
-        (click)="deleteInstitution()"
-      >
-        Eliminar
-      </button>
-    </div>
-  </form>
+  <!-- FORMULARIO EN DOS COLUMNAS -->
 
   <!-- SECCIÓN DE LABORATORIOS -->
   <div class="labs-section">
@@ -116,11 +114,12 @@
     <!-- FORMULARIO NUEVO LABORATORIO -->
     <div *ngIf="showAddLabForm" class="add-lab-form">
       <h4>Nuevo Laboratorio</h4>
-      <form (ngSubmit)="addLaboratory()">
+      <div class="lab-form">
         <div class="grid-2">
           <div class="form-field">
-            <label>Nombre</label>
+            <label for="newLab-name">Nombre</label>
             <input
+              id="newLab-name"
               type="text"
               class="form-control"
               [(ngModel)]="newLab.name"
@@ -130,8 +129,9 @@
           </div>
 
           <div class="form-field">
-            <label>Descripción</label>
+            <label for="newLab-description">Descripción</label>
             <input
+              id="newLab-description"
               type="text"
               class="form-control"
               [(ngModel)]="newLab.description"
@@ -141,8 +141,9 @@
           </div>
 
           <div class="form-field">
-            <label>Ubicación</label>
+            <label for="newLab-location">Ubicación</label>
             <input
+              id="newLab-location"
               type="text"
               class="form-control"
               [(ngModel)]="newLab.location"
@@ -151,8 +152,9 @@
           </div>
 
           <div class="form-field">
-            <label>Correo de contacto</label>
+            <label for="newLab-contact_email">Correo de contacto</label>
             <input
+              id="newLab-contact_email"
               type="email"
               class="form-control"
               [(ngModel)]="newLab.contact_email"
@@ -161,8 +163,9 @@
           </div>
 
           <div class="form-field">
-            <label>Sitio web</label>
+            <label for="newLab-website">Sitio web</label>
             <input
+              id="newLab-website"
               type="text"
               class="form-control"
               [(ngModel)]="newLab.website"
@@ -171,13 +174,37 @@
           </div>
 
           <div class="form-field form-field--full">
-            <label>Áreas de investigación</label>
+            <label for="newLab-research_areas">Áreas de investigación</label>
             <input
+              id="newLab-research_areas"
               type="text"
               class="form-control"
               [(ngModel)]="newLab.research_areas"
               name="research_areas"
             />
+          </div>
+        </div>
+
+        <!-- CAMPOS: ADMIN DEL LABORATORIO (REQUIRED) -->
+        <div class="create-admin-fields" style="margin-top:12px;">
+          <h5>Crear usuario administrador del laboratorio <span style="color:#d00">*</span></h5>
+          <div class="grid-2">
+            <div class="form-field">
+              <label for="adminEmail">Correo admin</label>
+              <input id="adminEmail" type="email" class="form-control" [(ngModel)]="newLab.adminEmail" name="adminEmail" required />
+            </div>
+            <div class="form-field">
+              <label for="adminPassword">Contraseña admin</label>
+              <input id="adminPassword" type="password" class="form-control" [(ngModel)]="newLab.adminPassword" name="adminPassword" required minlength="6" />
+            </div>
+            <div class="form-field">
+              <label for="adminFirstName">Nombre admin</label>
+              <input id="adminFirstName" type="text" class="form-control" [(ngModel)]="newLab.adminFirstName" name="adminFirstName" required />
+            </div>
+            <div class="form-field">
+              <label for="adminLastName">Apellido admin</label>
+              <input id="adminLastName" type="text" class="form-control" [(ngModel)]="newLab.adminLastName" name="adminLastName" required />
+            </div>
           </div>
         </div>
 
@@ -189,9 +216,9 @@
           >
             Cancelar
           </button>
-          <button type="submit" class="btn-primary">Guardar</button>
+          <button type="button" class="btn-primary" (click)="addLaboratory()">Guardar</button>
         </div>
-      </form>
+      </div>
     </div>
 
     <!-- TABLA DE LABORATORIOS -->
@@ -202,20 +229,52 @@
           <th>Descripción</th>
           <th>Ubicación</th>
           <th>Áreas de Investigación</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let lab of laboratories">
-          <td>{{ lab.name }}</td>
-          <td>{{ lab.description }}</td>
-          <td>{{ lab.location }}</td>
-          <td>{{ lab.research_areas }}</td>
-        </tr>
+  <ng-container *ngFor="let lab of laboratories; let i = index">
+          <!-- Row normal (cuando no está en edición) -->
+          <tr *ngIf="editingLabId !== lab.id">
+            <td>{{ lab.name }}</td>
+            <td>{{ lab.description }}</td>
+            <td>{{ lab.location }}</td>
+            <td>{{ lab.research_areas }}</td>
+            <td>
+              <button class="btn-secondary" (click)="startEditLab(lab)">Editar</button>
+              <button class="btn-danger" (click)="confirmDeleteLab(lab)">Eliminar</button>
+            </td>
+          </tr>
+
+          <!-- Row de edición inline -->
+          <tr *ngIf="editingLabId === lab.id">
+            <td><input type="text" class="form-control" [(ngModel)]="editLabModel.name" [name]="'edit_name_' + i" /></td>
+            <td><input type="text" class="form-control" [(ngModel)]="editLabModel.description" [name]="'edit_description_' + i" /></td>
+            <td><input type="text" class="form-control" [(ngModel)]="editLabModel.location" [name]="'edit_location_' + i" /></td>
+            <td><input type="text" class="form-control" [(ngModel)]="editLabModel.research_areas" [name]="'edit_research_' + i" /></td>
+            <td>
+              <button class="btn-primary" (click)="saveLabEdit()">Guardar</button>
+              <button class="btn-secondary" (click)="cancelEditLab()">Cancelar</button>
+            </td>
+          </tr>
+        </ng-container>
       </tbody>
     </table>
 
     <div *ngIf="laboratories.length === 0" class="no-labs">
       <p>Esta institución aún no tiene laboratorios registrados.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN PARA ELIMINAR INSTITUCIÓN -->
+<div class="modal-overlay" *ngIf="showDeleteConfirm">
+  <div class="modal-box">
+    <h4>Confirmar eliminación</h4>
+    <p>¿Seguro que deseas eliminar esta institución? Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeDeleteConfirm()">Cancelar</button>
+      <button class="btn-danger" (click)="confirmDeleteInstitution()">Eliminar</button>
     </div>
   </div>
 </div>

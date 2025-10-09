@@ -1,99 +1,94 @@
 <!-- Header -->
 <app-header-dashboard></app-header-dashboard>
 
-<div class="dashboard-page">
-  <!-- Main Content -->
-  <main class="dashboard-main">
-      <div class="container">
-          <!-- Welcome Section -->
-          <section class="welcome-section">
-              <div class="welcome-content">
-                  <h1>Bienvenido, {{ user.first_name }} {{ user.last_name }}</h1>
-                  <p>Gestiona tus proyectos de investigación y colaboraciones científicas</p>
-              </div>
-              <div class="welcome-stats">
-                  <div class="stat-card">
-                      <div class="stat-icon">📊</div>
-                      <div class="stat-info">
-                          <h3>5</h3>
-                          <p>Proyectos Activos</p>
-                      </div>
-                  </div>
-                  <div class="stat-card">
-                      <div class="stat-icon">👥</div>
-                      <div class="stat-info">
-                          <h3>12</h3>
-                          <p>Proveedores</p>
-                      </div>
-                  </div>
-                  <div class="stat-card">
-                      <div class="stat-icon">📝</div>
-                      <div class="stat-info">
-                          <h3>3</h3>
-                          <p>Publicaciones</p>
-                      </div>
-                  </div>
-              </div>
-          </section>
+<div class="community-page">
+        <main class="community-main container">
+            <div class="community-grid">
+                <!-- Main column: composer arriba, feed debajo -->
+                <div class="main-column">
+                    <section class="composer composer-top">
+                        <div class="composer-row">
+                            <div class="composer-avatar">{{ user.avatar || '👤' }}</div>
+                            <div class="composer-body">
+                                <form (ngSubmit)="createPost()" #postForm="ngForm">
+                                    <input type="text" class="form-control" placeholder="Título" [(ngModel)]="newPost.title" name="title" required />
+                                    <textarea class="form-control" rows="4" placeholder="Comparte una actualización, pregunta o recurso" [(ngModel)]="newPost.content" name="content" required></textarea>
+                                    <div class="composer-actions spaced">
+                                        <input type="text" class="form-control small" placeholder="Etiquetas (separadas por comas)" [(ngModel)]="newPost.tags" name="tags" />
+                                        <div class="actions-right">
+                                            <button type="button" class="btn-secondary" (click)="newPost = { title:'', content:'', tags:'' }">Cancelar</button>
+                                            <button class="btn-primary" type="submit" [disabled]="postForm.invalid">Publicar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
 
-          <!-- Quick Actions -->
-          <section class="quick-actions">
-              <h2>Acciones Rápidas</h2>
-              <div class="actions-grid">
-                  <a routerLink="/projects/new" class="action-card">
-                      <div class="action-icon">🆕</div>
-                      <h3>Nuevo Servicio</h3>
-                      <p>Crear un nuevo proyecto de investigación</p>
-                  </a>
-                  <a routerLink="/collaborate" class="action-card">
-                      <div class="action-icon">🤝</div>
-                      <h3>Buscar Proveedores</h3>
-                      <p>Encuentra investigadores para tu proyecto</p>
-                  </a>
-                  <a routerLink="/marketplace" class="action-card">
-                      <div class="action-icon">🛒</div>
-                      <h3>Marketplace</h3>
-                      <p>Recursos y equipos disponibles</p>
-                  </a>
-                  <a routerLink="/analytics" class="action-card">
-                      <div class="action-icon">📈</div>
-                      <h3>Analíticas</h3>
-                      <p>Estadísticas de tus proyectos</p>
-                  </a>
-              </div>
-          </section>
+                    <section class="feed">
+                        <h2>Comunidad</h2>
+                        <div *ngIf="posts.length === 0" class="empty-feed">Aún no hay publicaciones. Sé el primero en compartir algo.</div>
+                        <div class="post-card" *ngFor="let post of posts">
+                            <div class="post-header">
+                                <div class="avatar">{{ post.author?.avatar || '👤' }}</div>
+                                <div class="post-meta">
+                                    <strong>{{ post.author?.name || 'Usuario' }}</strong>
+                                    <span class="post-time">{{ post.createdAt | date:'short' }}</span>
+                                </div>
+                            </div>
+                            <div class="post-body">
+                                <h3>{{ post.title }}</h3>
+                                <p>{{ post.content }}</p>
+                                <div class="post-tags">
+                                    <span class="tag" *ngFor="let t of post.tagsArray">{{ t }}</span>
+                                </div>
+                            </div>
+                            <div class="post-actions">
+                                <button class="btn-link" (click)="likePost(post)">👍 {{ post.likes || 0 }}</button>
+                                <button class="btn-link" (click)="focusComment(post)">💬 Comentar</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
 
-          <!-- Recent Activity -->
-          <section class="recent-activity">
-              <h2>Actividad Reciente</h2>
-              <div class="activity-list">
-                  <div class="activity-item">
-                      <div class="activity-icon">🔬</div>
-                      <div class="activity-content">
-                          <h4>Nuevo Servicio Agregado</h4>
-                          <p>Microscopia Electronica - hace 2 horas</p>
-                      </div>
-                  </div>
-                  <div class="activity-item">
-                      <div class="activity-icon">👥</div>
-                      <div class="activity-content">
-                          <h4>Nuevo Colaborador</h4>
-                          <p>Dr. María González se unió al proyecto - hace 1 día</p>
-                      </div>
-                  </div>
-                  <div class="activity-item">
-                      <div class="activity-icon">📊</div>
-                      <div class="activity-content">
-                          <h4>Análisis Completado</h4>
-                          <p>Resultados del experimento #245 - hace 3 días</p>
-                      </div>
-                  </div>
-              </div>
-          </section>
-      </div>
-  </main>
+                <!-- Sidebar: tendencias / usuarios -->
+                <aside class="sidebar">
+                    <div class="widget">
+                        <h4>Tendencias</h4>
+                        <ul>
+                            <li *ngFor="let tag of trendingTags">{{ tag }}</li>
+                        </ul>
+                    </div>
 
-  <app-footer></app-footer>
+                    <div class="widget">
+                        <h4>Usuarios populares</h4>
+                        <ul>
+                            <li *ngFor="let u of popularUsers">
+                                {{ u.name }}
+                                <button class="btn-link" title="Ver usuario" (click)="openUser(u.id || null)">🔍</button>
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </main>
+
+    <app-footer></app-footer>
 </div>
+<!-- User modal -->
+<div class="modal-backdrop" *ngIf="selectedUser">
+    <div class="modal-card">
+        <button class="modal-close" (click)="closeUserModal()">✕</button>
+        <h3>{{ selectedUser.first_name }} {{ selectedUser.last_name }}</h3>
+        <p><strong>Email:</strong> {{ selectedUser.email }}</p>
+        <p><strong>Rol:</strong> {{ selectedUser.role }}</p>
+        <p><strong>Institución:</strong> {{ selectedUser.institution_name }}</p>
+        <p><strong>Biografía:</strong></p>
+        <p>{{ selectedUser.bio }}</p>
+    </div>
+</div>
+                      <div class="activity-icon">🔬</div>
 
+                      <div class="activity-content">
 
+                          <h4>Nuevo Servicio Agregado</h4>

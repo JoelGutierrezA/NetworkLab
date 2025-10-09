@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { Router } from 'express';
 import pool from '../config/database';
 import { authenticateToken, requireRole } from '../middleware/auth';
@@ -27,6 +28,8 @@ router.get('/institutions', async (req, res) => {
     }
 });
 
+// Rutas de Laboratories fueron movidas a laboratoriesRoutes.ts
+
 /**
  * @openapi
  * /api/institutions:
@@ -52,25 +55,68 @@ router.get('/institutions', async (req, res) => {
  *         description: El nombre es obligatorio
  */
 router.post('/institutions', authenticateToken, requireRole(['admin']), async (req, res) => {
+    const connection = await pool.getConnection();
     try {
-    const { name } = req.body;
+    const { name, adminEmail, adminPassword, adminFirstName, adminLastName } = req.body;
     if (!name) {
         return res.status(400).json({ success: false, message: 'El nombre es obligatorio' });
     }
 
-    const [result]: any = await pool.query(
+    await connection.beginTransaction();
+
+    const [result]: any = await connection.query(
         'INSERT INTO institutions (name) VALUES (?)',
         [name]
     );
+    const institutionId = result.insertId;
+
+    // Si se proporcionaron credenciales del admin, crearlo y asignar rol lab_manager
+    if (adminEmail && adminPassword) {
+        // verificar existencia de email
+        const [existingUsers]: any = await connection.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+        if (existingUsers.length > 0) {
+        // rollback y error
+        await connection.rollback();
+        return res.status(400).json({ success: false, message: 'El correo ya está registrado' });
+        }
+
+        const password_hash = await bcrypt.hash(adminPassword, 10);
+
+        const [userResult]: any = await connection.query(
+        'INSERT INTO users (email, password_hash, first_name, last_name) VALUES (?, ?, ?, ?)',
+        [adminEmail, password_hash, adminFirstName || '', adminLastName || '']
+        );
+        const userId = userResult.insertId;
+
+        // obtener role_id para lab_manager; si no existe, crearlo
+        const [roleRows]: any = await connection.query('SELECT id FROM roles WHERE name = ?', ['lab_manager']);
+        let roleId: number;
+        if (roleRows.length === 0) {
+        const [r]: any = await connection.query('INSERT INTO roles (name, description) VALUES (?, ?)', ['lab_manager', 'Laboratory manager']);
+        roleId = r.insertId;
+        } else {
+        roleId = roleRows[0].id;
+        }
+
+        // El trigger after insert en users pudo haber insertado institution_users con role_id=1
+        // Limpiar cualquier asignación previa e insertar la correcta
+        await connection.query('DELETE FROM institution_users WHERE user_id = ?', [userId]);
+        await connection.query('INSERT INTO institution_users (user_id, institution_id, role_id) VALUES (?, ?, ?)', [userId, institutionId, roleId]);
+    }
+
+    await connection.commit();
 
     res.json({
         success: true,
-        id: result.insertId,
+        id: institutionId,
         message: 'Institución creada correctamente',
     });
     } catch (error) {
     console.error('❌ Error creando institución:', error);
+    try { await connection.rollback(); } catch (rollbackErr) { console.error('❌ Error al hacer rollback:', rollbackErr); }
     res.status(500).json({ success: false, message: 'Error creando institución' });
+    } finally {
+    connection.release();
     }
 });
 
@@ -148,15 +194,24 @@ router.get('/institutions/:id', async (req, res) => {
 router.put('/institutions/:id', authenticateToken, requireRole(['admin']), async (req, res) => {
     try {
     const { id } = req.params;
-    const { name } = req.body;
+    const {
+        name,
+        type,
+        description,
+        website,
+        country,
+        city,
+        address
+    } = req.body;
 
+    // Validación mínima
     if (!name) {
         return res.status(400).json({ success: false, message: 'El nombre es obligatorio' });
     }
 
     const [result]: any = await pool.query(
-        'UPDATE institutions SET name = ? WHERE id = ?',
-        [name, id]
+        `UPDATE institutions SET name = ?, type = ?, description = ?, website = ?, country = ?, city = ?, address = ? WHERE id = ?`,
+        [name, type || null, description || null, website || null, country || null, city || null, address || null, id]
     );
 
     if (result.affectedRows === 0) {
@@ -211,157 +266,14 @@ router.delete('/institutions/:id', authenticateToken, requireRole(['admin']), as
     }
 });
 
-/**
- * @openapi
- * /api/institutions/{id}/laboratories:
- *   get:
- *     summary: Obtener laboratorios asociados a una institución
- *     tags:
- *       - Laboratories
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Lista de laboratorios
- */
-router.get('/institutions/:id/laboratories', async (req, res) => {
-    try {
-    const { id } = req.params;
+// (migrated) GET /api/institutions/:id/laboratories -> laboratoriesRoutes.ts
 
-    const [rows]: any = await pool.query(
-        `SELECT id, name, description, location, contact_email, website, research_areas 
-        FROM laboratories
-        WHERE institution_id = ?`,
-        [id]
-    );
+// (migrated) GET /api/laboratories/:id -> laboratoriesRoutes.ts
 
-    res.json({ success: true, laboratories: rows });
-    } catch (error) {
-    console.error('❌ Error obteniendo laboratorios:', error);
-    res.status(500).json({
-        success: false,
-        message: 'Error obteniendo laboratorios asociados a la institución',
-    });
-    }
-});
+// (migrated) POST /api/institutions/:id/laboratories -> laboratoriesRoutes.ts
 
-/**
- * @openapi
- * /api/laboratories/{id}:
- *   get:
- *     summary: Obtener detalle de un laboratorio
- *     tags:
- *       - Laboratories
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Detalle del laboratorio
- */
-router.get('/laboratories/:id', async (req, res) => {
-    try {
-    const { id } = req.params;
+// (migrated) PUT /api/laboratories/:id -> laboratoriesRoutes.ts
 
-    const [rows]: any = await pool.query(
-        `SELECT id, name, description, location, contact_email, website, research_areas, institution_id 
-        FROM laboratories 
-        WHERE id = ?`,
-        [id]
-    );
-
-    if (rows.length === 0) {
-        return res
-        .status(404)
-        .json({ success: false, message: 'Laboratorio no encontrado' });
-    }
-
-    res.json({ success: true, laboratory: rows[0] });
-    } catch (error) {
-    console.error('❌ Error obteniendo laboratorio:', error);
-    res
-        .status(500)
-        .json({ success: false, message: 'Error obteniendo laboratorio' });
-    }
-});
-
-/**
- * @openapi
- * /api/institutions/{id}/laboratories:
- *   post:
- *     summary: Crear un nuevo laboratorio asociado a una institución
- *     tags:
- *       - Laboratories
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               location:
- *                 type: string
- *               contact_email:
- *                 type: string
- *               website:
- *                 type: string
- *               research_areas:
- *                 type: string
- *     responses:
- *       200:
- *         description: Laboratorio creado correctamente
- *       400:
- *         description: Faltan campos obligatorios
- */
-router.post('/institutions/:id/laboratories', authenticateToken, requireRole(['admin']), async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, description, location, contact_email, website, research_areas } = req.body;
-
-        if (!name || !description) {
-            return res.status(400).json({
-                success: false,
-                message: 'El nombre y la descripción son obligatorios.',
-            });
-        }
-
-        const [result]: any = await pool.query(
-            `INSERT INTO laboratories (name, description, institution_id, location, contact_email, website, research_areas)
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [name, description, id, location, contact_email, website, research_areas]
-        );
-
-        res.json({
-            success: true,
-            id: result.insertId,
-            message: 'Laboratorio creado correctamente',
-        });
-    } catch (error) {
-        console.error('❌ Error creando laboratorio:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error creando laboratorio',
-        });
-    }
-});
+// (migrated) DELETE /api/laboratories/:id -> laboratoriesRoutes.ts
 
 export default router;

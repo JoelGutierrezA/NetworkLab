@@ -23,6 +23,7 @@ import { HeaderPublicComponent } from '../../shared/header-public/header-public.
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   errorMessage: string | null = null;
+  passwordVisible = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -35,6 +36,11 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
       remember: [false]
+    });
+
+    // Limpiar mensaje de error cuando el usuario empieza a editar
+    this.loginForm.valueChanges.subscribe(() => {
+      if (this.errorMessage) this.errorMessage = null;
     });
   }
 
@@ -73,6 +79,10 @@ export class LoginComponent implements OnInit {
         this.errorMessage = 'Error al intentar iniciar sesión. Intenta de nuevo.';
       }
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
   }
 }
 

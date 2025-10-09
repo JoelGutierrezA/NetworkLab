@@ -257,6 +257,139 @@
   font-weight: 500;
 }
 
+/* === TABLAS DE LISTADOS (Instituciones, Usuarios) === */
+.institutions-table,
+.users-table {
+  width: 100%;
+  table-layout: fixed; /* distribuye columnas según anchos asignados */
+  border-collapse: separate; /* usar separate para permitir border-radius exterior */
+  border-spacing: 0;
+  background: #fff;
+  margin-top: 6px;
+  border: 1px solid #e5e5e5; /* borde exterior sólido */
+  border-radius: 12px; /* esquinas redondeadas */
+  overflow: hidden; /* recorta esquinas para que el borde sea redondeado */
+}
+
+.institutions-table thead th,
+.users-table thead th,
+.institutions-table tbody td,
+.users-table tbody td {
+  padding: 8px 12px; /* reducir padding para disminuir la altura de las filas */
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: #111827;
+  border-bottom: 1px solid #eef0f3; /* separación horizontal sutil */
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Separadores verticales entre columnas */
+.institutions-table td + td,
+.institutions-table th + th,
+.users-table td + td,
+.users-table th + th {
+  border-left: 1px solid #eef0f3; /* separador vertical sutil */
+}
+
+.institutions-table thead th,
+.users-table thead th {
+  background: #f6f6f8;
+  font-weight: 700;
+  color: #334155;
+  border-bottom: 2px solid #e5e5e5;
+  text-align: left;
+}
+
+/* Anchos por columna: ID pequeño, Nombre amplio, Acciones estrecha */
+.institutions-table thead th:nth-child(1),
+.institutions-table tbody td:nth-child(1) {
+  width: 8%;
+  max-width: 80px;
+}
+.institutions-table thead th:nth-child(2),
+.institutions-table tbody td:nth-child(2) {
+  width: 74%;
+  min-width: 200px;
+}
+.institutions-table thead th:nth-child(3),
+.institutions-table tbody td:nth-child(3) {
+  width: 18%;
+  text-align: center;
+}
+
+/* ===== Reglas específicas para users-table ===== */
+.users-table thead th:nth-child(1),
+.users-table tbody td:nth-child(1) {
+  /* ID */
+  width: 6%;
+  max-width: 60px;
+  text-align: left;
+}
+.users-table thead th:nth-child(2),
+.users-table tbody td:nth-child(2) {
+  /* Nombre */
+  width: 18%;
+  min-width: 140px;
+}
+.users-table thead th:nth-child(3),
+.users-table tbody td:nth-child(3) {
+  /* Apellido */
+  width: 12%;
+  min-width: 120px;
+}
+.users-table thead th:nth-child(4),
+.users-table tbody td:nth-child(4) {
+  /* Email */
+  width: 30%;
+  min-width: 200px;
+}
+.users-table thead th:nth-child(5),
+.users-table tbody td:nth-child(5) {
+  /* Rol */
+  width: 8%;
+  text-align: left;
+}
+.users-table thead th:nth-child(6),
+.users-table tbody td:nth-child(6) {
+  /* Institución */
+  width: 12%;
+  min-width: 120px;
+}
+.users-table thead th:nth-child(7),
+.users-table tbody td:nth-child(7) {
+  /* Registrado */
+  width: 8%;
+  text-align: center;
+}
+.users-table thead th:nth-child(8),
+.users-table tbody td:nth-child(8) {
+  /* Acciones */
+  width: 6%;
+  text-align: center;
+}
+
+/* Icon button in actions column: center and remove default link styling */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #ffffff00;
+  color: #4f46e5;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+.btn-icon:hover { background: rgba(79,70,229,0.06); border-color: rgba(79,70,229,0.12); }
+
+/* Small screens: allow tables to scroll horizontally without breaking layout */
+@media (max-width: 720px) {
+  .institutions-table, .users-table { display: block; width: 100%; overflow-x: auto; }
+}
+
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

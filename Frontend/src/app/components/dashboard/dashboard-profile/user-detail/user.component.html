@@ -2,53 +2,60 @@
 <app-header-dashboard></app-header-dashboard>
 
 <div class="detail-wrapper" *ngIf="user">
-  <h2>Detalle de Usuario</h2>
+  <div class="detail-header">
+    <h2>Detalle de Usuario</h2>
+    <div class="action-top-right">
+  <button type="button" class="btn-secondary" *ngIf="!isEditing" (click)="goBack()">Volver</button>
+      <button type="button" class="btn-secondary" *ngIf="!isEditing" (click)="toggleEdit()">Editar</button>
+
+      <button type="submit" form="userForm" class="btn-primary" *ngIf="isEditing">Guardar</button>
+      <button type="button" class="btn-secondary" *ngIf="isEditing" (click)="cancelEdit()">Cancelar</button>
+      <button type="button" class="btn-danger" *ngIf="isEditing" (click)="deleteUser()">Eliminar</button>
+    </div>
+  </div>
 
   <!-- FORMULARIO EN DOS COLUMNAS -->
-  <form (ngSubmit)="saveChanges()">
+  <form id="userForm" (ngSubmit)="saveChanges()">
     <div class="grid-2">
       <div class="form-field">
-        <label>Nombre</label>
-        <input type="text" class="form-control" [(ngModel)]="user.first_name" name="first_name" [disabled]="!isEditing" />
+        <label for="user-first_name">Nombre</label>
+        <input id="user-first_name" type="text" class="form-control" [(ngModel)]="user.first_name" name="first_name" [disabled]="!isEditing" />
       </div>
 
       <div class="form-field">
-        <label>Apellido</label>
-        <input type="text" class="form-control" [(ngModel)]="user.last_name" name="last_name" [disabled]="!isEditing" />
+        <label for="user-last_name">Apellido</label>
+        <input id="user-last_name" type="text" class="form-control" [(ngModel)]="user.last_name" name="last_name" [disabled]="!isEditing" />
       </div>
 
       <div class="form-field">
-        <label>Email</label>
-        <input type="email" class="form-control" [(ngModel)]="user.email" name="email" [disabled]="!isEditing" />
+        <label for="user-email">Email</label>
+        <input id="user-email" type="email" class="form-control" [(ngModel)]="user.email" name="email" [disabled]="!isEditing" />
       </div>
 
       <div class="form-field">
-        <label>Rol</label>
-        <input type="text" class="form-control" [(ngModel)]="user.role" name="role" [disabled]="!isEditing" />
+        <label for="user-role">Rol</label>
+        <input id="user-role" type="text" class="form-control" [(ngModel)]="user.role" name="role" [disabled]="!isEditing" />
       </div>
 
       <div class="form-field">
-        <label>Institución</label>
-        <input type="text" class="form-control" [(ngModel)]="user.institution_name" name="institution" [disabled]="true" />
+        <label for="user-institution">Institución</label>
+        <input id="user-institution" type="text" class="form-control" [(ngModel)]="user.institution_name" name="institution" [disabled]="true" />
       </div>
 
       <div class="form-field">
-        <label>Registrado</label>
-        <input type="text" class="form-control" [value]="user.created_at | date: 'short'" disabled />
+        <label for="user-created_at">Registrado</label>
+        <input id="user-created_at" type="text" class="form-control" [value]="user.created_at | date: 'short'" disabled />
       </div>
     </div>
 
     <div class="form-field form-field--full">
-      <label>Biografía</label>
-      <textarea class="form-control" [(ngModel)]="user.bio" name="bio" [disabled]="!isEditing"></textarea>
+      <label for="user-bio">Biografía</label>
+      <textarea id="user-bio" class="form-control" [(ngModel)]="user.bio" name="bio" [disabled]="!isEditing"></textarea>
     </div>
 
-    <!-- BOTONES -->
-    <div class="form-actions">
-      <button type="button" class="btn-secondary" (click)="goBack()">Volver</button>
-      <button type="button" class="btn-secondary" *ngIf="!isEditing" (click)="toggleEdit()">Editar</button>
-      <button type="submit" class="btn-primary" *ngIf="isEditing">Guardar</button>
-      <button type="button" class="btn-danger" (click)="deleteUser()">Eliminar</button>
+    <!-- BOTONES (locales del formulario ya que los principales están en el header) -->
+    <div class="form-actions" style="display:none;">
+      <!-- leave hidden; actions are in header -->
     </div>
   </form>
 </div>

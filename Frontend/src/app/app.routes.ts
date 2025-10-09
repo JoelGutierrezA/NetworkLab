@@ -7,7 +7,6 @@ import { RoleGuard } from './guards/role.guard';
 import { HomeComponent } from './home/home.component';
 
 // Dashboard Components
-import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
 import { DashboardProfileComponent } from './components/dashboard/dashboard-profile/dashboard-profile.component';
 import { InstitutionComponent } from './components/dashboard/dashboard-profile/institution-detail/institution.component';
 import { UserComponent } from './components/dashboard/dashboard-profile/user-detail/user.component';
@@ -29,12 +28,7 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard]
   },
-  {
-    path: 'admin-dashboard',
-    component: AdminDashboardComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { expectedRole: 'admin' }
-  },
+  // admin-dashboard eliminado; usar dashboard-profile (tab Métricas)
   {
     path: 'dashboard-suppliers',
     component: DashboardSuppliersComponent,

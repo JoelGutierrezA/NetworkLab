@@ -90,10 +90,13 @@
 
 .form-group input {
   width: 100%;
-  padding: 1rem 3rem 1rem 1rem;
+  /* fixed height helps vertical centering of icons */
+  height: 48px;
+  padding: 0.8rem 3rem 0.8rem 1rem;
   border: 2px solid #e2e8f0;
   border-radius: 10px;
   font-size: 1rem;
+  line-height: 1.2;
   transition: all 0.3s ease;
 }
 
@@ -107,9 +110,55 @@
   position: absolute;
   right: 1rem;
   top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
+  /* nudge slightly downward to visually center emoji glyphs */
+  transform: translateY(-45%);
+  font-size: 1.1rem;
   color: #a0aec0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+}
+
+.input-icon svg {
+  width: 18px;
+  height: auto;
+  display: block;
+}
+
+/* Password wrapper: place toggle button inside the same input box */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  /* ensure space for the toggle button */
+  padding-right: 3rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #6b7280; /* slightly darker than input-icon */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+}
+
+.toggle-password:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.08);
 }
 
 .form-options {

@@ -28,7 +28,10 @@ export class AuthUtils {
     static verifyToken(token: string): any {
         try {
             return jwt.verify(token, JWT_SECRET);
-        } catch (error) {
+        } catch (error: unknown) {
+            // Log the original error for debugging / auditing purposes
+            console.error('Error verificando token JWT:', error);
+            // Re-throw a generic error for callers
             throw new Error('Token inválido');
         }
     }

@@ -85,7 +85,7 @@ export const getUserById = async (req: Request, res: Response) => {
         return res.status(404).json({ success: false, message: "Usuario no encontrado" });
     }
 
-    res.json(rows[0]);
+    res.json({ success: true, user: rows[0] });
     } catch (error) {
     console.error("❌ Error obteniendo usuario:", error);
     res.status(500).json({ success: false, message: "Error obteniendo usuario" });

@@ -80,10 +80,13 @@
 
 .register-form-group input {
   width: 100%;
-  padding: 1rem 3rem 1rem 1rem;
+  /* fixed height like login inputs */
+  height: 48px;
+  padding: 0.8rem 3rem 0.8rem 1rem;
   border: 2px solid #e2e8f0;
   border-radius: 10px;
   font-size: 1rem;
+  line-height: 1.2;
 }
 
 .register-form-group input:focus {
@@ -95,8 +98,20 @@
   position: absolute;
   right: 1rem;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-45%);
   color: #a0aec0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+}
+
+.register-input-icon svg {
+  width: 18px;
+  height: auto;
+  display: block;
 }
 
 .register-form-options {

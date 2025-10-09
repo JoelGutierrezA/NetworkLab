@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UserService } from '../../../services/user.service';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderDashboardComponent } from '../../shared/header-dashboard/header-dashboard.component';
@@ -52,6 +52,16 @@ export class DashboardProfileComponent implements OnInit {
 
   totalLaboratories: number = 0;
 
+  // Crear nueva institución (con admin opcional)
+  showCreateInstitutionForm = false;
+  newInstitution: any = {
+    name: '',
+    adminEmail: '',
+    adminPassword: '',
+    adminFirstName: '',
+    adminLastName: ''
+  };
+
   // Usuarios (solo admin)
   users: any[] = [];
   filteredUsers: any[] = [];
@@ -59,15 +69,21 @@ export class DashboardProfileComponent implements OnInit {
   userPage = 1;
   userPageSize = 5;
   userTotalPages = 1;
+  usersLastMonth = 0;
 
   constructor(
     private readonly userService: UserService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.loadLocalUser();
     this.loadInstitutions();
+    // If navigation requests a specific tab, open it
+    this.route.queryParams.subscribe((q: any) => {
+      if (q?.tab) this.setTab(q.tab as TabKey);
+    });
     if (this.role === 'admin') {
       this.loadUsers();
       this.loadMetrics();
@@ -218,6 +234,13 @@ export class DashboardProfileComponent implements OnInit {
       next: (res) => {
         this.users = res.usuarios || [];
         this.filteredUsers = [...this.users];
+        // calcular usuarios del último mes si hay created_at
+        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+        const now = Date.now();
+        this.usersLastMonth = this.users.filter((u: any) => {
+          const t = u?.created_at ? new Date(u.created_at).getTime() : 0;
+          return t && (now - t) <= THIRTY_DAYS;
+        }).length;
       },
       error: (err) => console.error('❌ Error cargando usuarios', err),
     });
@@ -278,5 +301,38 @@ export class DashboardProfileComponent implements OnInit {
   setTab(tab: TabKey): void {
     this.activeTab = tab;
     if (tab !== 'security') this.resetSecurityFeedback();
+  }
+
+  // Crear institución desde el dashboard (solo admin)
+  toggleCreateInstitutionForm(): void {
+    this.showCreateInstitutionForm = !this.showCreateInstitutionForm;
+    if (!this.showCreateInstitutionForm) {
+      this.newInstitution = { name: '', adminEmail: '', adminPassword: '', adminFirstName: '', adminLastName: '' };
+    }
+  }
+
+  createInstitution(): void {
+    // validación simple
+    if (!this.newInstitution.name || this.newInstitution.name.trim().length === 0) {
+      alert('El nombre de la institución es obligatorio');
+      return;
+    }
+
+    // Llamada al servicio
+    this.userService.createInstitution(this.newInstitution).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          alert('✅ Institución creada correctamente');
+          this.loadInstitutions();
+          this.toggleCreateInstitutionForm();
+        } else {
+          alert('Error: ' + (res.message || 'No se pudo crear la institución'));
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error creando institución', err);
+        alert(err?.error?.message || 'Error creando institución');
+      }
+    });
   }
 }

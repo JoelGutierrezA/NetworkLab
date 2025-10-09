@@ -74,35 +74,35 @@
     <form (ngSubmit)="saveProfile()">
       <div class="grid-2">
         <div class="form-field">
-          <label>Nombre</label>
-          <input type="text" class="form-control" [(ngModel)]="firstName" name="firstName" [disabled]="!isEditing" />
+          <label for="profileFirstName">Nombre</label>
+          <input id="profileFirstName" type="text" class="form-control" [(ngModel)]="firstName" name="firstName" [disabled]="!isEditing" />
         </div>
 
         <div class="form-field">
-          <label>Apellido</label>
-          <input type="text" class="form-control" [(ngModel)]="lastName" name="lastName" [disabled]="!isEditing" />
+          <label for="profileLastName">Apellido</label>
+          <input id="profileLastName" type="text" class="form-control" [(ngModel)]="lastName" name="lastName" [disabled]="!isEditing" />
         </div>
 
         <div class="form-field">
-          <label>Correo</label>
-          <input type="email" class="form-control" [(ngModel)]="email" name="email" [disabled]="!isEditing" />
+          <label for="profileEmail">Correo</label>
+          <input id="profileEmail" type="email" class="form-control" [(ngModel)]="email" name="email" [disabled]="!isEditing" />
         </div>
 
         <div class="form-field">
-          <label>Teléfono</label>
-          <input type="tel" class="form-control" [(ngModel)]="phone" name="phone" [disabled]="!isEditing" />
+          <label for="profilePhone">Teléfono</label>
+          <input id="profilePhone" type="tel" class="form-control" [(ngModel)]="phone" name="phone" [disabled]="!isEditing" />
         </div>
 
         <div class="form-field">
-          <label>Institución</label>
-          <select class="form-control" [(ngModel)]="selectedInstitution" name="institution" [disabled]="!isEditing">
+          <label for="profileInstitution">Institución</label>
+          <select id="profileInstitution" class="form-control" [(ngModel)]="selectedInstitution" name="institution" [disabled]="!isEditing">
             <option *ngFor="let inst of institutions" [value]="inst.id">{{ inst.name }}</option>
           </select>
         </div>
 
         <div class="form-field form-field--full">
-          <label>Biografía</label>
-          <textarea
+          <label for="profileBio">Biografía</label>
+          <textarea id="profileBio"
             class="form-control"
             rows="5"
             [(ngModel)]="bio"
@@ -129,8 +129,8 @@
     <form (ngSubmit)="changePassword()">
       <div class="grid-2">
         <div class="form-field form-field--full">
-          <label>Contraseña actual</label>
-          <input
+          <label for="currentPassword">Contraseña actual</label>
+          <input id="currentPassword"
             type="password"
             class="form-control"
             [(ngModel)]="oldPassword"
@@ -140,8 +140,8 @@
         </div>
 
         <div class="form-field">
-          <label>Nueva contraseña</label>
-          <input
+          <label for="newPassword">Nueva contraseña</label>
+          <input id="newPassword"
             type="password"
             class="form-control"
             [(ngModel)]="newPassword"
@@ -151,8 +151,8 @@
         </div>
 
         <div class="form-field">
-          <label>Confirmar nueva contraseña</label>
-          <input
+          <label for="confirmPassword">Confirmar nueva contraseña</label>
+          <input id="confirmPassword"
             type="password"
             class="form-control"
             [(ngModel)]="confirmPassword"
@@ -179,6 +179,47 @@
   <div class="profile-section-card" *ngIf="activeTab === 'institutions'">
     <div class="section-header">
       <h3 class="section-title">Gestión de Instituciones</h3>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <button class="btn-primary" (click)="toggleCreateInstitutionForm()">+ Nueva institución</button>
+    </div>
+
+    <div *ngIf="showCreateInstitutionForm" class="create-institution-form">
+      <h4>Crear institución</h4>
+      <form (ngSubmit)="createInstitution()">
+        <div class="grid-2">
+          <div class="form-field">
+            <label for="newInstitutionName">Nombre</label>
+            <input id="newInstitutionName" type="text" class="form-control" [(ngModel)]="newInstitution.name" name="newInstitutionName" required />
+          </div>
+
+          <div class="form-field">
+            <label for="newInstitutionAdminEmail">Admin Email (opcional)</label>
+            <input id="newInstitutionAdminEmail" type="email" class="form-control" [(ngModel)]="newInstitution.adminEmail" name="newInstitutionAdminEmail" />
+          </div>
+
+          <div class="form-field">
+            <label for="newInstitutionAdminPassword">Admin Password (opcional)</label>
+            <input id="newInstitutionAdminPassword" type="password" class="form-control" [(ngModel)]="newInstitution.adminPassword" name="newInstitutionAdminPassword" />
+          </div>
+
+          <div class="form-field">
+            <label for="newInstitutionAdminFirstName">Admin Nombre</label>
+            <input id="newInstitutionAdminFirstName" type="text" class="form-control" [(ngModel)]="newInstitution.adminFirstName" name="newInstitutionAdminFirstName" />
+          </div>
+
+          <div class="form-field">
+            <label for="newInstitutionAdminLastName">Admin Apellido</label>
+            <input id="newInstitutionAdminLastName" type="text" class="form-control" [(ngModel)]="newInstitution.adminLastName" name="newInstitutionAdminLastName" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="toggleCreateInstitutionForm()">Cancelar</button>
+          <button type="submit" class="btn-primary">Crear</button>
+        </div>
+      </form>
     </div>
 
     <div class="form-field form-field--full" style="margin-bottom: 15px;">
@@ -287,6 +328,10 @@
       <div class="metric-card">
         <h4>Total de laboratorios</h4>
         <p>{{ totalLaboratories }}</p>
+      </div>
+      <div class="metric-card">
+        <h4>Usuarios último mes</h4>
+        <p>{{ usersLastMonth }}</p>
       </div>
     </div>
 

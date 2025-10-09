@@ -346,3 +346,98 @@
         margin: 0 auto;
     }
 }
+
+/* Community layout styles */
+.community-page {
+    min-height: 100vh;
+    background: #f6f8fb;
+}
+
+.community-main {
+    padding: 80px 0 60px;
+}
+
+.main-column { grid-column: 2 / 3; }
+.sidebar { grid-column: 3 / 4; }
+
+.community-grid {
+    display: grid;
+    grid-template-columns: 1fr minmax(720px, 720px) 260px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.composer {
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e6eef8;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.composer h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+}
+
+.composer .form-field { margin-bottom: 10px; }
+.composer .form-control { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e3edf8; background: #ffffff; }
+.composer .small { max-width: 60%; display: inline-block; margin-right: 8px; }
+.composer .composer-actions { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+
+.composer-top { box-shadow: 0 8px 30px rgba(30,41,59,0.06); }
+.composer-row { display:flex; gap:12px; }
+.composer-avatar { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#4f46e5,#06b6d4); color:white; font-size:22px; }
+.composer-body form { width:100%; }
+.composer-body textarea { resize:vertical; min-height:84px; }
+
+.actions-right { display:flex; gap:8px; align-items:center; }
+.btn-secondary { background:#f1f5f9; border:1px solid #e2e8f0; color:#334155; padding:8px 12px; border-radius:8px; cursor:pointer; }
+.btn-secondary:hover { background:#e6eef8; }
+.btn-primary { background: linear-gradient(90deg,#4f46e5,#06b6d4); color:white; border:none; padding:8px 14px; border-radius:10px; cursor:pointer; box-shadow: 0 6px 20px rgba(79,70,229,0.18); }
+.btn-primary[disabled] { opacity:0.6; cursor:not-allowed; box-shadow:none; }
+
+.feed { min-width: 0; }
+.feed h2 { margin-top: 0; margin-bottom: 12px; font-size: 1.25rem; }
+.empty-feed { color:#718096; padding: 12px; background: #fff; border-radius: 8px; border: 1px dashed #e2e8f0; }
+
+.post-card {
+    background: white;
+    border: 1px solid #e6eef8;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+}
+
+.post-header { display:flex; gap:12px; align-items:center; }
+.avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#667eea,#764ba2); color:white; font-size:20px; }
+.post-meta strong { display:block; }
+.post-meta .post-time { color:#94a3b8; font-size:0.85rem; }
+
+.post-body h3 { margin:8px 0; }
+.post-tags { margin-top:8px; }
+.tag { display:inline-block; background:#eef2ff; color:#4c51bf; padding:6px 8px; border-radius:999px; margin-right:6px; font-size:0.85rem; }
+
+.post-actions { margin-top:10px; display:flex; gap:8px; }
+.btn-link { background:transparent; border:none; color:#4a5568; cursor:pointer; padding:6px 8px; border-radius:6px; }
+.btn-link:hover { background:#f1f5f9; }
+
+.sidebar .widget { background:white; border:1px solid #e6eef8; padding:12px; border-radius:10px; margin-bottom:12px; }
+.sidebar h4 { margin:0 0 8px 0; color:#0f172a; }
+.sidebar ul { list-style:none; padding:0; margin:0; }
+.sidebar li { padding:6px 4px; color:#334155; display:flex; justify-content:space-between; align-items:center; }
+.sidebar li .btn-link { padding:4px 6px; border-radius:6px; }
+
+/* Modal styles */
+.modal-backdrop { position:fixed; inset:0; background:rgba(2,6,23,0.5); display:flex; align-items:center; justify-content:center; z-index:2000; }
+.modal-card { background:white; padding:20px; border-radius:12px; width:min(720px, 95%); box-shadow:0 20px 60px rgba(2,6,23,0.4); position:relative; }
+.modal-close { position:absolute; top:12px; right:12px; background:transparent; border:none; font-size:18px; cursor:pointer; }
+.modal-card h3 { margin-top:0; }
+
+@media (max-width: 980px) {
+    .community-grid { grid-template-columns: 1fr; }
+    .composer .small { max-width: 100%; }
+}
+

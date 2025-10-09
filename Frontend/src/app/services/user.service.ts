@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
@@ -59,7 +59,13 @@ export class UserService {
   }
 
   updateInstitution(id: number, data: any): Observable<ApiResponse<null>> {
-    return this.http.put<ApiResponse<null>>(`${this.apiUrl}/institutions/${id}`, data);
+    const url = `${this.apiUrl}/institutions/${id}`;
+    const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.put<ApiResponse<null>>(url, data, { headers });
+    }
+    return this.http.put<ApiResponse<null>>(url, data);
   }
 
   deleteInstitution(id: number): Observable<ApiResponse<null>> {
@@ -67,6 +73,12 @@ export class UserService {
   }
 
   // LABORATORIOS
+  getAllLaboratories(): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(
+      `${this.apiUrl}/laboratories`
+    );
+  }
+
   getLaboratoriesByInstitution(institutionId: number): Observable<ApiResponse<any[]>> {
     return this.http.get<ApiResponse<any[]>>(
       `${this.apiUrl}/institutions/${institutionId}/laboratories`
@@ -74,9 +86,36 @@ export class UserService {
   }
 
   createLaboratory(institutionId: number, labData: any): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(
-      `${this.apiUrl}/institutions/${institutionId}/laboratories`,
-      labData
-    );
+    const url = `${this.apiUrl}/institutions/${institutionId}/laboratories`;
+
+    // Fallback: si por alguna razón el interceptor no adjunta la cabecera,
+    // intentar leer el token directamente desde localStorage y adjuntarlo aquí.
+    const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.post<ApiResponse<null>>(url, labData, { headers });
+    }
+
+    return this.http.post<ApiResponse<null>>(url, labData);
+  }
+
+  updateLaboratory(laboratoryId: number, labData: any): Observable<ApiResponse<null>> {
+    const url = `${this.apiUrl}/laboratories/${laboratoryId}`;
+    const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.put<ApiResponse<null>>(url, labData, { headers });
+    }
+    return this.http.put<ApiResponse<null>>(url, labData);
+  }
+
+  deleteLaboratory(laboratoryId: number): Observable<ApiResponse<null>> {
+    const url = `${this.apiUrl}/laboratories/${laboratoryId}`;
+    const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.delete<ApiResponse<null>>(url, { headers });
+    }
+    return this.http.delete<ApiResponse<null>>(url);
   }
 }

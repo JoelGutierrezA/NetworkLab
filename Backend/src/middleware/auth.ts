@@ -85,7 +85,7 @@ export const requireSelfOrAdmin = (req: Request, res: Response, next: NextFuncti
     }
 
     const paramId = String(req.params.id);
-    const sameUser = String(user.id) === paramId; // 👈 aquí usamos id
+    const sameUser = String(user.id) === paramId;
     const isAdmin = user.role === 'admin';
 
     if (!sameUser && !isAdmin) {

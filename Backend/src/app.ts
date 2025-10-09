@@ -7,6 +7,7 @@ import { testConnection } from './config/database';
 import authRoutes from './routes/authRoutes';
 import equipmentRoutes from './routes/equipmentRoutes';
 import institutionRoutes from './routes/institutionRoutes';
+import laboratoriesRoutes from './routes/laboratoriesRoutes';
 import userRoutes from './routes/userRoutes';
 dotenv.config();
 
@@ -16,24 +17,21 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/api', authRoutes);
-app.use('/api', userRoutes);
-app.use('/api', equipmentRoutes);
-app.use('/api', institutionRoutes);
 
-// Rutas
-app.use('/api', userRoutes);
+// Montar routers en rutas explícitas
+app.use('/api', authRoutes);
+  app.use('/api', userRoutes);
+  app.use('/api', institutionRoutes);
+  app.use('/api', laboratoriesRoutes);
+  app.use('/api', equipmentRoutes);
+
+// Rutas registradas (resumen)
 console.log('🔄 Rutas cargadas:');
-console.log('- POST /api/users');
-console.log('- GET /api/users/:id');
-console.log('- GET /api/users');
-console.log('🔄 Rutas cargadas:');
-console.log('- POST /api/equipment');
-console.log('- GET /api/equipment');
-console.log('- GET /api/equipment/:id');
-console.log('- PUT /api/equipment/:id');
-console.log('- DELETE /api/equipment/:id');
-console.log('- GET /api/laboratories/:labId/equipment');
+console.log('- Auth: POST /api/auth/login');
+console.log('- Users: GET /api/users | POST /api/users | GET /api/users/:id');
+console.log('- Equipment: CRUD en /api/equipment');
+console.log('- Institutions: rutas bajo /api/institutions');
+console.log('- Laboratories: rutas bajo /api/laboratories y /api/institutions/:id/laboratories');
 
 // Rutas básicas
 app.get('/api/health', (req: any, res: any) => {
