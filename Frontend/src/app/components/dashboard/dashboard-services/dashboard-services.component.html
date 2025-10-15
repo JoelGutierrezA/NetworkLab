@@ -1,0 +1,217 @@
+<!-- HEADER del dashboard -->
+<app-header-dashboard></app-header-dashboard>
+
+<div class="services-wrapper">
+  <!-- Sidebar de filtros -->
+  <aside class="filters">
+    <!-- Botón Agregar Servicio (encima del título) -->
+    <div class="filters-top">
+      <button class="btn-add add-service-btn" *ngIf="isLabManager" (click)="toggleAddForm()">
+        {{ showAddForm ? 'Cancelar' : '+ Agregar servicio' }}
+      </button>
+    </div>
+    <h3>🔍 Filtros</h3>
+
+    <input type="text" placeholder="Buscar servicio..." [(ngModel)]="searchTerm" class="filter-input" />
+
+  <label for="cat-filter">Categoría</label>
+  <select id="cat-filter" [(ngModel)]="selectedCategory">
+      <option value="">Todas</option>
+      <option value="laboratorio">Laboratorio</option>
+      <option value="clínico">Clínico</option>
+      <option value="alimentos">Alimentos</option>
+    </select>
+
+  <label for="lab-filter">Laboratorio</label>
+  <select id="lab-filter" [(ngModel)]="selectedLaboratory">
+      <option value="">Todos</option>
+      <option *ngFor="let lab of laboratories" [value]="lab.id">{{ lab.name }}</option>
+    </select>
+
+    <button class="btn-apply" (click)="applyFilters()">Aplicar</button>
+  </aside>
+
+  <!-- Columna central: servicios -->
+  <main class="services-list">
+    <div class="service-card" *ngFor="let service of filteredServices">
+      <div class="card-header">
+        <h4>{{ service.name }}</h4>
+        <button class="btn-secondary" (click)="openEdit(service)">Editar</button>
+      </div>
+
+      <p class="service-desc">{{ service.description }}</p>
+
+      <div class="service-meta">
+        <div class="meta-item"><span class="label">Modelo:</span> <span class="value">{{ service.model || '-' }}</span></div>
+        <div class="meta-item"><span class="label">Fabricante:</span> <span class="value">{{ service.manufacturer || '-' }}</span></div>
+        <div class="meta-item"><span class="label">Estado:</span> <span class="value">{{ service.status || '-' }}</span></div>
+        <div class="meta-item"><span class="label">Requiere entrenamiento:</span> <span class="value">{{ service.requires_training ? 'Sí' : 'No' }}</span></div>
+        <div class="meta-item"><span class="label">Laboratorio:</span> <span class="value">{{ service.laboratory_name || getLabNameById(service.laboratory_id) || service.provider || '-' }}</span></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal/Overlay para agregar servicio -->
+<div class="modal-backdrop" *ngIf="showAddForm" (click)="toggleAddForm()" (keydown.escape)="toggleAddForm()">
+  <dialog class="modal" open (click)="$event.stopPropagation()" (keydown.escape)="toggleAddForm()">
+    <div class="modal-header">
+      <h3>Agregar nuevo servicio</h3>
+      <button class="icon-btn" (click)="toggleAddForm()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label for="svc-name">Nombre</label>
+          <input id="svc-name" [(ngModel)]="newService.name" />
+        </div>
+
+        <div class="field">
+          <label for="svc-model">Modelo</label>
+          <input id="svc-model" [(ngModel)]="newService.model" />
+        </div>
+
+        <div class="field field-span-2">
+          <label for="svc-desc">Descripción</label>
+          <textarea id="svc-desc" [(ngModel)]="newService.description"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="svc-manufacturer">Fabricante</label>
+          <input id="svc-manufacturer" [(ngModel)]="newService.manufacturer" />
+        </div>
+
+        <div class="field">
+          <fieldset class="seg-fieldset">
+            <legend class="seg-legend">¿Requiere entrenamiento?</legend>
+            <div class="segmented" role="radiogroup">
+              <label class="seg-pill">
+                <input type="radio" name="reqTraining" [value]="true" [(ngModel)]="newService.requires_training" />
+                <span>Sí</span>
+              </label>
+              <label class="seg-pill">
+                <input type="radio" name="reqTraining" [value]="false" [(ngModel)]="newService.requires_training" />
+                <span>No</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="field">
+          <label for="svc-status">Estado</label>
+          <select id="svc-status" [(ngModel)]="newService.status">
+            <option value="available">Disponible</option>
+            <option value="in_use">En uso</option>
+            <option value="maintenance">Mantenimiento</option>
+            <option value="out_of_service">Fuera de servicio</option>
+          </select>
+        </div>
+
+        <div class="field field-span-2">
+          <label for="lab-search">Laboratorio</label>
+          <div class="lab-dropdown">
+            <div class="lab-input-row">
+              <input id="lab-search" type="text" [(ngModel)]="labSearchTerm" name="labSearchTerm" placeholder="Buscar laboratorio..." (focus)="showLabList=true" (input)="showLabList=true" autocomplete="off" />
+              <button type="button" class="btn-secondary" (click)="showLabList=!showLabList">Ver todos</button>
+            </div>
+            <ul *ngIf="showLabList" class="lab-list">
+              <li *ngFor="let lab of filteredLaboratories" [class.active]="lab.id===newService.laboratory_id">
+                <button type="button" class="lab-item" (click)="selectLab(lab)">{{ lab.name }}</button>
+              </li>
+              <li *ngIf="filteredLaboratories.length===0" class="empty">No hay laboratorios</li>
+            </ul>
+          </div>
+          <input type="hidden" [(ngModel)]="newService.laboratory_id" name="laboratory_id" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary modal-btn" (click)="toggleAddForm()">Cancelar</button>
+      <button class="btn-primary modal-btn" (click)="submitNewService()">Crear servicio</button>
+    </div>
+  </dialog>
+  </div>
+
+<!-- Modal/Overlay para editar servicio -->
+<div class="modal-backdrop" *ngIf="showEditForm" (click)="closeEdit()" (keydown.escape)="closeEdit()">
+  <dialog class="modal" open (click)="$event.stopPropagation()" (keydown.escape)="closeEdit()">
+    <div class="modal-header">
+      <h3>Editar servicio</h3>
+      <button class="icon-btn" (click)="closeEdit()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body" *ngIf="editService">
+      <div class="form-grid">
+        <div class="field">
+          <label for="edit-svc-name">Nombre</label>
+          <input id="edit-svc-name" [(ngModel)]="editService.name" />
+        </div>
+
+        <div class="field">
+          <label for="edit-svc-model">Modelo</label>
+          <input id="edit-svc-model" [(ngModel)]="editService.model" />
+        </div>
+
+        <div class="field field-span-2">
+          <label for="edit-svc-desc">Descripción</label>
+          <textarea id="edit-svc-desc" [(ngModel)]="editService.description"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="edit-svc-manufacturer">Fabricante</label>
+          <input id="edit-svc-manufacturer" [(ngModel)]="editService.manufacturer" />
+        </div>
+
+        <div class="field">
+          <fieldset class="seg-fieldset">
+            <legend class="seg-legend">¿Requiere entrenamiento?</legend>
+            <div class="segmented" role="radiogroup">
+              <label class="seg-pill">
+                <input type="radio" name="editReqTraining" [value]="true" [(ngModel)]="editService.requires_training" />
+                <span>Sí</span>
+              </label>
+              <label class="seg-pill">
+                <input type="radio" name="editReqTraining" [value]="false" [(ngModel)]="editService.requires_training" />
+                <span>No</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="field">
+          <label for="edit-svc-status">Estado</label>
+          <select id="edit-svc-status" [(ngModel)]="editService.status">
+            <option value="available">Disponible</option>
+            <option value="in_use">En uso</option>
+            <option value="maintenance">Mantenimiento</option>
+            <option value="out_of_service">Fuera de servicio</option>
+          </select>
+        </div>
+
+        <div class="field field-span-2">
+          <label for="edit-lab-search">Laboratorio</label>
+          <div class="lab-dropdown">
+            <div class="lab-input-row">
+              <input id="edit-lab-search" type="text" [(ngModel)]="labSearchTerm" name="editLabSearch" placeholder="Buscar laboratorio..." (focus)="showLabList=true" (input)="showLabList=true" autocomplete="off" />
+              <button type="button" class="btn-secondary" (click)="showLabList=!showLabList">Ver todos</button>
+            </div>
+            <ul *ngIf="showLabList" class="lab-list">
+              <li *ngFor="let lab of filteredLaboratories" [class.active]="lab.id===editService.laboratory_id">
+                <button type="button" class="lab-item" (click)="editService.laboratory_id = lab.id; labSearchTerm = lab.name; showLabList=false">{{ lab.name }}</button>
+              </li>
+              <li *ngIf="filteredLaboratories.length===0" class="empty">No hay laboratorios</li>
+            </ul>
+          </div>
+          <input type="hidden" [(ngModel)]="editService.laboratory_id" name="edit_laboratory_id" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary modal-btn" (click)="closeEdit()">Cancelar</button>
+      <button class="btn-danger modal-btn" (click)="confirmDelete()">Eliminar</button>
+      <button class="btn-primary modal-btn" (click)="saveEdit()">Guardar</button>
+    </div>
+  </dialog>
+</div>
+
+<!-- FOOTER -->
+<app-footer></app-footer>

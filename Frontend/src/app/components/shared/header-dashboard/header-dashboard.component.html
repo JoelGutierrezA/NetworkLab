@@ -1,0 +1,31 @@
+<header #headerEl class="header">
+  <nav class="nav container">
+    <a routerLink="/dashboard" class="logo" aria-label="Ir al inicio">
+      <img src="assets/images/networklab-logo.png" alt="NetworkLab" class="logo-img" onerror="this.style.display='none'" />
+      <span class="logo-fallback">Net</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a routerLink="/dashboard" class="nav-link">Inicio</a></li>
+      <li><a routerLink="/dashboard-services" class="nav-link">Servicios</a></li>
+      <li><a routerLink="/dashboard-suppliers" class="nav-link">Marketplace</a></li>
+      <li><a routerLink="/dashboard-profile" class="nav-link">Perfil</a></li>
+    </ul>
+
+    <!-- Menú de usuario -->
+    <div class="user-container">
+      <button class="user-menu" (click)="toggleDropdown()">
+        <span class="user-avatar">👤</span>
+        <span class="user-name">{{ userName }}</span>
+      </button>
+
+      <!-- Dropdown -->
+      <div class="dropdown-menu" *ngIf="isDropdownOpen">
+        <a routerLink="/dashboard-profile" class="dropdown-item">Mi Perfil</a>
+        <a routerLink="/settings" class="dropdown-item">Configuración</a>
+        <div class="dropdown-divider"></div>
+        <a (click)="logout()" class="dropdown-item logout-btn">Cerrar Sesión</a>
+      </div>
+    </div>
+  </nav>
+</header>

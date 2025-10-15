@@ -1,0 +1,46 @@
+<app-header-dashboard></app-header-dashboard>
+
+<div class="marketplace-page">
+  <div class="marketplace-wrapper">
+    <aside class="filters">
+      <h3>🔎 Filtros</h3>
+      <div style="margin-bottom:12px;">
+        <input placeholder="Buscar por producto o proveedor..." class="filter-input" [(ngModel)]="searchTerm" (input)="filterSuppliers()" />
+      </div>
+      <label>Marca</label>
+      <select class="filter-select" [(ngModel)]="selectedBrand" (change)="filterSuppliers()">
+        <option value="">Todas las marcas</option>
+        <option *ngFor="let brand of brands" [value]="brand">{{ brand }}</option>
+      </select>
+      <label style="margin-top:10px;">País</label>
+      <select class="filter-select" [(ngModel)]="selectedCountry" (change)="filterSuppliers()">
+        <option value="">Todos los países</option>
+        <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+      </select>
+      <button class="btn-apply" style="margin-top:14px;">Aplicar</button>
+    </aside>
+
+    <main class="marketplace-content">
+      <div class="suppliers-grid">
+        <div class="supplier-card" *ngFor="let s of filteredSuppliers">
+          <div class="card-header" aria-hidden="true">
+            <div class="card-header-inner">{{ s.name }}</div>
+          </div>
+          <div class="card-body">
+            <h3>{{ s.product }}</h3>
+            <p class="brand">{{ s.brand }}</p>
+            <p class="supplier-name">{{ s.name }}</p>
+            <p class="country">{{ s.country }}</p>
+            <p class="description">{{ s.description }}</p>
+            <button class="btn-primary">Ver detalles</button>
+          </div>
+        </div>
+        <div *ngIf="filteredSuppliers.length === 0" class="no-results">
+          <p>No se encontraron resultados.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<app-footer></app-footer>

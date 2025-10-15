@@ -1,0 +1,187 @@
+/* Page background that covers the full viewport */
+.marketplace-page {
+  background: linear-gradient(180deg, #6f63e6 0%, #7b4bb3 100%);
+  min-height: 100vh;
+  padding-top: 10px;
+}
+
+/* Inner wrapper - centers content and places aside + main */
+.marketplace-wrapper {
+  display: flex;
+  gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: flex-start;
+  padding: 48px 20px 64px;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+
+/* Filters column - fixed width to match Services page */
+.filters {
+  flex: 0 0 260px; /* same width used in services */
+  background: #ffffff; /* white background for filters */
+  padding: 18px;
+  border-radius: 12px;
+  color: #1f2937; /* dark text */
+  box-shadow: 0 6px 20px rgba(30, 30, 60, 0.06);
+  align-self: flex-start;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+
+.filters h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  margin-bottom: 8px;
+  background: #fff;
+  color: #111827;
+}
+
+.btn-apply {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(180deg,#6a5bd8,#8b4fd3);
+  color: #fff;
+}
+
+.marketplace-content {
+  flex: 1 1 auto;
+}
+
+.suppliers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.supplier-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(30, 30, 60, 0.08);
+}
+
+.card-header {
+  width: 100%;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(102,126,234,0.95) 0%, rgba(118,75,162,0.95) 100%);
+  color: #fff;
+}
+
+.card-header-inner {
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.card-body {
+  padding: 18px;
+}
+
+.card-body h3 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.brand,
+.supplier-name,
+.country {
+  color: #666;
+  margin: 4px 0;
+}
+
+.description {
+  margin-top: 10px;
+  color: #777;
+  line-height: 1.4;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #6a5bd8, #8b4fd3);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(96, 64, 160, 0.12);
+}
+
+/* Mobile: stack filters on top for narrow viewports */
+@media (max-width: 900px) {
+  .marketplace-wrapper {
+    flex-direction: column;
+    padding: 24px 12px 48px;
+  }
+
+  .filters {
+    width: 100%;
+    max-height: none;
+    order: 0;
+  }
+
+  .marketplace-content {
+    width: 100%;
+  }
+}
+
+.card-body .brand {
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.card-body .supplier-name {
+  font-weight: 700;
+  color: #334155;
+}
+
+.card-body .country {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.card-body .description {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  margin-top: 20px;
+}

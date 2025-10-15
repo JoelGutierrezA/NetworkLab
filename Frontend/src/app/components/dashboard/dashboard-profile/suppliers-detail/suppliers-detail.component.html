@@ -1,0 +1,158 @@
+<div class="profile-wrapper">
+  <div class="profile-hero">
+    <div class="profile-identity">
+      <div class="section-header">
+        <h3 class="section-title">Gestión de Proveedores</h3>
+      </div>
+    </div>
+
+    <div>
+      <div class="header-controls">
+        <div class="left-controls">
+          <div class="count-row" *ngIf="!loading">{{ suppliers.length }} proveedores registrados</div>
+        </div>
+        <div class="right-controls">
+          <div class="search-row">
+            <div class="search-input">
+              <input type="text" class="form-control" placeholder="Buscar proveedor..." [(ngModel)]="search" (input)="filterSuppliers()" aria-label="Buscar proveedor" />
+              <span class="search-icon">🔍</span>
+            </div>
+          </div>
+          <button class="btn-primary btn-new" (click)="openCreate()">+ Nuevo proveedor</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-section-card">
+
+  <div *ngIf="loading" class="loading-row">
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="muted">Cargando proveedores...</div>
+  </div>
+
+  <div *ngIf="!loading && suppliers.length === 0 && !errorMsg" class="muted">No hay proveedores.</div>
+
+  <div *ngIf="errorMsg" class="error-banner">
+    <div class="error-text">{{ errorMsg }}</div>
+    <div class="error-actions">
+      <button class="btn-primary" (click)="retry()">Reintentar</button>
+    </div>
+  </div>
+
+  <!-- Confirmación de borrado in-UI -->
+  <div *ngIf="pendingDelete" class="confirm-banner">
+    <div>¿Eliminar proveedor "{{ pendingDelete.name }}"? Esta acción no se puede deshacer.</div>
+    <div class="confirm-actions">
+      <button class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+      <button class="btn-primary" (click)="proceedDelete()">Eliminar</button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && suppliers.length > 0">
+    <div class="table-wrapper">
+      <table class="suppliers-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>País</th>
+            <th>Ciudad</th>
+            <th>Sitio web</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of filteredSuppliers">
+            <td>{{ s.name }}</td>
+            <td>{{ s.country || '—' }}</td>
+            <td>{{ s.city || '—' }}</td>
+            <td>
+              <a *ngIf="s.website" href="{{ s.website }}" target="_blank" rel="noopener">Ver</a>
+              <span *ngIf="!s.website">—</span>
+            </td>
+            <td>
+              <button class="btn-icon" title="Editar" (click)="openEdit(s)">✏️</button>
+              <button class="btn-icon danger" title="Eliminar" (click)="confirmDelete(s)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="filteredSuppliers.length === 0 && suppliers.length > 0" class="no-results muted">No hay proveedores que coincidan con la búsqueda.</div>
+    </div>
+  </div>
+
+  <!-- Form modal simple -->
+  <div class="modal" *ngIf="showForm">
+    <div class="modal-dialog">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">{{ isEditing ? 'Editar proveedor' : 'Crear proveedor' }}</h3>
+        </div>
+
+        <form class="modal-body" (ngSubmit)="save()">
+          <div *ngIf="modalError" class="alert error">{{ modalError }}</div>
+          <div class="grid-2">
+            <div class="form-field">
+              <label for="supplier-name">Nombre</label>
+              <input id="supplier-name" class="form-control" [(ngModel)]="formModel.name" name="supplierName" required />
+            </div>
+
+            <div class="form-field">
+              <label for="supplier-country">País</label>
+              <input id="supplier-country" class="form-control" [(ngModel)]="formModel.country" name="supplierCountry" />
+            </div>
+
+            <div class="form-field">
+              <label for="supplier-city">Ciudad</label>
+              <input id="supplier-city" class="form-control" [(ngModel)]="formModel.city" name="supplierCity" />
+            </div>
+
+            <div class="form-field">
+              <label for="supplier-website">Sitio web</label>
+              <input id="supplier-website" class="form-control" [(ngModel)]="formModel.website" name="supplierWebsite" />
+            </div>
+
+            <div class="form-field full-width">
+              <label for="supplier-desc">Descripción</label>
+              <textarea id="supplier-desc" class="form-control" rows="4" [(ngModel)]="formModel.description" name="supplierDesc"></textarea>
+            </div>
+
+            <!-- Admin account for supplier (only on create) -->
+            <div *ngIf="!isEditing" class="form-field full-width admin-section">
+              <h4>Cuenta administradora del proveedor</h4>
+              <div class="grid-2">
+                <div class="form-field">
+                    <label for="admin-email">Correo electrónico <span class="required">*</span></label>
+                    <input id="admin-email" class="form-control" [(ngModel)]="formModel.adminEmail" name="adminEmail" required />
+                </div>
+                <div class="form-field">
+                    <label for="admin-password">Contraseña <span class="required">*</span></label>
+                    <input id="admin-password" type="password" class="form-control" [(ngModel)]="formModel.adminPassword" name="adminPassword" required />
+                </div>
+                <div class="form-field">
+                    <label for="admin-first">Nombre</label>
+                    <input id="admin-first" class="form-control" [(ngModel)]="formModel.adminFirstName" name="adminFirstName" />
+                </div>
+                <div class="form-field">
+                    <label for="admin-last">Apellido</label>
+                    <input id="admin-last" class="form-control" [(ngModel)]="formModel.adminLastName" name="adminLastName" />
+                </div>
+                  <div class="form-field">
+                    <label for="admin-username">Usuario (username) <span class="required">*</span></label>
+                    <input id="admin-username" class="form-control" [(ngModel)]="formModel.adminUsername" name="adminUsername" required />
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn-primary modal-btn">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+            <button type="button" class="btn-secondary modal-btn" (click)="closeForm()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
