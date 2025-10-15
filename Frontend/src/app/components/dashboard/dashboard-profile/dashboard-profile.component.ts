@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { SupplierService } from '../../../services/supplier.service';
 import { UserService } from '../../../services/user.service';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderDashboardComponent } from '../../shared/header-dashboard/header-dashboard.component';
 
 // Tipado para Tabs
-type TabKey = 'info' | 'security' | 'institutions' | 'users' | 'activity' | 'notifications' | 'metrics';
+type TabKey = 'info' | 'security' | 'institutions' | 'suppliers' | 'users' | 'activity' | 'notifications' | 'metrics';
 
 @Component({
   selector: 'app-dashboard-profile',
@@ -71,11 +72,43 @@ export class DashboardProfileComponent implements OnInit {
   userTotalPages = 1;
   usersLastMonth = 0;
 
+  // Proveedores (admin)
+  suppliers: any[] = [];
+  filteredSuppliers: any[] = [];
+  supplierSearch = '';
+  supplierPage = 1;
+  supplierPageSize = 5;
+  supplierTotalPages = 1;
+
+  // Nuevo proveedor (modal)
+  showNewSupplierForm = false;
+  newSupplier: any = {
+    name: '',
+    country: '',
+    city: '',
+    website: '',
+    description: '',
+    // admin account fields (optional when creating a supplier)
+    adminEmail: '',
+    adminFirstName: '',
+    adminLastName: '',
+    adminPassword: ''
+  };
+
+  // Edit supplier state
+  isEditingSupplier = false;
+  editingSupplierId: number | null = null;
+
   constructor(
-    private readonly userService: UserService,
-    private readonly router: Router,
+  private readonly userService: UserService,
+  public readonly router: Router,
     private readonly route: ActivatedRoute
+    ,
+    private readonly supplierService: SupplierService
   ) {}
+
+  // Inyectar SupplierService
+
 
   ngOnInit(): void {
     this.loadLocalUser();
@@ -87,7 +120,176 @@ export class DashboardProfileComponent implements OnInit {
     if (this.role === 'admin') {
       this.loadUsers();
       this.loadMetrics();
+      this.loadSuppliers();
   }
+  }
+
+  /* Proveedores */
+  loadSuppliers(): void {
+    this.supplierService.list().subscribe({
+      next: (res: any) => {
+        this.suppliers = res?.data || [];
+        this.filteredSuppliers = [...this.suppliers];
+      },
+      error: (err) => console.error('Error cargando proveedores', err)
+    });
+  }
+
+  filterSuppliers(): void {
+    const q = (this.supplierSearch || '').trim().toLowerCase();
+    if (!q) {
+      this.filteredSuppliers = [...this.suppliers];
+      return;
+    }
+    this.filteredSuppliers = this.suppliers.filter((s: any) => {
+      return (s.name || '').toLowerCase().includes(q) || (s.country || '').toLowerCase().includes(q) || (s.city || '').toLowerCase().includes(q) || (s.description || '').toLowerCase().includes(q);
+    });
+  }
+
+  getPagedSuppliers(): any[] {
+    this.supplierTotalPages = Math.ceil(this.filteredSuppliers.length / this.supplierPageSize) || 1;
+    const start = (this.supplierPage - 1) * this.supplierPageSize;
+    return this.filteredSuppliers.slice(start, start + this.supplierPageSize);
+  }
+
+  nextSupplierPage(): void {
+    if (this.supplierPage < this.supplierTotalPages) this.supplierPage++;
+  }
+
+  prevSupplierPage(): void {
+    if (this.supplierPage > 1) this.supplierPage--;
+  }
+
+  viewSupplier(id: number): void {
+    this.router.navigate(['/dashboard-profile/supplier', id]);
+  }
+
+  openNewSupplier(): void {
+    this.isEditingSupplier = false;
+    this.editingSupplierId = null;
+    this.newSupplier = { name: '', country: '', city: '', website: '', description: '', adminEmail: '', adminUsername: '', adminPassword: '' };
+    this.showNewSupplierForm = true;
+  }
+
+  closeNewSupplier(): void {
+    this.showNewSupplierForm = false;
+    this.newSupplier = { name: '', country: '', city: '', website: '', description: '', adminEmail: '', adminUsername: '', adminPassword: '' };
+  }
+
+  createSupplier(): void {
+    // Prevent calling admin-only endpoint if current user isn't admin
+    const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!currentUser || currentUser.role !== 'admin') {
+      alert('Necesitas permisos de administrador para crear proveedores con cuenta admin. Inicia sesión como admin.');
+      console.debug('Intento de crear proveedor con admin sin permisos. user=', currentUser, 'token=', localStorage.getItem('token'));
+      return;
+    }
+    const payload = {
+      name: this.newSupplier.name,
+      country: this.newSupplier.country,
+      city: this.newSupplier.city,
+      website: this.newSupplier.website,
+      description: this.newSupplier.description
+    };
+    if (!payload.name || payload.name.trim() === '') {
+      alert('El nombre del proveedor es obligatorio');
+      return;
+    }
+    // If admin credentials were provided, require all three (email, username, password)
+    const adminProvided = !!(this.newSupplier.adminEmail || this.newSupplier.adminFirstName || this.newSupplier.adminLastName || this.newSupplier.adminPassword);
+    if (adminProvided) {
+      const adminEmail = (this.newSupplier.adminEmail || '').trim();
+      const adminFirstName = (this.newSupplier.adminFirstName || '').trim();
+      const adminLastName = (this.newSupplier.adminLastName || '').trim();
+      const adminPassword = (this.newSupplier.adminPassword || '').trim();
+      if (!adminEmail || !adminFirstName || !adminLastName || !adminPassword) {
+        alert('Al crear un proveedor con administrador, completa correo, nombre, apellido y contraseña.');
+        return;
+      }
+      const provider = payload;
+      const admin = { email: adminEmail, first_name: adminFirstName, last_name: adminLastName, password: adminPassword };
+      this.supplierService.createWithAdmin(provider, admin).subscribe({
+        next: (res: any) => {
+          if (res?.success) {
+            this.loadSuppliers();
+            this.closeNewSupplier();
+          } else {
+            alert(res?.message || 'No se pudo crear el proveedor con administrador');
+          }
+        },
+        error: (err) => {
+          console.error('Error creando proveedor con admin', err);
+          alert(err?.error?.message || 'Error creando proveedor con administrador. Revisa la consola.');
+        }
+      });
+      return;
+    }
+
+    this.supplierService.create(payload).subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          this.loadSuppliers();
+          this.closeNewSupplier();
+        } else {
+          alert(res?.message || 'No se pudo crear el proveedor');
+        }
+      },
+      error: (err) => {
+        console.error('Error creando proveedor', err);
+        alert('Error creando proveedor. Revisa la consola.');
+      }
+    });
+  }
+
+  openEditSupplier(s: any): void {
+    this.isEditingSupplier = true;
+    this.editingSupplierId = s.id || null;
+    this.newSupplier = { name: s.name || '', country: s.country || '', city: s.city || '', website: s.website || '', description: s.description || '' };
+    this.showNewSupplierForm = true;
+  }
+
+  updateSupplier(): void {
+    if (!this.editingSupplierId) return;
+    const payload = {
+      name: this.newSupplier.name,
+      country: this.newSupplier.country,
+      city: this.newSupplier.city,
+      website: this.newSupplier.website,
+      description: this.newSupplier.description
+    };
+    this.supplierService.update(this.editingSupplierId, payload).subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          this.loadSuppliers();
+          this.closeNewSupplier();
+        } else {
+          alert(res?.message || 'No se pudo actualizar el proveedor');
+        }
+      },
+      error: (err) => {
+        console.error('Error actualizando proveedor', err);
+        alert('Error actualizando proveedor. Revisa la consola.');
+      }
+    });
+  }
+
+  deleteSupplier(id?: number): void {
+    if (!id) return;
+    const ok = confirm('¿Eliminar proveedor? Esta acción no se puede deshacer.');
+    if (!ok) return;
+    this.supplierService.delete(id).subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          this.loadSuppliers();
+        } else {
+          alert(res?.message || 'No se pudo eliminar el proveedor');
+        }
+      },
+      error: (err) => {
+        console.error('Error eliminando proveedor', err);
+        alert('Error eliminando proveedor. Revisa la consola.');
+      }
+    });
   }
 
   /* Perfil de Usuario */
@@ -233,6 +435,12 @@ export class DashboardProfileComponent implements OnInit {
     this.userService.getUsuarios(1, 9999).subscribe({
       next: (res) => {
         this.users = res.usuarios || [];
+        // Ordenar por created_at desc (más nuevos primero)
+        this.users.sort((a: any, b: any) => {
+          const ta = a?.created_at ? new Date(a.created_at).getTime() : 0;
+          const tb = b?.created_at ? new Date(b.created_at).getTime() : 0;
+          return tb - ta;
+        });
         this.filteredUsers = [...this.users];
         // calcular usuarios del último mes si hay created_at
         const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -272,6 +480,33 @@ export class DashboardProfileComponent implements OnInit {
 
   viewUser(id: number): void {
     this.router.navigate(['/dashboard-profile/user', id]);
+  }
+
+  deleteUser(id?: number): void {
+    if (!id) return;
+    // Verificar permisos en frontend para evitar llamadas que sabemos fallarán
+    const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!currentUser || currentUser.role !== 'admin') {
+      alert('No tienes permisos para eliminar usuarios. Inicia sesión como administrador.');
+      console.debug('Intento de eliminación sin permisos', { currentUser, token: localStorage.getItem('token') });
+      return;
+    }
+    const ok = confirm('¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.');
+    if (!ok) return;
+    this.userService.deleteUser(id).subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          // recargar lista de usuarios
+          this.loadUsers();
+        } else {
+          alert(res?.message || 'No se pudo eliminar el usuario');
+        }
+      },
+      error: (err) => {
+        console.error('Error eliminando usuario', err);
+        alert(err?.error?.message || 'Error eliminando usuario. Revisa la consola.');
+      }
+    });
   }
 
   loadMetrics(): void {

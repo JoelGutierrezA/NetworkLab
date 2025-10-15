@@ -15,20 +15,7 @@
       </div>
     </div>
 
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-number">3</div>
-        <div class="stat-label">Proyectos</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">8</div>
-        <div class="stat-label">Colaboraciones</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">126</div>
-        <div class="stat-label">Días activo</div>
-      </div>
-    </div>
+    <!-- stats-row removed as requested -->
   </section>
 
   <!-- TABS -->
@@ -41,6 +28,9 @@
     <ng-container *ngIf="role === 'admin'; else userTabs">
       <button class="tab" [class.active]="activeTab === 'institutions'" (click)="setTab('institutions')">
         Instituciones
+      </button>
+      <button class="tab" [class.active]="activeTab === 'suppliers'" (click)="setTab('suppliers')">
+        Proveedores
       </button>
       <button class="tab" [class.active]="activeTab === 'users'" (click)="setTab('users')">
         Usuarios
@@ -59,6 +49,107 @@
         Notificaciones
       </button>
     </ng-template>
+  </div>
+
+  <!-- Proveedores (admin) -->
+  <div class="profile-section-card" *ngIf="activeTab === 'suppliers' && role === 'admin'">
+    <div class="section-header section-header--with-controls">
+      <h3 class="section-title">Proveedores</h3>
+      <div class="section-controls-top">
+        <button class="btn-primary btn-new btn-top-right" type="button" (click)="openNewSupplier()">+ Nuevo proveedor</button>
+      </div>
+    </div>
+
+    <div class="search-row" style="margin-bottom:12px;">
+      <input type="text" class="form-control" placeholder="Buscar proveedor..." [(ngModel)]="supplierSearch" (input)="filterSuppliers()" />
+    </div>
+
+    <table class="institutions-table suppliers-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>País</th>
+          <th>Ciudad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of getPagedSuppliers()">
+          <td>{{ s.id }}</td>
+          <td>{{ s.name }}</td>
+          <td>{{ s.country || '—' }}</td>
+          <td>{{ s.city || '—' }}</td>
+          <td>
+            <a class="btn-icon" title="Ver proveedor" (click)="viewSupplier(s.id)">🔍</a>
+            <button class="btn-icon" title="Eliminar proveedor" (click)="deleteSupplier(s.id)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination-controls">
+      <button class="btn-secondary" (click)="prevSupplierPage()" [disabled]="supplierPage === 1">⬅ Anterior</button>
+      <span>Página {{ supplierPage }} de {{ supplierTotalPages }}</span>
+      <button class="btn-primary" (click)="nextSupplierPage()" [disabled]="supplierPage === supplierTotalPages">Siguiente ➡</button>
+    </div>
+
+    <!-- Modal: Nuevo proveedor -->
+    <div class="modal-backdrop" *ngIf="showNewSupplierForm">
+      <div class="modal-card">
+        <h4>{{ isEditingSupplier ? 'Editar proveedor' : 'Crear nuevo proveedor' }}</h4>
+        <div class="grid-2">
+          <div class="form-field">
+            <label for="ns-name">Nombre</label>
+            <input id="ns-name" class="form-control" [(ngModel)]="newSupplier.name" name="newSupplierName" />
+          </div>
+          <div class="form-field">
+            <label for="ns-country">País</label>
+            <input id="ns-country" class="form-control" [(ngModel)]="newSupplier.country" name="newSupplierCountry" />
+          </div>
+          <div class="form-field">
+            <label for="ns-city">Ciudad</label>
+            <input id="ns-city" class="form-control" [(ngModel)]="newSupplier.city" name="newSupplierCity" />
+          </div>
+          <div class="form-field">
+            <label for="ns-website">Sitio web</label>
+            <input id="ns-website" class="form-control" [(ngModel)]="newSupplier.website" name="newSupplierWebsite" />
+          </div>
+          <div class="form-field form-field--full">
+            <label for="ns-desc">Descripción</label>
+            <textarea id="ns-desc" class="form-control" rows="4" [(ngModel)]="newSupplier.description" name="newSupplierDesc"></textarea>
+          </div>
+          <!-- Admin account for the supplier (required) -->
+          <div class="form-field form-field--full create-admin-fields">
+            <h4>Cuenta administradora del proveedor</h4>
+            <div class="grid-2">
+              <div class="form-field">
+                <label for="ns-admin-email">Correo administrador <span class="required">*</span></label>
+                <input id="ns-admin-email" type="email" class="form-control" [(ngModel)]="newSupplier.adminEmail" name="newSupplierAdminEmail" required />
+              </div>
+                <div class="form-field">
+                  <label for="ns-admin-first">Nombre administrador <span class="required">*</span></label>
+                  <input id="ns-admin-first" type="text" class="form-control" [(ngModel)]="newSupplier.adminFirstName" name="newSupplierAdminFirstName" required />
+                </div>
+                <div class="form-field">
+                  <label for="ns-admin-last">Apellido administrador <span class="required">*</span></label>
+                  <input id="ns-admin-last" type="text" class="form-control" [(ngModel)]="newSupplier.adminLastName" name="newSupplierAdminLastName" required />
+                </div>
+              <div class="form-field">
+                <label for="ns-admin-password">Contraseña administrador <span class="required">*</span></label>
+                <input id="ns-admin-password" type="password" class="form-control" [(ngModel)]="newSupplier.adminPassword" name="newSupplierAdminPassword" required />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="closeNewSupplier()">Cancelar</button>
+          <button type="button" class="btn-primary modal-btn" *ngIf="!isEditingSupplier" (click)="createSupplier()">Crear proveedor</button>
+          <button type="button" class="btn-primary modal-btn" *ngIf="isEditingSupplier" (click)="updateSupplier()">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Información de Perfil -->
@@ -177,12 +268,11 @@
 
   <!-- Instituciones -->
   <div class="profile-section-card" *ngIf="activeTab === 'institutions'">
-    <div class="section-header">
+    <div class="section-header section-header--with-controls">
       <h3 class="section-title">Gestión de Instituciones</h3>
-    </div>
-
-    <div style="margin-bottom: 15px;">
-      <button class="btn-primary" (click)="toggleCreateInstitutionForm()">+ Nueva institución</button>
+      <div class="section-controls-top">
+        <button class="btn-primary btn-new btn-top-right" (click)="toggleCreateInstitutionForm()">+ Nueva institución</button>
+      </div>
     </div>
 
     <div *ngIf="showCreateInstitutionForm" class="create-institution-form">
@@ -225,7 +315,7 @@
     <div class="form-field form-field--full" style="margin-bottom: 15px;">
       <input
         type="text"
-        class="form-control"
+        class="form-control search-half"
         placeholder="Buscar institución..."
         [(ngModel)]="institutionSearch"
         (input)="filterInstitutions()"
@@ -297,7 +387,8 @@
           <td>{{ user.institution_name || '—' }}</td>
           <td>{{ user.created_at | date: 'shortDate' }}</td>
           <td>
-            <a class="btn-icon" [routerLink]="['/dashboard-profile/user', user.id]">🔍</a>
+            <a class="btn-icon" [routerLink]="['/dashboard-profile/user', user.id]" title="Ver usuario">🔍</a>
+            <button class="btn-icon" title="Eliminar usuario" (click)="deleteUser(user.id)">🗑️</button>
           </td>
         </tr>
       </tbody>

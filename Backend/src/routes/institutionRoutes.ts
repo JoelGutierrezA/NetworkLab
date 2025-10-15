@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { Router } from 'express';
 import pool from '../config/database';
 import { authenticateToken, requireRole } from '../middleware/auth';
@@ -82,10 +82,10 @@ router.post('/institutions', authenticateToken, requireRole(['admin']), async (r
 
         const password_hash = await bcrypt.hash(adminPassword, 10);
 
-        const [userResult]: any = await connection.query(
-        'INSERT INTO users (email, password_hash, first_name, last_name) VALUES (?, ?, ?, ?)',
-        [adminEmail, password_hash, adminFirstName || '', adminLastName || '']
-        );
+    const [userResult]: any = await connection.query(
+    'INSERT INTO users (email, password_hash, first_name, last_name, created_via) VALUES (?, ?, ?, ?, ?)',
+    [adminEmail, password_hash, adminFirstName || '', adminLastName || '', 'admin']
+    );
         const userId = userResult.insertId;
 
         // obtener role_id para lab_manager; si no existe, crearlo
@@ -98,10 +98,10 @@ router.post('/institutions', authenticateToken, requireRole(['admin']), async (r
         roleId = roleRows[0].id;
         }
 
-        // El trigger after insert en users pudo haber insertado institution_users con role_id=1
-        // Limpiar cualquier asignación previa e insertar la correcta
-        await connection.query('DELETE FROM institution_users WHERE user_id = ?', [userId]);
-        await connection.query('INSERT INTO institution_users (user_id, institution_id, role_id) VALUES (?, ?, ?)', [userId, institutionId, roleId]);
+    // El trigger after insert en users pudo haber insertado institution_users con role_id=1
+    // Limpiar cualquier asignación previa e insertar la correcta en organization_users (polimórfica)
+    await connection.query("DELETE FROM organization_users WHERE user_id = ? AND organization_type = 'institution'", [userId]);
+    await connection.query('INSERT INTO organization_users (user_id, organization_type, organization_id, role_id) VALUES (?, ?, ?, ?)', [userId, 'institution', institutionId, roleId]);
     }
 
     await connection.commit();

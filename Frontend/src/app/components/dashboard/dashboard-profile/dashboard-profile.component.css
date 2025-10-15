@@ -2,7 +2,7 @@
 .profile-wrapper {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: calc(100vh - 64px);
-  padding: 96px 16px 40px;
+  padding: 50px 16px 40px;
 }
 
 /* ======== HERO ======== */
@@ -129,6 +129,24 @@
   margin-bottom: 12px;
 }
 
+.section-header--with-controls { position: relative; }
+.section-controls-top { position: absolute; right: 18px; top: 12px; }
+.btn-top-right { padding: 8px 14px; }
+
+.search-row { max-width: 420px; margin-left: 0; }
+.search-row .form-control { padding: 10px 12px; }
+
+/* Input de búsqueda reducido para la lista de instituciones: 50% ancho en pantallas grandes */
+.search-half {
+  width: 50%;
+  max-width: 50%;
+}
+
+@media (max-width: 720px) {
+  .search-half { width: 100%; max-width: 100%; }
+  .section-controls-top { position: static; margin-top: 10px; }
+}
+
 .section-title {
   font-size: 1.2rem;
   font-weight: 800;
@@ -213,6 +231,37 @@
 }
 .btn-primary:hover { transform: translateY(-1px); }
 
+/* Estilos específicos para botones de proveedores */
+.btn-primary.btn-new {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, .35);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary.modal-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  min-width: 120px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-secondary {
   background: #f1f5f9;
   color: #0f172a;
@@ -261,25 +310,25 @@
 .institutions-table,
 .users-table {
   width: 100%;
-  table-layout: fixed; /* distribuye columnas según anchos asignados */
-  border-collapse: separate; /* usar separate para permitir border-radius exterior */
+  table-layout: fixed;
+  border-collapse: separate;
   border-spacing: 0;
   background: #fff;
   margin-top: 6px;
-  border: 1px solid #e5e5e5; /* borde exterior sólido */
-  border-radius: 12px; /* esquinas redondeadas */
-  overflow: hidden; /* recorta esquinas para que el borde sea redondeado */
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .institutions-table thead th,
 .users-table thead th,
 .institutions-table tbody td,
 .users-table tbody td {
-  padding: 8px 12px; /* reducir padding para disminuir la altura de las filas */
+  padding: 8px 12px;
   vertical-align: middle;
   font-size: 0.95rem;
   color: #111827;
-  border-bottom: 1px solid #eef0f3; /* separación horizontal sutil */
+  border-bottom: 1px solid #eef0f3;
   word-break: break-word;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -290,7 +339,7 @@
 .institutions-table th + th,
 .users-table td + td,
 .users-table th + th {
-  border-left: 1px solid #eef0f3; /* separador vertical sutil */
+  border-left: 1px solid #eef0f3;
 }
 
 .institutions-table thead th,
@@ -319,6 +368,44 @@
   text-align: center;
 }
 
+/* Ajustes específicos para suppliers-table para reducir altura y spacing */
+.suppliers-table thead th,
+.suppliers-table tbody td {
+  padding: 10px 12px; /* un poco menos que las tablas grandes */
+  font-size: 0.95rem;
+}
+.suppliers-table tbody tr { min-height: 36px; }
+.suppliers-table tbody td { line-height: 1.3; }
+.suppliers-table thead th:nth-child(1),
+.suppliers-table tbody td:nth-child(1) { width: 6%; max-width: 60px; }
+.suppliers-table thead th:nth-child(2),
+.suppliers-table tbody td:nth-child(2) { width: 50%; min-width: 140px; }
+.suppliers-table thead th:nth-child(3),
+.suppliers-table tbody td:nth-child(3) { width: 20%; }
+.suppliers-table thead th:nth-child(4),
+.suppliers-table tbody td:nth-child(4) { width: 14%; }
+.suppliers-table thead th:nth-child(5),
+.suppliers-table tbody td:nth-child(5) { width: 10%; text-align: center; }
+
+/* Modal backdrop and card */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2,6,23,0.5);
+  z-index: 1200;
+}
+.modal-card {
+  width: 680px;
+  max-width: calc(100% - 40px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 20px 60px rgba(2,6,23,0.25);
+}
+
 /* ===== Reglas específicas para users-table ===== */
 .users-table thead th:nth-child(1),
 .users-table tbody td:nth-child(1) {
@@ -330,8 +417,12 @@
 .users-table thead th:nth-child(2),
 .users-table tbody td:nth-child(2) {
   /* Nombre */
-  width: 18%;
-  min-width: 140px;
+  width: 12%;
+  min-width: 120px;
+}
+.users-table thead th:nth-child(2) {
+  width: 12%;
+  min-width: 120px;
 }
 .users-table thead th:nth-child(3),
 .users-table tbody td:nth-child(3) {
@@ -342,13 +433,13 @@
 .users-table thead th:nth-child(4),
 .users-table tbody td:nth-child(4) {
   /* Email */
-  width: 30%;
+  width: 26%;
   min-width: 200px;
 }
 .users-table thead th:nth-child(5),
 .users-table tbody td:nth-child(5) {
   /* Rol */
-  width: 8%;
+  width: 12%;
   text-align: left;
 }
 .users-table thead th:nth-child(6),
@@ -360,13 +451,13 @@
 .users-table thead th:nth-child(7),
 .users-table tbody td:nth-child(7) {
   /* Registrado */
-  width: 8%;
+  width: 10%;
   text-align: center;
 }
 .users-table thead th:nth-child(8),
 .users-table tbody td:nth-child(8) {
   /* Acciones */
-  width: 6%;
+  width: 10%;
   text-align: center;
 }
 

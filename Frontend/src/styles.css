@@ -11,6 +11,16 @@ body {
     overflow-x: hidden;
 }
 
+/* Evitar que el header fijo se sobreponga al contenido.
+     Ajusta --header-height si cambias la altura del header en componentes. */
+:root {
+    --header-height: 100px; /* valor por defecto; mantener sincronizado con header-dashboard.component.css */
+}
+
+/* Nota: el header ahora usa position:sticky y ocupa espacio en el flujo.
+   Si en algún caso necesitas aplicar padding-top global, reactiva la regla
+   o actualiza --header-height. */
+
 .container {
     max-width: 1200px;
     margin: 0 auto;

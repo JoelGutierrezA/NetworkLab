@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes';
 import equipmentRoutes from './routes/equipmentRoutes';
 import institutionRoutes from './routes/institutionRoutes';
 import laboratoriesRoutes from './routes/laboratoriesRoutes';
+import providerRoutes from './routes/providerRoutes';
 import userRoutes from './routes/userRoutes';
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api', authRoutes);
   app.use('/api', institutionRoutes);
   app.use('/api', laboratoriesRoutes);
   app.use('/api', equipmentRoutes);
+  app.use('/api', providerRoutes);
 
 // Rutas registradas (resumen)
 console.log('🔄 Rutas cargadas:');

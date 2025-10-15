@@ -9,6 +9,7 @@ import { HomeComponent } from './home/home.component';
 // Dashboard Components
 import { DashboardProfileComponent } from './components/dashboard/dashboard-profile/dashboard-profile.component';
 import { InstitutionComponent } from './components/dashboard/dashboard-profile/institution-detail/institution.component';
+import { SuppliersDetailComponent } from './components/dashboard/dashboard-profile/suppliers-detail/suppliers-detail.component';
 import { UserComponent } from './components/dashboard/dashboard-profile/user-detail/user.component';
 import { DashboardServicesComponent } from './components/dashboard/dashboard-services/dashboard-services.component';
 import { DashboardSuppliersComponent } from './components/dashboard/dashboard-suppliers/dashboard-suppliers.component';
@@ -38,6 +39,14 @@ export const routes: Routes = [
     path: 'dashboard-profile',
     component: DashboardProfileComponent,
     canActivate: [AuthGuard]
+  },
+
+  // Detalle de proveedor (admin)
+  {
+    path: 'dashboard-profile/supplier/:id',
+    component: SuppliersDetailComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'admin' }
   },
   {
     path: 'dashboard-services',

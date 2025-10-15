@@ -1,1 +1,6 @@
+<!-- Indicador global: cuando el token se está refrescando -->
+<div *ngIf="isRefreshing$ | async" class="session-refresh-banner">
+	Refrescando sesión… por favor espere...
+</div>
+
 <router-outlet></router-outlet>

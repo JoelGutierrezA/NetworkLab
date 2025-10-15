@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { validationResult } from 'express-validator';
-import { createUser, deleteUser, getUserById, getUsers, login, updatePassword, updateUserInstitution } from '../controllers/userController';
+import { createUser, deleteUser, getUserById, getUsers, updatePassword, updateUser, updateUserInstitution } from '../controllers/userController';
 import { authenticateToken, requireRole, requireSelfOrAdmin } from '../middleware/auth';
 import { changePasswordValidator } from '../validators/user.validators';
 
@@ -19,33 +19,6 @@ function validate(req: any, res: any, next: any) {
     next();
 }
 
-/**
- * @openapi
- * /api/login:
- *   post:
- *     summary: Iniciar sesión de usuario
- *     tags:
- *       - Users
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: joelgutierrez@networklab.com
- *               password:
- *                 type: string
- *                 example: admin123
- *     responses:
- *       200:
- *         description: Inicio de sesión exitoso
- *       401:
- *         description: Credenciales inválidas
- */
-router.post('/login', login);
 
 /**
  * @openapi
@@ -157,6 +130,9 @@ router.get('/users/:id', getUserById);
  *         description: No autorizado
  */
 router.put('/users/:id/password', authenticateToken, requireSelfOrAdmin, changePasswordValidator, validate, updatePassword);
+
+// Actualizar usuario (campos básicos)
+router.put('/users/:id', authenticateToken, requireSelfOrAdmin, updateUser);
 
 /**
  * @openapi

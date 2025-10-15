@@ -17,11 +17,12 @@ export class AuthUtils {
 
     /* Genera un token JWT */
     static generateToken(userId: number, email: string, role: string): string {
-    return jwt.sign(
-        { userId, email, role },
-        process.env.JWT_SECRET!,
-        { expiresIn: '1h' }
-    );
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        throw new Error('JWT_SECRET no está definido en las variables de entorno');
+    }
+
+    return jwt.sign({ userId, email, role }, secret, { expiresIn: '1h' });
     }
 
     /* Decodifica un token JWT sin verificar la firma */
@@ -37,10 +38,15 @@ export class AuthUtils {
     /* Verifica un token JWT (con firma y expiración) */
     static verifyToken(token: string): any {
     try {
-        return jwt.verify(token, process.env.JWT_SECRET!);
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+        throw new Error('JWT_SECRET no está definido en las variables de entorno');
+        }
+        return jwt.verify(token, secret);
     } catch (error) {
         console.error('Error verificando token:', error);
-        return null;
+        // Re-lanzamos para que los middlewares que llamen puedan decidir cómo responder
+        throw error;
     }
     }
     }
@@ -48,7 +54,7 @@ export class AuthUtils {
     // MIDDLEWARES
     export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    const token = authHeader?.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
     return res.status(401).json({ success: false, message: 'Token de acceso requerido' });
@@ -58,8 +64,16 @@ export class AuthUtils {
     const decoded = AuthUtils.verifyToken(token);
     (req as any).user = decoded;
     next();
-    } catch (error) {
-    return res.status(403).json({ success: false, message: 'Token inválido o expirado' });
+    } catch (error: any) {
+        console.error('Token verification failed in middleware:', error?.message ?? error);
+        // Si el token expiró, respondemos 401 para que el cliente pueda intentar refrescarlo
+        if (error && error.name === 'TokenExpiredError') {
+        // error.expiredAt puede venir como Date
+        return res.status(401).json({ success: false, message: 'Token expirado', expiredAt: error.expiredAt });
+        }
+
+        // Para otros errores de verificación (firma inválida, etc.) devolvemos 401
+        return res.status(401).json({ success: false, message: 'Token inválido' });
     }
     };
 

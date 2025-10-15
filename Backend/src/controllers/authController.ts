@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
 import pool from '../config/database';
+import { AuthUtils } from '../middleware/auth';
 import { UserModel } from '../models/User';
-import { AuthUtils } from '../utils/AuthUtils';
 
 export class AuthController {
     // Obtener rol por user_id
     private static async getRole(userId: number): Promise<string> {
+    // Prefer organization_users (polymorphic). Look for any organization membership (institution/provider).
     const [rows]: any = await pool.query(
         `SELECT r.name AS role
-            FROM institution_users iu
-            LEFT JOIN roles r ON r.id = iu.role_id
-        WHERE iu.user_id = ?
+            FROM organization_users ou
+            LEFT JOIN roles r ON r.id = ou.role_id
+        WHERE ou.user_id = ?
         LIMIT 1`,
         [userId]
     );
@@ -34,7 +35,7 @@ export class AuthController {
         // Hashear password
         const password_hash = await AuthUtils.hashPassword(password);
 
-        // Crear usuario (el trigger AFTER INSERT lo inserta en institution_users con role_id=1 -> student)
+    // Crear usuario (si existe un trigger antiguo podría haber insertado en institution_users; ahora usamos organization_users)
         const newUser = await UserModel.create({
             email,
             password_hash,
@@ -45,11 +46,11 @@ export class AuthController {
         });
 
 
-        // Obtener rol real desde la BD (por si el trigger asignó student u otro flujo lo modifica)
-        const role = await AuthController.getRole(newUser.id!);
+    // Obtener rol real desde la BD (por si el trigger asignó student u otro flujo lo modifica)
+    const role = await AuthController.getRole(newUser.id);
 
-        // Generar token con rol
-        const token = AuthUtils.generateToken(newUser.id!, email, role);
+    // Generar token con rol
+    const token = AuthUtils.generateToken(newUser.id, email, role);
 
         // Respuesta PLANA homogénea con login/refresh
         return res.status(201).json({
@@ -101,11 +102,11 @@ export class AuthController {
         });
         }
 
-        // 3) Obtener rol desde institution_users + roles
-        const role = await AuthController.getRole(user.id!);
+    // 3) Obtener rol desde organization_users + roles
+    const role = await AuthController.getRole(user.id);
 
-        // 4) Generar token con rol
-        const token = AuthUtils.generateToken(user.id!, user.email, role);
+    // 4) Generar token con rol
+    const token = AuthUtils.generateToken(user.id, user.email, role);
 
         // 5) Responder en formato plano esperado por el frontend
         return res.json({
@@ -136,16 +137,10 @@ export class AuthController {
     try {
         // 1) Obtener Bearer token
         const authHeader = req.headers.authorization;
-        if (!authHeader) {
+        if (!authHeader?.startsWith('Bearer ')) {
         return res.status(401).json({
             success: false,
             message: 'Token de refresco requerido en header Authorization'
-        });
-        }
-        if (!authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({
-            success: false,
-            message: 'Formato de token inválido. Use: Bearer TOKEN'
         });
         }
         const oldToken = authHeader.substring(7);
@@ -169,11 +164,11 @@ export class AuthController {
         });
         }
 
-        // 4) Obtener rol actual desde BD (o usar decoded.role si confías en él)
-        const role = await AuthController.getRole(user.id!);
+    // 4) Obtener rol actual desde BD (o usar decoded.role si confías en él)
+    const role = decoded?.role ?? (await AuthController.getRole(user.id));
 
-        // 5) Generar NUEVO token
-        const newToken = AuthUtils.generateToken(user.id!, user.email, role);
+    // 5) Generar NUEVO token
+    const newToken = AuthUtils.generateToken(user.id, user.email, role);
         console.log('✅ Token refrescado exitosamente para usuario:', user.email);
 
         // 6) Responder en el mismo formato que login
@@ -201,7 +196,7 @@ export class AuthController {
     static async verifyToken(req: Request, res: Response) {
     try {
         const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        if (!authHeader?.startsWith('Bearer ')) {
         return res.status(401).json({
             success: false,
             message: 'Token requerido'
@@ -229,7 +224,7 @@ export class AuthController {
         }
 
         // Usar rol del token si viene, si no obtenerlo desde la BD
-        const role = decoded?.role ?? (await AuthController.getRole(user.id!));
+        const roleFromTokenOrDb = decoded?.role ?? (await AuthController.getRole(user.id));
 
         // Respuesta plana
         return res.json({
@@ -239,7 +234,7 @@ export class AuthController {
             email: user.email,
             first_name: user.first_name,
             last_name: user.last_name,
-            role: decoded?.role ?? (await AuthController.getRole(user.id!))
+            role: roleFromTokenOrDb
         }
 });
     } catch (error: any) {
