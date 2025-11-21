@@ -1,0 +1,117 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding profile-page-content">
+
+  <ion-card class="welcome-card">
+    <div class="welcome-banner">
+      <div class="avatar-circle" aria-hidden="true">{{ initials }}</div>
+      <div class="welcome-text">
+        <h1 class="welcome-title">¡Bienvenido!</h1>
+        <div class="user-fullname">{{ displayName }}</div>
+        <div class="role-label">{{ roleLabel }}</div>
+      </div>
+    </div>
+  </ion-card>
+
+  <ion-card class="info-card">
+    <ion-card-header>
+      <div class="card-header-row">
+        <ion-card-title>Información personal</ion-card-title>
+        <div style="display:flex; align-items:center; gap:8px">
+          <ion-button fill="clear" class="toggle-btn" (click)="toggleProfileInfo()" [attr.aria-expanded]="showProfileInfo" aria-controls="profile-info">
+            <ion-icon [name]="showProfileInfo ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content *ngIf="showProfileInfo" id="profile-info">
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <div>{{ user?.first_name || '-' }} {{ user?.last_name || '' }}</div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Usuario</ion-label>
+        <div *ngIf="!editProfile">{{ user?.username || '-' }}</div>
+        <ion-input *ngIf="editProfile" [(ngModel)]="editModel.username" name="edit_username"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Correo</ion-label>
+        <div>{{ user?.email || '-' }}</div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Teléfono</ion-label>
+        <div *ngIf="!editProfile">{{ user?.phone || '-' }}</div>
+        <div *ngIf="editProfile" class="phone-input-row">
+          <div class="phone-prefix">+56 9</div>
+          <ion-input class="phone-rest" [(ngModel)]="editModel.phoneRest" name="edit_phone" type="tel" inputmode="tel" placeholder="1234 5678"></ion-input>
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Rol</ion-label>
+        <div>{{ roleLabel || '-' }}</div>
+      </ion-item>
+
+      <!-- Inline actions for editing profile placed at the end of the form -->
+      <div class="actions-row" style="margin-top:18px;">
+        <button *ngIf="!editProfile" type="button" class="btn-accept" (click)="startEditProfile()">Editar</button>
+
+        <div *ngIf="editProfile" style="display:flex; gap:12px; justify-content:flex-end; width:100%;">
+          <button type="button" class="btn-cancel" (click)="cancelEditProfile()">Cancelar</button>
+          <button type="button" class="btn-accept" (click)="saveProfile()">Guardar</button>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="change-card">
+    <ion-card-header>
+      <div class="card-header-row">
+        <ion-card-title>Cambiar contraseña</ion-card-title>
+        <ion-button fill="clear" class="toggle-btn" (click)="toggleChangeForm()" [attr.aria-expanded]="showChangeForm" aria-controls="change-form">
+          <ion-icon [name]="showChangeForm ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content *ngIf="showChangeForm" id="change-form">
+      <form>
+        <ion-item class="line-item">
+          <ion-label position="stacked">Contraseña actual</ion-label>
+          <ion-input [(ngModel)]="current" name="current" type="password" autocomplete="current-password"></ion-input>
+        </ion-item>
+
+        <ion-item class="line-item">
+          <ion-label position="stacked">Nueva contraseña</ion-label>
+          <ion-input [(ngModel)]="newPwd" name="newPwd" type="password" autocomplete="new-password"></ion-input>
+        </ion-item>
+
+        <ion-item class="line-item">
+          <ion-label position="stacked">Confirmar nueva contraseña</ion-label>
+          <ion-input [(ngModel)]="confirm" name="confirm" type="password" autocomplete="new-password"></ion-input>
+        </ion-item>
+
+        <div class="actions-row actions-pill" aria-live="polite">
+          <button type="button" class="btn-cancel" (click)="onReset()" aria-label="Cancelar">Cancelar</button>
+          <button type="button" class="btn-accept" (click)="confirmChangePassword()" aria-label="Aceptar">Aceptar</button>
+        </div>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<ion-loading [isOpen]="loading" message="Procesando..."></ion-loading>
+<ion-toast [isOpen]="toastOpen" [message]="toastMessage" [duration]="3000" [color]="toastColor" (ionDidDismiss)="toastOpen=false"></ion-toast>
+<app-bottom-tabs></app-bottom-tabs>

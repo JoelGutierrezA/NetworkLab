@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes';
 import equipmentRoutes from './routes/equipmentRoutes';
 import institutionRoutes from './routes/institutionRoutes';
 import laboratoriesRoutes from './routes/laboratoriesRoutes';
+import productRoutes from './routes/productRoutes';
 import providerRoutes from './routes/providerRoutes';
 import userRoutes from './routes/userRoutes';
 dotenv.config();
@@ -26,9 +27,10 @@ app.use('/api', authRoutes);
   app.use('/api', laboratoriesRoutes);
   app.use('/api', equipmentRoutes);
   app.use('/api', providerRoutes);
+  app.use('/api', productRoutes);
 
 // Rutas registradas (resumen)
-console.log('🔄 Rutas cargadas:');
+console.log('Rutas cargadas:');
 console.log('- Auth: POST /api/auth/login');
 console.log('- Users: GET /api/users | POST /api/users | GET /api/users/:id');
 console.log('- Equipment: CRUD en /api/equipment');
@@ -60,14 +62,14 @@ app.get('/api/test-db', async (req: any, res: any) => {
 
 // Iniciar servidor
 app.listen(Number(PORT), '0.0.0.0', async () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 Testing database connection...`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Testing database connection...`);
   
   const connected = await testConnection();
   if (connected) {
-    console.log('✅ Database connected successfully');
+    console.log('Database connected successfully');
   } else {
-    console.log('❌ Database connection failed');
+    console.log('Database connection failed');
   }
 });
 

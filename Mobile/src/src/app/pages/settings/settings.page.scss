@@ -1,0 +1,54 @@
+/* Styles specific to Settings page */
+.settings-content {
+	padding-bottom: 96px; /* avoid overlap with bottom tabs */
+}
+
+.logout-actions {
+	margin-top: 12px;
+	display: flex;
+	gap: 8px;
+}
+
+ion-card {
+	--padding-top: 8px;
+	--padding-bottom: 8px;
+}
+
+/* Logo at top of settings */
+.settings-top {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 24px 0 8px 0;
+}
+.settings-logo {
+	width: 153px; /* 180px * 0.85 = 153px (15% smaller) */
+	max-width: 60%;
+	height: auto;
+	display: block;
+}
+
+.logout-text-button {
+	--background: transparent;
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	color: #d32f2f !important; /* red text */
+	font-weight: 700;
+	--padding-top: 12px;
+	--padding-bottom: 12px;
+}
+.logout-text-button .button-native {
+	border: none !important;
+}
+
+/* Settings page: use white background and dark text */
+ion-content {
+	background: #ffffff;
+	background-size: cover;
+	color: #071228;
+}
+
+h3, p {
+	color: #071228;
+}

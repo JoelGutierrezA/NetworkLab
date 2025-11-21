@@ -1,0 +1,104 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Servicios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding services-page-content">
+
+  <!-- Visual accessible alert (unified with dashboard style) -->
+  <output *ngIf="alertMessage" class="alert" [ngClass]="{'alert-success': alertType==='success', 'alert-error': alertType==='error', 'alert-info': alertType==='info'}" [attr.aria-live]="alertType==='error' ? 'assertive' : 'polite'">
+    <div class="icon" aria-hidden="true">
+      <ng-container [ngSwitch]="alertType">
+        <span *ngSwitchCase="'success'">✔</span>
+        <span *ngSwitchCase="'error'">✖</span>
+        <span *ngSwitchDefault>ℹ</span>
+      </ng-container>
+    </div>
+    <div class="text">{{ alertMessage }}</div>
+    <button class="icon-btn alert-close" (click)="clearAlert()" aria-label="Cerrar alerta">✕</button>
+  </output>
+
+  <!-- Search bar -->
+  <div class="search-wrap">
+    <ion-searchbar placeholder="Buscar servicio" [(ngModel)]="searchTerm" show-clear-button="focus"></ion-searchbar>
+  </div>
+
+  <!-- Add / Edit service toggle button -->
+  <div class="add-toggle">
+    <!-- Mostrar sólo para usuarios no-student; diseño y texto iguales a la versión web -->
+    <button class="btn-add add-service-btn" *ngIf="!isStudent" (click)="openAddForm()">
+      {{ showAddForm ? 'Cancelar' : '+ Agregar Servicio' }}
+    </button>
+  </div>
+
+  <!-- Add / Edit service form (collapsible) -->
+  <ion-card class="add-card" *ngIf="showAddForm">
+    <ion-card-content>
+      <form (ngSubmit)="saveForm()">
+        <div class="add-row">
+          <ion-item lines="none">
+            <ion-label position="stacked">Nombre del servicio</ion-label>
+            <ion-input [(ngModel)]="formModel.name" name="name" required></ion-input>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Descripción (opcional)</ion-label>
+            <ion-input [(ngModel)]="formModel.description" name="description"></ion-input>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Modelo</ion-label>
+            <ion-input [(ngModel)]="formModel.model" name="model" placeholder="Ej. MX-200"></ion-input>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Fabricante</ion-label>
+            <ion-input [(ngModel)]="formModel.manufacturer" name="manufacturer" placeholder="Ej. Acme Corp."></ion-input>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Requiere capacitación</ion-label>
+            <ion-toggle [(ngModel)]="formModel.requires_training" name="requires_training"></ion-toggle>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Estado</ion-label>
+            <ion-select [(ngModel)]="formModel.status" name="status">
+              <ion-select-option value="available">Disponible</ion-select-option>
+              <ion-select-option value="unavailable">No disponible</ion-select-option>
+              <ion-select-option value="maintenance">Mantenimiento</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label position="stacked">Laboratorio (ID)</ion-label>
+            <ion-input type="number" [(ngModel)]="formModel.laboratory_id" name="laboratory_id"></ion-input>
+          </ion-item>
+          <div class="add-actions">
+            <ion-button *ngIf="!viewOnly" fill="clear" size="small" (click)="cancelForm()">Cancelar</ion-button>
+            <ion-button *ngIf="!viewOnly" fill="solid" size="small" color="primary" type="submit">{{ editingId ? 'Guardar cambios' : 'Agregar servicio' }}</ion-button>
+            <ion-button *ngIf="viewOnly" fill="solid" size="small" color="primary" (click)="cancelForm()">Cerrar</ion-button>
+          </div>
+        </div>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Services list -->
+  <div class="services-list">
+    <ion-card *ngFor="let s of filteredServices" class="service-card">
+      <ion-card-header>
+        <ion-card-title>{{ s.name }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p class="service-desc">{{ s.description }}</p>
+        <div class="service-actions">
+          <ion-button *ngIf="isStudent" fill="clear" size="small" class="btn-view" (click)="openView(s)">Ver</ion-button>
+          <ion-button *ngIf="!isStudent" fill="clear" size="small" class="btn-edit" (click)="openEdit(s)" (keydown.enter)="openEdit(s)">Editar</ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    <div *ngIf="filteredServices.length === 0" class="empty">No se encontraron servicios.</div>
+  </div>
+
+</ion-content>
+
+<app-bottom-tabs></app-bottom-tabs>

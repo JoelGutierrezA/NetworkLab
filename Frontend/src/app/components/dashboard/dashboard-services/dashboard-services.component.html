@@ -1,12 +1,25 @@
 <!-- HEADER del dashboard -->
 <app-header-dashboard></app-header-dashboard>
 
+<!-- Alert visual local -->
+<output *ngIf="alertText" class="alert" [ngClass]="{'alert-success': alertType==='success', 'alert-error': alertType==='error', 'alert-info': alertType==='info'}" [attr.aria-live]="alertType==='error' ? 'assertive' : 'polite'" role="status">
+  <div class="icon" aria-hidden="true">
+    <ng-container [ngSwitch]="alertType">
+      <span *ngSwitchCase="'success'">✔</span>
+      <span *ngSwitchCase="'error'">✖</span>
+      <span *ngSwitchDefault>ℹ</span>
+    </ng-container>
+  </div>
+  <div class="text">{{ alertText }}</div>
+  <button class="icon-btn alert-close" (click)="clearAlert()" aria-label="Cerrar alerta">✕</button>
+</output>
+
 <div class="services-wrapper">
   <!-- Sidebar de filtros -->
   <aside class="filters">
     <!-- Botón Agregar Servicio (encima del título) -->
     <div class="filters-top">
-      <button class="btn-add add-service-btn" *ngIf="isLabManager" (click)="toggleAddForm()">
+      <button class="btn-add add-service-btn" *ngIf="!isStudent" (click)="toggleAddForm()">
         {{ showAddForm ? 'Cancelar' : '+ Agregar servicio' }}
       </button>
     </div>
@@ -36,7 +49,10 @@
     <div class="service-card" *ngFor="let service of filteredServices">
       <div class="card-header">
         <h4>{{ service.name }}</h4>
-        <button class="btn-secondary" (click)="openEdit(service)">Editar</button>
+        <div>
+          <button *ngIf="isStudent" class="btn-secondary" (click)="openView(service)">Ver</button>
+          <button *ngIf="!isStudent" class="btn-secondary" (click)="openEdit(service)">Editar</button>
+        </div>
       </div>
 
       <p class="service-desc">{{ service.description }}</p>
@@ -143,22 +159,22 @@
       <div class="form-grid">
         <div class="field">
           <label for="edit-svc-name">Nombre</label>
-          <input id="edit-svc-name" [(ngModel)]="editService.name" />
+          <input id="edit-svc-name" [(ngModel)]="editService.name" [disabled]="editReadOnly" />
         </div>
 
         <div class="field">
           <label for="edit-svc-model">Modelo</label>
-          <input id="edit-svc-model" [(ngModel)]="editService.model" />
+          <input id="edit-svc-model" [(ngModel)]="editService.model" [disabled]="editReadOnly" />
         </div>
 
         <div class="field field-span-2">
           <label for="edit-svc-desc">Descripción</label>
-          <textarea id="edit-svc-desc" [(ngModel)]="editService.description"></textarea>
+          <textarea id="edit-svc-desc" [(ngModel)]="editService.description" [disabled]="editReadOnly"></textarea>
         </div>
 
         <div class="field">
           <label for="edit-svc-manufacturer">Fabricante</label>
-          <input id="edit-svc-manufacturer" [(ngModel)]="editService.manufacturer" />
+          <input id="edit-svc-manufacturer" [(ngModel)]="editService.manufacturer" [disabled]="editReadOnly" />
         </div>
 
         <div class="field">
@@ -166,11 +182,11 @@
             <legend class="seg-legend">¿Requiere entrenamiento?</legend>
             <div class="segmented" role="radiogroup">
               <label class="seg-pill">
-                <input type="radio" name="editReqTraining" [value]="true" [(ngModel)]="editService.requires_training" />
+                <input type="radio" name="editReqTraining" [value]="true" [(ngModel)]="editService.requires_training" [disabled]="editReadOnly" />
                 <span>Sí</span>
               </label>
               <label class="seg-pill">
-                <input type="radio" name="editReqTraining" [value]="false" [(ngModel)]="editService.requires_training" />
+                <input type="radio" name="editReqTraining" [value]="false" [(ngModel)]="editService.requires_training" [disabled]="editReadOnly" />
                 <span>No</span>
               </label>
             </div>
@@ -179,7 +195,7 @@
 
         <div class="field">
           <label for="edit-svc-status">Estado</label>
-          <select id="edit-svc-status" [(ngModel)]="editService.status">
+          <select id="edit-svc-status" [(ngModel)]="editService.status" [disabled]="editReadOnly">
             <option value="available">Disponible</option>
             <option value="in_use">En uso</option>
             <option value="maintenance">Mantenimiento</option>
@@ -191,12 +207,12 @@
           <label for="edit-lab-search">Laboratorio</label>
           <div class="lab-dropdown">
             <div class="lab-input-row">
-              <input id="edit-lab-search" type="text" [(ngModel)]="labSearchTerm" name="editLabSearch" placeholder="Buscar laboratorio..." (focus)="showLabList=true" (input)="showLabList=true" autocomplete="off" />
-              <button type="button" class="btn-secondary" (click)="showLabList=!showLabList">Ver todos</button>
+              <input id="edit-lab-search" type="text" [(ngModel)]="labSearchTerm" name="editLabSearch" placeholder="Buscar laboratorio..." (focus)="showLabList=true" (input)="showLabList=true" autocomplete="off" [disabled]="editReadOnly" />
+              <button type="button" class="btn-secondary" (click)="showLabList=!showLabList" [disabled]="editReadOnly">Ver todos</button>
             </div>
             <ul *ngIf="showLabList" class="lab-list">
               <li *ngFor="let lab of filteredLaboratories" [class.active]="lab.id===editService.laboratory_id">
-                <button type="button" class="lab-item" (click)="editService.laboratory_id = lab.id; labSearchTerm = lab.name; showLabList=false">{{ lab.name }}</button>
+                <button type="button" class="lab-item" (click)="editService.laboratory_id = lab.id; labSearchTerm = lab.name; showLabList=false" [disabled]="editReadOnly">{{ lab.name }}</button>
               </li>
               <li *ngIf="filteredLaboratories.length===0" class="empty">No hay laboratorios</li>
             </ul>
@@ -206,9 +222,10 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary modal-btn" (click)="closeEdit()">Cancelar</button>
-      <button class="btn-danger modal-btn" (click)="confirmDelete()">Eliminar</button>
-      <button class="btn-primary modal-btn" (click)="saveEdit()">Guardar</button>
+      <button *ngIf="!editReadOnly" class="btn-secondary modal-btn" (click)="closeEdit()">Cancelar</button>
+      <button *ngIf="!editReadOnly" class="btn-danger modal-btn" (click)="confirmDelete()">Eliminar</button>
+      <button *ngIf="!editReadOnly" class="btn-primary modal-btn" (click)="saveEdit()">Guardar</button>
+      <button *ngIf="editReadOnly" class="btn-secondary modal-btn" (click)="closeEdit()">Cerrar</button>
     </div>
   </dialog>
 </div>

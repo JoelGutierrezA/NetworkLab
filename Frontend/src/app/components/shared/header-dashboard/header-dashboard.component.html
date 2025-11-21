@@ -1,8 +1,8 @@
 <header #headerEl class="header">
   <nav class="nav container">
     <a routerLink="/dashboard" class="logo" aria-label="Ir al inicio">
-      <img src="assets/images/networklab-logo.png" alt="NetworkLab" class="logo-img" onerror="this.style.display='none'" />
-      <span class="logo-fallback">Net</span>
+      <img *ngIf="showLogo" src="assets/images/networklab-logo.png" alt="NetworkLab" class="logo-img" (error)="onLogoError()" />
+      <span *ngIf="!showLogo" class="logo-fallback">Net</span>
     </a>
 
     <ul class="nav-links">

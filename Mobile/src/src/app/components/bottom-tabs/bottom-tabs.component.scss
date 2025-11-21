@@ -1,0 +1,370 @@
+/* Bottom toolbar container adjustments */
+.bottom-toolbar {
+  --background: #ffffff;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  backdrop-filter: none;
+  height: 64px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+/* Floating tabbar (dark) */
+.tabbar {
+  /* use fixed positioning so the tabbar floats above content reliably
+     and is visible even when ion-content is fullscreen; center over the
+     phone-frame using translateX for responsive demo sizes */
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px; /* small gap from bottom */
+  width: calc(min(390px, 100% - 24px));
+  max-width: 420px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* left / center / right */
+  padding: 0 8px;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.45);
+  border: none;
+  /* ensure it overrides default toolbar backgrounds */
+  background: #ffffff !important; /* White background as requested */
+  overflow: visible; /* allow elevated center button and side buttons to show */
+  z-index: 9999;
+}
+
+/* inner row that holds all buttons horizontally */
+.tabbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Ensure all direct children of .tabbar occupy full height and center their content */
+.tabbar > * {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+ion-tab-bar {
+  --background: transparent;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Force the toolbar/footer background to be transparent so .tabbar is visible */
+ion-footer {
+  --background: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Keep toolbar padding but don't force background here so .tabbar background shows */
+ion-toolbar.tabbar {
+  padding: 0 !important;
+}
+
+/* Default tab button style: white icons on dark footer */
+ion-tab-button {
+  --color: #333333; /* dark gray icon/text color on white background */
+  --color-selected: var(--ion-color-primary, #3880ff);
+  --ionicon-color: #333333; /* set the ion-icon color variable to dark gray */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  min-width: 52px;
+  padding: 6px 10px;
+  background: transparent !important;
+}
+
+/* icon size and white color */
+ion-tab-button ion-icon {
+  font-size: 20px;
+  color: inherit;
+  opacity: 1;
+}
+
+/* Hide labels for icon-only footer */
+ion-tab-button ion-label {
+  display: none !important;
+}
+
+
+/* Icon base sizing and SVG inheritance */
+/* Single consolidated ion-icon block placed later to avoid duplicate selector warnings. */
+
+/* (background forced in the main ion-tab-button block) */
+
+/* Make the center/home button elevated and larger */
+.home-button {
+  position: relative;
+  margin: 0 auto; /* center in available space */
+  /* remove legacy elevation transform so it sits on the same horizontal axis */
+  transform: none;
+  background: var(--ion-color-primary, #3880ff);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px rgba(8,24,48,0.18);
+  border: 3px solid rgba(255,255,255,0.92);
+}
+
+.home-button ion-icon {
+  font-size: 34px;
+  color: #fff;
+  --ionicon-color: #fff;
+}
+
+/* Responsive: show labels on wider screens */
+@media (min-width: 600px) {
+  ion-tab-button ion-label {
+    display: block !important;
+    font-size: 11px;
+    margin-top: 4px;
+    color: var(--ion-color-step-50, #ffffff);
+  }
+  ion-tab-button {
+    min-width: 60px;
+    padding: 8px 12px;
+  }
+}
+
+/* Slight spacing tweak so the home button appears visually centered relative to left/right groups */
+ion-tab-bar ion-tab-button:nth-child(1),
+ion-tab-bar ion-tab-button:nth-child(2) {
+  margin-right: 6px;
+}
+ion-tab-bar ion-tab-button:nth-child(4),
+ion-tab-bar ion-tab-button:nth-child(5) {
+  margin-left: 6px;
+}
+
+/* NOTE: label visibility controlled above for debugging; remove hide to inspect rendering */
+
+/* Selected tab uses primary color */
+ion-tab-button[aria-selected="true"] {
+  --color: var(--ion-color-primary, #3880ff);
+  --ionicon-color: var(--ion-color-primary, #3880ff);
+}
+
+/* Ensure Ionicons SVGs inherit currentColor (fixes some icon renderings) */
+ion-icon,
+ion-icon svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* Single center button styling - minimal and visible */
+
+.side {
+  display: flex;
+  align-items: center;
+  height: 100%; /* ensure children can center vertically */
+}
+
+.side.left { justify-content: flex-start; padding-left: 8px; flex: 0 0 auto; gap: 8px; }
+.side.right { justify-content: flex-end; padding-right: 8px; flex: 0 0 auto; gap: 8px; }
+
+.side-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  min-width: 48px;
+  box-sizing: border-box;
+  --padding-start: 5px;
+  --padding-end: 5px;
+  background: transparent;
+  color: var(--ion-color-primary, #3880ff);
+  border: none;
+  border-radius: 5px;
+  padding: 0 5px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+/* spacing between multiple buttons inside a side */
+.side .side-button + .side-button {
+  margin-left: 8px;
+}
+
+/* Avatar styles */
+.avatar-button {
+  padding: 0 !important;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+/* remove custom white avatar circle; use ion-icon styling instead */
+.avatar-button ion-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: #333333;
+}
+
+/* icons inside side buttons */
+.side-button ion-icon {
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+  color: #333333;
+  display: inline-block;
+}
+
+/* make icon-only side buttons tighter */
+.side-button[fill="clear"] {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+}
+
+.single-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+.center-home {
+  /* make the center-home use the circular home-button styles for visual consistency */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  line-height: 1;
+  --background: #3880ff;
+  background: var(--background);
+  color: #fff;
+  border: none;
+  border-radius: 50%; /* circle */
+  padding: 0;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.14);
+  cursor: pointer;
+  text-decoration: none;
+  will-change: transform;
+}
+
+/* size the ion-icon inside the center button */
+.center-home ion-icon {
+  font-size: 28px; /* larger icon for bigger home button */
+  width: 30px;
+  height: 30px;
+  color: #fff;
+}
+
+/* Icon base and transition styles consolidated here to avoid duplicate selector warnings. */
+ion-icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+  color: inherit !important;
+  transform: scale(1.10);
+  transform-origin: center;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08));
+  transition: transform 140ms ease, color 180ms ease, filter 180ms ease;
+}
+
+ion-icon svg {
+  width: 100% !important;
+  height: 100% !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Increase non-center icons by an additional ~10% over the base scale */
+ion-tab-button ion-icon,
+.side-button ion-icon,
+.avatar-button ion-icon {
+  /* base transform was 1.10; increase those specific icons by ~10% -> 1.21 */
+  transform: scale(1.21) !important;
+}
+
+.side-button:hover ion-icon,
+.side-button:active ion-icon,
+ion-tab-button:hover ion-icon,
+ion-tab-button:active ion-icon {
+  color: var(--ion-color-primary, #3880ff) !important;
+  /* increase hover/active scale proportionally (~1.12 -> ~1.23) */
+  transform: scale(1.23) !important;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08));
+}
+
+/* Selected and active states */
+ion-tab-button[aria-selected="true"] ion-icon {
+  color: var(--ion-color-primary, #3880ff) !important;
+  /* selected state enlarged similarly to hover/active */
+  transform: scale(1.23) !important;
+}
+
+/* Make sure center/home gets a subtle lift on hover for affordance */
+.center-home:hover,
+.home-button:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.center-home:active,
+.home-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* Decorative highlight to make the whole bar pop on dark backgrounds */
+.tabbar::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+  pointer-events: none;
+}
+
+/* small label/pill under the center button to make it clearly visible */
+.center-home::after {
+  content: 'HOME';
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  padding: 3px 8px;
+  color: rgba(207,232,255,0.98);
+  background: rgba(8,24,48,0.32);
+  border: 1px solid rgba(56,136,255,0.16);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.center-home:active { transform: translateY(1px); }
+
+/* hide any leftover tab buttons just in case */
+.tabbar ion-tab-button { display: none !important; }
+

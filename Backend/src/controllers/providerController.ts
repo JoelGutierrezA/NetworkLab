@@ -3,8 +3,9 @@ import { Request, Response } from 'express';
 import { pool } from '../config/database';
 
 export async function createProviderWithAdmin(req: Request, res: Response) {
-    const connection = await pool.getConnection();
+    let connection: any = null;
     try {
+      connection = await pool.getConnection();
       const { provider, admin } = req.body;
         if (!provider || !admin) {
         return res.status(400).json({ success: false, message: 'provider and admin data required' });
@@ -40,7 +41,7 @@ export async function createProviderWithAdmin(req: Request, res: Response) {
         );
         userId = userRes2.insertId;
       } else {
-        throw err; // re-lanzar para el manejo más arriba
+        throw err;
       }
     }
   // 3) Ensure role provider_admin exists (create if missing) and get roleId
@@ -67,14 +68,18 @@ export async function createProviderWithAdmin(req: Request, res: Response) {
   return res.status(201).json({ success: true, data: { supplierId, userId } });
   } catch (err: any) {
     try {
-      await connection.rollback();
+      if (connection) await connection.rollback();
     } catch (rollbackErr) {
       console.error('rollback error:', rollbackErr);
     }
     console.error('createProviderWithAdmin error', err);
     return res.status(500).json({ success: false, message: err.message || 'Internal error' });
   } finally {
-    connection.release();
+    try {
+      if (connection) await connection.release();
+    } catch (releaseErr) {
+      console.warn('error releasing connection', releaseErr);
+    }
   }
 }
 

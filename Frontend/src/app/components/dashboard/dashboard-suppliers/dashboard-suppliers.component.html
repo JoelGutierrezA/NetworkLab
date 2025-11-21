@@ -1,19 +1,35 @@
 <app-header-dashboard></app-header-dashboard>
 
+<!-- Alert visual local -->
+<output *ngIf="alertText" class="alert" [ngClass]="{'alert-success': alertType==='success', 'alert-error': alertType==='error', 'alert-info': alertType==='info'}" [attr.aria-live]="alertType==='error' ? 'assertive' : 'polite'" role="status">
+  <div class="icon" aria-hidden="true">
+    <ng-container [ngSwitch]="alertType">
+      <span *ngSwitchCase="'success'">✔</span>
+      <span *ngSwitchCase="'error'">✖</span>
+      <span *ngSwitchDefault>ℹ</span>
+    </ng-container>
+  </div>
+  <div class="text">{{ alertText }}</div>
+  <button class="icon-btn alert-close" (click)="clearAlert()" aria-label="Cerrar alerta">✕</button>
+</output>
+
 <div class="marketplace-page">
   <div class="marketplace-wrapper">
     <aside class="filters">
+      <div class="filters-top">
+        <button class="btn-add add-product-btn" *ngIf="!isStudent" (click)="toggleAddForm()">+ Agregar Producto</button>
+      </div>
       <h3>🔎 Filtros</h3>
       <div style="margin-bottom:12px;">
         <input placeholder="Buscar por producto o proveedor..." class="filter-input" [(ngModel)]="searchTerm" (input)="filterSuppliers()" />
       </div>
-      <label>Marca</label>
-      <select class="filter-select" [(ngModel)]="selectedBrand" (change)="filterSuppliers()">
+      <label for="brand-filter">Marca</label>
+      <select id="brand-filter" class="filter-select" [(ngModel)]="selectedBrand" (change)="filterSuppliers()">
         <option value="">Todas las marcas</option>
         <option *ngFor="let brand of brands" [value]="brand">{{ brand }}</option>
       </select>
-      <label style="margin-top:10px;">País</label>
-      <select class="filter-select" [(ngModel)]="selectedCountry" (change)="filterSuppliers()">
+      <label for="country-filter" style="margin-top:10px;">País</label>
+      <select id="country-filter" class="filter-select" [(ngModel)]="selectedCountry" (change)="filterSuppliers()">
         <option value="">Todos los países</option>
         <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
       </select>
@@ -44,3 +60,45 @@
 </div>
 
 <app-footer></app-footer>
+
+<!-- Modal/Overlay para agregar producto -->
+<div class="modal-backdrop" *ngIf="showAddForm" (click)="toggleAddForm()" (keydown.escape)="toggleAddForm()">
+  <dialog class="modal" open (click)="$event.stopPropagation()" (keydown.escape)="toggleAddForm()">
+    <div class="modal-header">
+      <h3>Agregar Producto</h3>
+      <button class="icon-btn" (click)="toggleAddForm()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label for="prod-name">Nombre del producto</label>
+          <input id="prod-name" [(ngModel)]="newProduct.name" />
+        </div>
+
+        <div class="field">
+          <label for="prod-brand">Marca</label>
+          <input id="prod-brand" [(ngModel)]="newProduct.brand" />
+        </div>
+
+        <div class="field field-span-2">
+          <label for="prod-desc">Descripción</label>
+          <textarea id="prod-desc" [(ngModel)]="newProduct.description"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="prod-supplier">Proveedor</label>
+          <input id="prod-supplier" [(ngModel)]="newProduct.supplier" />
+        </div>
+
+        <div class="field">
+          <label for="prod-price">Precio</label>
+          <input id="prod-price" type="number" [(ngModel)]="newProduct.price" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary modal-btn" (click)="toggleAddForm()">Cancelar</button>
+      <button class="btn-primary modal-btn" (click)="submitNewProduct()">Crear producto</button>
+    </div>
+  </dialog>
+</div>

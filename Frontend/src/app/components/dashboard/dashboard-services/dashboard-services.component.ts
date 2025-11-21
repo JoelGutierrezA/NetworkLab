@@ -69,6 +69,8 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
   // edición
   showEditForm = false;
   editService: any = null;
+  // read-only flag for the edit modal (used when students view details)
+  editReadOnly = false;
   // newService aligned with equipment table columns
   newService: any = {
     name: '',
@@ -94,6 +96,20 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
   }
   isLabManager = false;
 
+  // Alert visual state
+  alertText: string = '';
+  alertType: 'info' | 'success' | 'error' = 'info';
+
+  setAlert(type: 'info'|'success'|'error', text: string, autoHideMs = 5000) {
+    this.alertType = type;
+    this.alertText = text;
+    if (autoHideMs > 0) {
+      setTimeout(() => this.clearAlert(), autoHideMs);
+    }
+  }
+
+  clearAlert() { this.alertText = ''; this.alertType = 'info'; }
+
   constructor(private readonly serviceService: ServiceService,
               private readonly userService: UserService,
               private readonly authService: AuthService) {}
@@ -101,6 +117,9 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const user = this.authService.getUser();
     this.isLabManager = user && user.role === 'lab_manager';
+
+    // expose student role check
+    this.isStudent = user && user.role === 'student';
 
     // Cargar laboratorios: por institución si hay, si no, todos los laboratorios
     const loadLabs$ = user?.institution_id
@@ -174,6 +193,12 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
     }
 
     toggleAddForm() {
+      // Prevent students from opening the Add form
+      if (this.isStudent) {
+        this.setAlert('error', 'No tienes permiso para agregar servicios');
+        return;
+      }
+
       this.showAddForm = !this.showAddForm;
       try {
         if (this.showAddForm) {
@@ -187,6 +212,15 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
     openEdit(service: any) {
       // clonar para evitar cambios inmediatos en la lista
       this.editService = { ...service };
+      this.editReadOnly = false;
+      this.showEditForm = true;
+      try { document.body.style.overflow = 'hidden'; } catch {}
+    }
+
+    /** Open edit dialog in view-only mode (students) */
+    openView(service: any) {
+      this.editService = { ...service };
+      this.editReadOnly = true;
       this.showEditForm = true;
       try { document.body.style.overflow = 'hidden'; } catch {}
     }
@@ -220,10 +254,10 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
             }
             this.closeEdit();
           } else {
-            alert('Error al actualizar servicio');
+            this.setAlert('error', 'Error al actualizar servicio');
           }
         },
-        error: (err: any) => alert('Error al actualizar servicio: ' + (err.message || err.statusText || err))
+        error: (err: any) => this.setAlert('error', 'Error al actualizar servicio: ' + (err.message || err.statusText || err))
       });
     }
 
@@ -238,18 +272,18 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
             this.services = this.services.filter(s => s.id !== this.editService.id);
             this.applyFilters();
             this.closeEdit();
-          } else {
-            alert('Error al eliminar servicio');
-          }
+            } else {
+              this.setAlert('error', 'Error al eliminar servicio');
+            }
         },
-        error: (err: any) => alert('Error al eliminar servicio: ' + (err.message || err.statusText || err))
+        error: (err: any) => this.setAlert('error', 'Error al eliminar servicio: ' + (err.message || err.statusText || err))
       });
     }
 
     submitNewService() {
     const labId = this.newService.laboratory_id;
     if (!labId) {
-      alert('Seleccione un laboratorio para el servicio');
+      this.setAlert('error', 'Seleccione un laboratorio para el servicio');
       return;
     }
 
@@ -271,11 +305,11 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
           try { document.body.style.overflow = ''; } catch {}
           this.newService = { name: '', description: '', model: '', manufacturer: '', requires_training: false, status: 'available', laboratory_id: this.isLabManager ? labId : null };
         } else {
-          alert('Error al crear servicio');
+          this.setAlert('error', 'Error al crear servicio');
         }
       },
       error: (err: any) => {
-        alert('Error al crear servicio: ' + (err.message || err.statusText || err));
+        this.setAlert('error', 'Error al crear servicio: ' + (err.message || err.statusText || err));
       }
     });
     }
@@ -283,4 +317,7 @@ export class DashboardServicesComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
       try { document.body.style.overflow = ''; } catch {}
     }
+
+    // convenience property populated on init
+    isStudent = false;
 }

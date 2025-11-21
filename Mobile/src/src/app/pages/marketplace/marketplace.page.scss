@@ -1,0 +1,50 @@
+/* Marketplace page styles (self-contained) */
+.marketplace-content {
+  padding-bottom: 96px; /* leave space for bottom tabs */
+  background: #ffffff;
+  --background: #ffffff;
+  color: #071228;
+}
+
+.market-container { padding: 12px; }
+
+/* Reuse services page search styling */
+.search-wrap { margin: 8px 0 12px; }
+.search-wrap ion-searchbar {
+  --border-radius: 14px;
+  border-radius: 14px;
+  --box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  --background: #ffffff;
+  --icon-color: #000000;
+  --placeholder-color: #6b7280;
+  --color: #0f172a;
+}
+
+.search-actions { margin: 12px 0; }
+.add-service { width: 100%; font-weight:800; }
+
+/* Service-like cards */
+.services-list { display:flex; flex-direction:column; gap: 14px; }
+.service-card {
+  background: linear-gradient(90deg,#2563eb 0%, #1e40af 100%);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  color: #ffffff;
+  padding: 12px 14px;
+}
+.service-card ion-card-title { font-weight: 800; font-size: 1.05rem; color: #ffffff; }
+.service-desc { color: rgba(255,255,255,0.92); margin-top:8px; }
+.service-actions { display:flex; justify-content:flex-end; margin-top:8px; }
+
+/* Action button: single-color green, no border */
+.btn-action {
+  background: #10b981 !important; /* emerald-500 */
+  color: #ffffff !important;
+  border: 2px solid #059669 !important; /* slightly darker green border */
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  min-width: 0;
+  box-shadow: 0 6px 18px rgba(5,150,105,0.12);
+}
+

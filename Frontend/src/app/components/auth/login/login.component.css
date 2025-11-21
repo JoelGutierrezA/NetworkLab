@@ -48,17 +48,21 @@
   width: 80px;
   height: 80px;
   margin: 0 auto 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+  /* removed decorative border/background so the logo itself is primary */
+  background: transparent;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.login-icon svg {
-  width: 40px;
-  height: 40px;
-  fill: white;
+.login-icon img.login-logo {
+  /* make the image fill the original container size (80x80) */
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px; /* slight rounding so it doesn't look too sharp */
 }
 
 .login-header h1 {

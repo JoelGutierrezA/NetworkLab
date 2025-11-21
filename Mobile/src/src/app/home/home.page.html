@@ -1,0 +1,42 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>Inicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="home-container">
+    <section class="composer">
+      <h3 class="composer-title">Comparte una actualización</h3>
+      <ion-textarea rows="4" placeholder="Comparte una actualización, pregunta o recurso" [(ngModel)]="newPostBody"></ion-textarea>
+      <div class="composer-actions">
+  <ion-button color="primary" fill="solid" (click)="createPost()" (keyup.enter)="createPost()" (keydown)="noop($event)">Publicar</ion-button>
+      </div>
+    </section>
+
+    <section class="feed">
+      <h3>Comunidad</h3>
+      <div *ngIf="loading" class="skeleton-list">
+        <div class="skeleton-card" *ngFor="let i of [1,2,3]"></div>
+      </div>
+
+      <ion-list *ngIf="!loading">
+        <ion-item *ngFor="let p of posts">
+          <div class="post-card">
+            <div class="post-header">
+              <div class="avatar">{{ getInitials(p) }}</div>
+              <div class="meta">
+                <div class="author">{{ p.author?.first_name }} {{ p.author?.last_name }}</div>
+                <div class="date">{{ p.created_at | date:'short' }}</div>
+              </div>
+            </div>
+            <div class="post-body">{{ p.body }}</div>
+          </div>
+        </ion-item>
+      </ion-list>
+      <div *ngIf="!loading && posts.length === 0" class="empty">Aún no hay publicaciones. Sé el primero en compartir algo.</div>
+    </section>
+  </div>
+</ion-content>
+
+<app-bottom-tabs></app-bottom-tabs>

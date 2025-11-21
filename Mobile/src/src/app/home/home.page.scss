@@ -1,0 +1,96 @@
+.home-container {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+  min-height: 60vh;
+}
+
+/* Make the page background transparent so the global/app-shell gradient shows through */
+:host {
+  display: block;
+}
+
+ion-content {
+  --background: transparent;
+  background: transparent;
+  /* leave room for the floating footer */
+  padding-bottom: 96px;
+}
+
+.home-container h2 {
+  color: var(--ion-color-primary, #667eea);
+}
+
+/* Composer */
+.composer {
+  background: var(--ion-color-step-50, #fff);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+  color: #111;
+}
+
+.composer-title {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #111;
+}
+
+.composer ion-textarea {
+  width: 100%;
+  border-radius: 8px;
+  background: var(--ion-color-step-10, #fafafa);
+  padding: 8px;
+  color: #111;
+}
+
+/* textarea placeholder color */
+.composer ion-textarea::part(native) {
+  color: #222;
+}
+
+/* Feed */
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.post-card {
+  background: var(--ion-color-step-50, #fff);
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  color: #111;
+}
+
+.post-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  /* Darker gradient to improve text contrast against the background */
+  background: linear-gradient(135deg,#4b2b83,#2b0f4a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.meta .author {
+  font-weight: 600;
+}
+
+.post-body {
+  margin-top: 6px;
+  color: var(--ion-color-medium, #444);
+}

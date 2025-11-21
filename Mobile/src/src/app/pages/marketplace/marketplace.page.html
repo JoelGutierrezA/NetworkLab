@@ -1,0 +1,46 @@
+
+		<ion-header translucent="true">
+			<ion-toolbar>
+				<ion-buttons slot="start">
+					<ion-back-button defaultHref="/home"></ion-back-button>
+				</ion-buttons>
+				<ion-title>Marketplace</ion-title>
+				<ion-buttons slot="end">
+					<ion-button class="cart-button" fill="clear" (click)="onOpenCart()">
+						<ion-icon name="cart-outline"></ion-icon>
+						<ion-badge class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</ion-badge>
+					</ion-button>
+				</ion-buttons>
+			</ion-toolbar>
+			<ion-toolbar>
+					<div class="search-wrap">
+						<ion-searchbar placeholder="Buscar producto" show-cancel-button="never"></ion-searchbar>
+					</div>
+				</ion-toolbar>
+		</ion-header>
+			<ion-content class="marketplace-content services-page-content">
+				<div class="market-container">
+					<div class="search-actions">
+						<ion-button expand="block" color="primary" class="add-service">AGREGAR PRODUCTO</ion-button>
+					</div>
+
+					<div class="services-list">
+						<ion-card class="service-card" *ngFor="let p of products">
+							<ion-card-header>
+								<ion-card-title>{{ p.name }}</ion-card-title>
+							</ion-card-header>
+							<ion-card-content>
+								<div class="service-desc">{{ p.description || '-' }}</div>
+								<div class="service-actions">
+									<ion-button class="btn-action" (click)="isStudent ? viewProduct(p) : editProduct(p)">
+										{{ isStudent ? 'Ver' : 'Editar' }}
+									</ion-button>
+								</div>
+							</ion-card-content>
+						</ion-card>
+					</div>
+				</div>
+			</ion-content>
+		<app-bottom-tabs></app-bottom-tabs>
+		<ion-toast [isOpen]="toastOpen" [message]="toastMessage" [duration]="2000"></ion-toast>
+

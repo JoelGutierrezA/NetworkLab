@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import pool from "../config/database";
+import { pool } from "../config/database";
 
 // Crear usuario
 export const createUser = async (req: Request, res: Response) => {

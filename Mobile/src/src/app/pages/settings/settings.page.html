@@ -1,0 +1,19 @@
+<ion-header translucent="true">
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button defaultHref="/home"></ion-back-button>
+		</ion-buttons>
+		<ion-title>Configuración</ion-title>
+	</ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding settings-content" style="--background: #ffffff; padding-bottom:96px;">
+	<div class="settings-top">
+		<img src="assets/icon/networklab-logo.png" alt="NetworkLab" class="settings-logo" />
+	</div>
+
+	<div class="logout-actions">
+		<ion-button fill="clear" expand="block" class="logout-text-button" (click)="onLogout()">Cerrar sesión</ion-button>
+	</div>
+</ion-content>
+<app-bottom-tabs></app-bottom-tabs>
+

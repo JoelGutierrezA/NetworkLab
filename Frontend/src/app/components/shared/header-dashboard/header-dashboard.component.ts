@@ -15,6 +15,7 @@ export class HeaderDashboardComponent implements OnInit, AfterViewInit, OnDestro
   userName: string = 'Usuario';
   isDropdownOpen: boolean = false;
   user: any = null;
+  showLogo: boolean = true;
   @ViewChild('headerEl', { static: true }) headerEl!: ElementRef<HTMLElement>;
   private resizeHandler = () => this.updateHeaderHeight();
 
@@ -55,6 +56,11 @@ export class HeaderDashboardComponent implements OnInit, AfterViewInit, OnDestro
 
   logout(): void {
     this.authService.logout();
+  }
+
+  onLogoError(): void {
+    // evitar uso de inline JS y manejar fallback desde Angular
+    this.showLogo = false;
   }
 }
 
