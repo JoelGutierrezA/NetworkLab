@@ -1,14 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ApiResponse } from '../models/api-response.model';
+import { Institution } from '../models/institution.model';
+import { Laboratory } from '../models/laboratory.model';
 import { User } from '../models/user.model';
-
-interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  id?: number;
-  [key: string]: any;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +12,7 @@ interface ApiResponse<T> {
 export class UserService {
   private readonly apiUrl = 'http://localhost:3000/api';
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   // USUARIOS
   getUsuarios(page: number, pageSize: number): Observable<{ usuarios: User[]; total: number }> {
@@ -58,19 +54,19 @@ export class UserService {
   }
 
   // INSTITUCIONES
-  getInstitutions(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/institutions`);
+  getInstitutions(): Observable<ApiResponse<Institution[]>> {
+    return this.http.get<ApiResponse<Institution[]>>(`${this.apiUrl}/institutions`);
   }
 
-  getInstitutionById(id: number): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/institutions/${id}`);
+  getInstitutionById(id: number): Observable<ApiResponse<Institution>> {
+    return this.http.get<ApiResponse<Institution>>(`${this.apiUrl}/institutions/${id}`);
   }
 
-  createInstitution(data: any): Observable<ApiResponse<null>> {
+  createInstitution(data: Partial<Institution>): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${this.apiUrl}/institutions`, data);
   }
 
-  updateInstitution(id: number, data: any): Observable<ApiResponse<null>> {
+  updateInstitution(id: number, data: Partial<Institution>): Observable<ApiResponse<null>> {
     const url = `${this.apiUrl}/institutions/${id}`;
     const token = localStorage.getItem('token');
     if (token) {
@@ -85,19 +81,19 @@ export class UserService {
   }
 
   // LABORATORIOS
-  getAllLaboratories(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(
+  getAllLaboratories(): Observable<ApiResponse<Laboratory[]>> {
+    return this.http.get<ApiResponse<Laboratory[]>>(
       `${this.apiUrl}/laboratories`
     );
   }
 
-  getLaboratoriesByInstitution(institutionId: number): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(
+  getLaboratoriesByInstitution(institutionId: number): Observable<ApiResponse<Laboratory[]>> {
+    return this.http.get<ApiResponse<Laboratory[]>>(
       `${this.apiUrl}/institutions/${institutionId}/laboratories`
     );
   }
 
-  createLaboratory(institutionId: number, labData: any): Observable<ApiResponse<null>> {
+  createLaboratory(institutionId: number, labData: Partial<Laboratory>): Observable<ApiResponse<null>> {
     const url = `${this.apiUrl}/institutions/${institutionId}/laboratories`;
 
     // Fallback: si por alguna razón el interceptor no adjunta la cabecera,
@@ -111,7 +107,7 @@ export class UserService {
     return this.http.post<ApiResponse<null>>(url, labData);
   }
 
-  updateLaboratory(laboratoryId: number, labData: any): Observable<ApiResponse<null>> {
+  updateLaboratory(laboratoryId: number, labData: Partial<Laboratory>): Observable<ApiResponse<null>> {
     const url = `${this.apiUrl}/laboratories/${laboratoryId}`;
     const token = localStorage.getItem('token');
     if (token) {

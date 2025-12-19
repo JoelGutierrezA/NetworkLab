@@ -100,12 +100,12 @@ export class DashboardProfileComponent implements OnInit {
   editingSupplierId: number | null = null;
 
   constructor(
-  private readonly userService: UserService,
-  public readonly router: Router,
+    private readonly userService: UserService,
+    public readonly router: Router,
     private readonly route: ActivatedRoute
     ,
     private readonly supplierService: SupplierService
-  ) {}
+  ) { }
 
   // Inyectar SupplierService
 
@@ -121,7 +121,7 @@ export class DashboardProfileComponent implements OnInit {
       this.loadUsers();
       this.loadMetrics();
       this.loadSuppliers();
-  }
+    }
   }
 
   /* Proveedores */
@@ -341,7 +341,7 @@ export class DashboardProfileComponent implements OnInit {
 
       if (this.selectedInstitution) {
         this.userService
-          .updateInstitution(updatedUser.id, { institutionId: this.selectedInstitution })
+          .updateUser(updatedUser.id, { institution_id: this.selectedInstitution })
           .subscribe({
             next: (res) => console.log('✅ Perfil actualizado:', res.message),
             error: (err) => console.error('❌ Error actualizando perfil:', err),
@@ -510,17 +510,17 @@ export class DashboardProfileComponent implements OnInit {
   }
 
   loadMetrics(): void {
-  // Contar laboratorios
-  this.institutions.forEach(inst => {
-    this.userService.getLaboratoriesByInstitution(inst.id).subscribe({
-      next: (res: any) => {
-        if (res.success) {
-          this.totalLaboratories += res.laboratories.length;
-        }
-      },
-      error: (err) => console.error('❌ Error obteniendo laboratorios para métricas', err)
+    // Contar laboratorios
+    this.institutions.forEach(inst => {
+      this.userService.getLaboratoriesByInstitution(inst.id).subscribe({
+        next: (res: any) => {
+          if (res.success) {
+            this.totalLaboratories += res.laboratories.length;
+          }
+        },
+        error: (err) => console.error('❌ Error obteniendo laboratorios para métricas', err)
+      });
     });
-  });
   }
 
   /* Paginación */

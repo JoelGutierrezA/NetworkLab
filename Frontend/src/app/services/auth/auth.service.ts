@@ -14,13 +14,7 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   data: {
-    user: {
-      id: number;
-      email: string;
-      first_name: string;
-      last_name: string;
-      role: string;
-    };
+    user: User;
     token: string;
   };
 }
@@ -37,15 +31,18 @@ export interface RegisterResponse {
   success: boolean;
   message: string;
   data: {
-    user: {
-      id: number;
-      email: string;
-      first_name: string;
-      last_name: string;
-      role: string;
-    };
+    user: User;
     token: string;
   };
+}
+
+// Interfaz común para User
+export interface User {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
 }
 
 @Injectable({
@@ -55,12 +52,12 @@ export class AuthService {
   private readonly apiUrl = environment.apiUrl;
 
   constructor(private readonly http: HttpClient,
-              private readonly router: Router
-  ) {}
+    private readonly router: Router
+  ) { }
 
   login(dto: { email: string; password: string }): Observable<AuthResponse> {
-  return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, dto);
-}
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, dto);
+  }
 
   // MÉTODO REGISTER
   register(userData: RegisterRequest): Observable<RegisterResponse> {
@@ -71,8 +68,8 @@ export class AuthService {
   }
 
   refreshToken(): Observable<string> {
-  this._isRefreshing.next(true);
-    return this.http.post<{ token: string; user?: any }>(
+    this._isRefreshing.next(true);
+    return this.http.post<{ token: string; user?: User }>(
       `${this.apiUrl}/auth/refresh`,
       {},
       {
@@ -92,7 +89,7 @@ export class AuthService {
         }
         return newToken;
       }),
-  finalize(() => this._isRefreshing.next(false))
+      finalize(() => this._isRefreshing.next(false))
     );
   }
 
@@ -105,8 +102,8 @@ export class AuthService {
   }
 
   getUser() {
-  const userData = localStorage.getItem('user');
-  return userData ? JSON.parse(userData) : null;
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
   }
 
   // Método adicional para verificar roles

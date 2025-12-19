@@ -8,11 +8,13 @@ import { Product } from '../models/product.model';
 export class MarketplaceService {
   private readonly apiUrl = environment.apiUrl;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   // Catálogo general (ajusta el endpoint a tu backend)
   getCatalog(params?: { q?: string; category?: string }): Observable<Product[]> {
     const url = `${this.apiUrl}/marketplace/catalog`;
-    return this.http.get<Product[]>(url, { params: (params as any) || {} });
+    // Angular's HttpClient params accepts { [param: string]: string | number | boolean | ReadonlyArray<string | number | boolean> }
+    // We cast to any or Record<string, any> only if strictly necessary, but better to type it properly.
+    return this.http.get<Product[]>(url, { params: params as any });
   }
 }
