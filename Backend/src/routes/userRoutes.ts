@@ -7,14 +7,15 @@ import { changePasswordValidator } from '../validators/user.validators';
 const router = Router();
 
 // Middleware para manejar errores de validación
-function validate(req: any, res: any, next: any) {
+import { NextFunction, Request, Response } from 'express';
+function validate(req: Request, res: Response, next: NextFunction) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-    return res.status(400).json({
-        success: false,
-        message: 'Validación fallida',
-        errors: errors.array(),
-    });
+        return res.status(400).json({
+            success: false,
+            message: 'Validación fallida',
+            errors: errors.array(),
+        });
     }
     next();
 }

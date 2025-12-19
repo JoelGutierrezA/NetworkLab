@@ -1,18 +1,19 @@
 import { pool } from '../config/database';
+import { ResultSetHeader, RowDataPacket } from '../types';
 
 export interface User {
-    id?: number;
-    email: string;
-    password_hash: string;
-    first_name: string;
-    last_name: string;
-    avatar_url?: string;
-    bio?: string;
-    phone?: string;
-    institution_id?: number;
-    is_verified?: boolean;
-    created_at?: Date;
-    updated_at?: Date;
+  id?: number;
+  email: string;
+  password_hash: string;
+  first_name: string;
+  last_name: string;
+  avatar_url?: string;
+  bio?: string;
+  phone?: string;
+  institution_id?: number;
+  is_verified?: boolean;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export class UserModel {
@@ -33,22 +34,22 @@ export class UserModel {
       user.phone || null
     ];
 
-    const [result]: any = await pool.execute(query, values);
+    const [result] = await pool.execute<ResultSetHeader>(query, values);
     return { ...user, id: result.insertId };
   }
 
   // Encontrar usuario por email
   static async findByEmail(email: string): Promise<User | null> {
     const query = 'SELECT * FROM users WHERE email = ?';
-    const [rows]: any = await pool.execute(query, [email]);
-    return rows.length > 0 ? rows[0] : null;
+    const [rows] = await pool.execute<RowDataPacket[]>(query, [email]);
+    return rows.length > 0 ? (rows[0] as User) : null;
   }
 
   // Encontrar usuario por ID
   static async findById(id: number): Promise<User | null> {
     const query = 'SELECT * FROM users WHERE id = ?';
-    const [rows]: any = await pool.execute(query, [id]);
-    return rows.length > 0 ? rows[0] : null;
+    const [rows] = await pool.execute<RowDataPacket[]>(query, [id]);
+    return rows.length > 0 ? (rows[0] as User) : null;
   }
 
   // Actualizar usuario
@@ -60,15 +61,15 @@ export class UserModel {
     const values = [...Object.values(updates), id];
 
     const query = `UPDATE users SET ${setClause} WHERE id = ?`;
-    const [result]: any = await pool.execute(query, values);
-    
+    const [result] = await pool.execute<ResultSetHeader>(query, values);
+
     return result.affectedRows > 0;
   }
 
   // Eliminar usuario
   static async delete(id: number): Promise<boolean> {
     const query = 'DELETE FROM users WHERE id = ?';
-    const [result]: any = await pool.execute(query, [id]);
+    const [result] = await pool.execute<ResultSetHeader>(query, [id]);
     return result.affectedRows > 0;
   }
 }

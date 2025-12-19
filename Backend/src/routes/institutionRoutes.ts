@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { Router } from 'express';
 import pool from '../config/database';
 import { authenticateToken, requireRole } from '../middleware/auth';
+import { ResultSetHeader, RowDataPacket } from '../types';
 
 const router = Router();
 
@@ -18,13 +19,13 @@ const router = Router();
  */
 router.get('/institutions', async (req, res) => {
     try {
-    const [rows]: any = await pool.query(
-        'SELECT id, name FROM institutions ORDER BY name ASC'
-    );
-    res.json({ success: true, institutions: rows });
+        const [rows] = await pool.query<RowDataPacket[]>(
+            'SELECT id, name FROM institutions ORDER BY name ASC'
+        );
+        res.json({ success: true, institutions: rows });
     } catch (error) {
-    console.error('❌ Error obteniendo instituciones:', error);
-    res.status(500).json({ success: false, message: 'Error obteniendo instituciones' });
+        console.error('❌ Error obteniendo instituciones:', error);
+        res.status(500).json({ success: false, message: 'Error obteniendo instituciones' });
     }
 });
 
@@ -57,66 +58,66 @@ router.get('/institutions', async (req, res) => {
 router.post('/institutions', authenticateToken, requireRole(['admin']), async (req, res) => {
     const connection = await pool.getConnection();
     try {
-    const { name, adminEmail, adminPassword, adminFirstName, adminLastName } = req.body;
-    if (!name) {
-        return res.status(400).json({ success: false, message: 'El nombre es obligatorio' });
-    }
-
-    await connection.beginTransaction();
-
-    const [result]: any = await connection.query(
-        'INSERT INTO institutions (name) VALUES (?)',
-        [name]
-    );
-    const institutionId = result.insertId;
-
-    // Si se proporcionaron credenciales del admin, crearlo y asignar rol lab_manager
-    if (adminEmail && adminPassword) {
-        // verificar existencia de email
-        const [existingUsers]: any = await connection.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
-        if (existingUsers.length > 0) {
-        // rollback y error
-        await connection.rollback();
-        return res.status(400).json({ success: false, message: 'El correo ya está registrado' });
+        const { name, adminEmail, adminPassword, adminFirstName, adminLastName } = req.body;
+        if (!name) {
+            return res.status(400).json({ success: false, message: 'El nombre es obligatorio' });
         }
 
-        const password_hash = await bcrypt.hash(adminPassword, 10);
+        await connection.beginTransaction();
 
-    const [userResult]: any = await connection.query(
-    'INSERT INTO users (email, password_hash, first_name, last_name, created_via) VALUES (?, ?, ?, ?, ?)',
-    [adminEmail, password_hash, adminFirstName || '', adminLastName || '', 'admin']
-    );
-        const userId = userResult.insertId;
+        const [result] = await connection.query<ResultSetHeader>(
+            'INSERT INTO institutions (name) VALUES (?)',
+            [name]
+        );
+        const institutionId = result.insertId;
 
-        // obtener role_id para lab_manager; si no existe, crearlo
-        const [roleRows]: any = await connection.query('SELECT id FROM roles WHERE name = ?', ['lab_manager']);
-        let roleId: number;
-        if (roleRows.length === 0) {
-        const [r]: any = await connection.query('INSERT INTO roles (name, description) VALUES (?, ?)', ['lab_manager', 'Laboratory manager']);
-        roleId = r.insertId;
-        } else {
-        roleId = roleRows[0].id;
+        // Si se proporcionaron credenciales del admin, crearlo y asignar rol lab_manager
+        if (adminEmail && adminPassword) {
+            // verificar existencia de email
+            const [existingUsers] = await connection.query<RowDataPacket[]>('SELECT id FROM users WHERE email = ?', [adminEmail]);
+            if (existingUsers.length > 0) {
+                // rollback y error
+                await connection.rollback();
+                return res.status(400).json({ success: false, message: 'El correo ya está registrado' });
+            }
+
+            const password_hash = await bcrypt.hash(adminPassword, 10);
+
+            const [userResult] = await connection.query<ResultSetHeader>(
+                'INSERT INTO users (email, password_hash, first_name, last_name, created_via) VALUES (?, ?, ?, ?, ?)',
+                [adminEmail, password_hash, adminFirstName || '', adminLastName || '', 'admin']
+            );
+            const userId = userResult.insertId;
+
+            // obtener role_id para lab_manager; si no existe, crearlo
+            const [roleRows] = await connection.query<RowDataPacket[]>('SELECT id FROM roles WHERE name = ?', ['lab_manager']);
+            let roleId: number;
+            if (roleRows.length === 0) {
+                const [r] = await connection.query<ResultSetHeader>('INSERT INTO roles (name, description) VALUES (?, ?)', ['lab_manager', 'Laboratory manager']);
+                roleId = r.insertId;
+            } else {
+                roleId = roleRows[0].id as number;
+            }
+
+            // El trigger after insert en users pudo haber insertado institution_users con role_id=1
+            // Limpiar cualquier asignación previa e insertar la correcta en organization_users (polimórfica)
+            await connection.query("DELETE FROM organization_users WHERE user_id = ? AND organization_type = 'institution'", [userId]);
+            await connection.query('INSERT INTO organization_users (user_id, organization_type, organization_id, role_id) VALUES (?, ?, ?, ?)', [userId, 'institution', institutionId, roleId]);
         }
 
-    // El trigger after insert en users pudo haber insertado institution_users con role_id=1
-    // Limpiar cualquier asignación previa e insertar la correcta en organization_users (polimórfica)
-    await connection.query("DELETE FROM organization_users WHERE user_id = ? AND organization_type = 'institution'", [userId]);
-    await connection.query('INSERT INTO organization_users (user_id, organization_type, organization_id, role_id) VALUES (?, ?, ?, ?)', [userId, 'institution', institutionId, roleId]);
-    }
+        await connection.commit();
 
-    await connection.commit();
-
-    res.json({
-        success: true,
-        id: institutionId,
-        message: 'Institución creada correctamente',
-    });
+        res.json({
+            success: true,
+            id: institutionId,
+            message: 'Institución creada correctamente',
+        });
     } catch (error) {
-    console.error('❌ Error creando institución:', error);
-    try { await connection.rollback(); } catch (rollbackErr) { console.error('❌ Error al hacer rollback:', rollbackErr); }
-    res.status(500).json({ success: false, message: 'Error creando institución' });
+        console.error('❌ Error creando institución:', error);
+        try { await connection.rollback(); } catch (rollbackErr) { console.error('❌ Error al hacer rollback:', rollbackErr); }
+        res.status(500).json({ success: false, message: 'Error creando institución' });
     } finally {
-    connection.release();
+        connection.release();
     }
 });
 
@@ -143,15 +144,15 @@ router.get('/institutions/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [rows]: any = await pool.query(
-        `SELECT id, name, type, description, website, logo_url, country, city, address, created_at
+        const [rows] = await pool.query<RowDataPacket[]>(
+            `SELECT id, name, type, description, website, logo_url, country, city, address, created_at
             FROM institutions
             WHERE id = ?`,
-        [id]
+            [id]
         );
 
         if (!rows || rows.length === 0) {
-        return res.status(404).json({ success: false, message: 'Institución no encontrada' });
+            return res.status(404).json({ success: false, message: 'Institución no encontrada' });
         }
 
         res.json({ success: true, institution: rows[0] });
@@ -193,35 +194,35 @@ router.get('/institutions/:id', async (req, res) => {
  */
 router.put('/institutions/:id', authenticateToken, requireRole(['admin']), async (req, res) => {
     try {
-    const { id } = req.params;
-    const {
-        name,
-        type,
-        description,
-        website,
-        country,
-        city,
-        address
-    } = req.body;
+        const { id } = req.params;
+        const {
+            name,
+            type,
+            description,
+            website,
+            country,
+            city,
+            address
+        } = req.body;
 
-    // Validación mínima
-    if (!name) {
-        return res.status(400).json({ success: false, message: 'El nombre es obligatorio' });
-    }
+        // Validación mínima
+        if (!name) {
+            return res.status(400).json({ success: false, message: 'El nombre es obligatorio' });
+        }
 
-    const [result]: any = await pool.query(
-        `UPDATE institutions SET name = ?, type = ?, description = ?, website = ?, country = ?, city = ?, address = ? WHERE id = ?`,
-        [name, type || null, description || null, website || null, country || null, city || null, address || null, id]
-    );
+        const [result] = await pool.query<ResultSetHeader>(
+            `UPDATE institutions SET name = ?, type = ?, description = ?, website = ?, country = ?, city = ?, address = ? WHERE id = ?`,
+            [name, type || null, description || null, website || null, country || null, city || null, address || null, id]
+        );
 
-    if (result.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: 'Institución no encontrada' });
-    }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Institución no encontrada' });
+        }
 
-    res.json({ success: true, message: 'Institución actualizada correctamente' });
+        res.json({ success: true, message: 'Institución actualizada correctamente' });
     } catch (error) {
-    console.error('❌ Error actualizando institución:', error);
-    res.status(500).json({ success: false, message: 'Error actualizando institución' });
+        console.error('❌ Error actualizando institución:', error);
+        res.status(500).json({ success: false, message: 'Error actualizando institución' });
     }
 });
 
@@ -248,21 +249,21 @@ router.put('/institutions/:id', authenticateToken, requireRole(['admin']), async
  */
 router.delete('/institutions/:id', authenticateToken, requireRole(['admin']), async (req, res) => {
     try {
-    const { id } = req.params;
+        const { id } = req.params;
 
-    const [result]: any = await pool.query(
-        'DELETE FROM institutions WHERE id = ?',
-        [id]
-    );
+        const [result] = await pool.query<ResultSetHeader>(
+            'DELETE FROM institutions WHERE id = ?',
+            [id]
+        );
 
-    if (result.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: 'Institución no encontrada' });
-    }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Institución no encontrada' });
+        }
 
-    res.json({ success: true, message: 'Institución eliminada correctamente' });
+        res.json({ success: true, message: 'Institución eliminada correctamente' });
     } catch (error) {
-    console.error('❌ Error eliminando institución:', error);
-    res.status(500).json({ success: false, message: 'Error eliminando institución' });
+        console.error('❌ Error eliminando institución:', error);
+        res.status(500).json({ success: false, message: 'Error eliminando institución' });
     }
 });
 

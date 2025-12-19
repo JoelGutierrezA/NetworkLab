@@ -2,12 +2,13 @@ import bcrypt from 'bcrypt';
 import { Router } from 'express';
 import pool from '../config/database';
 import { authenticateToken, requireRole } from '../middleware/auth';
+import { ResultSetHeader, RowDataPacket, hasMessage, isMySQLError } from '../types';
 
 const router = Router();
 const isDev = process.env.NODE_ENV !== 'production';
 
-function mapMysqlError(err: any) {
-  const code = err?.code || err?.errno || null;
+function mapMysqlError(err: unknown) {
+  const code = isMySQLError(err) ? (err.code || err.errno?.toString() || null) : null;
   // Default
   let status = 500;
   let message = 'Error en la base de datos';
@@ -55,16 +56,16 @@ function mapMysqlError(err: any) {
 // Obtener todos los laboratorios
 router.get('/laboratories', async (req, res) => {
   try {
-    const [rows]: any = await pool.query(
+    const [rows] = await pool.query<RowDataPacket[]>(
       `SELECT id, institution_id, name, description, location, contact_email, website, research_areas
       FROM laboratories
       ORDER BY name ASC`
     );
     res.json({ success: true, laboratories: rows });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Error obteniendo TODOS los laboratorios:', error);
-    const resp: any = { success: false, message: 'Error obteniendo laboratorios' };
-    if (isDev) resp.details = (error as any)?.message || String(error);
+    const errorMessage = hasMessage(error) ? error.message : String(error);
+    const resp = { success: false, message: 'Error obteniendo laboratorios', details: isDev ? errorMessage : undefined };
     res.status(500).json(resp);
   }
 });
@@ -94,12 +95,12 @@ router.get('/institutions/:id/laboratories', async (req, res) => {
     const { id } = req.params;
 
     // validar que la institución existe
-    const [instRows]: any = await pool.query('SELECT id FROM institutions WHERE id = ?', [id]);
+    const [instRows] = await pool.query<RowDataPacket[]>('SELECT id FROM institutions WHERE id = ?', [id]);
     if (instRows.length === 0) {
       return res.status(404).json({ success: false, message: 'Institución no encontrada' });
     }
 
-    const [rows]: any = await pool.query(
+    const [rows] = await pool.query<RowDataPacket[]>(
       `SELECT id, name, description, location, contact_email, website, research_areas
         FROM laboratories
         WHERE institution_id = ?`,
@@ -107,10 +108,10 @@ router.get('/institutions/:id/laboratories', async (req, res) => {
     );
 
     res.json({ success: true, laboratories: rows });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Error obteniendo laboratorios:', error);
-    const resp: any = { success: false, message: 'Error obteniendo laboratorios asociados a la institución' };
-    if (isDev) resp.details = (error as any)?.message || String(error);
+    const errorMessage = hasMessage(error) ? error.message : String(error);
+    const resp = { success: false, message: 'Error obteniendo laboratorios asociados a la institución', details: isDev ? errorMessage : undefined };
     res.status(500).json(resp);
   }
 });
@@ -139,7 +140,7 @@ router.get('/laboratories/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [rows]: any = await pool.query(
+    const [rows] = await pool.query<RowDataPacket[]>(
       `SELECT id, name, description, location, contact_email, website, research_areas, institution_id 
         FROM laboratories
         WHERE id = ?`,
@@ -151,10 +152,10 @@ router.get('/laboratories/:id', async (req, res) => {
     }
 
     res.json({ success: true, laboratory: rows[0] });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Error obteniendo laboratorio:', error);
-    const resp: any = { success: false, message: 'Error obteniendo laboratorio' };
-    if (isDev) resp.details = (error as any)?.message || String(error);
+    const errorMessage = hasMessage(error) ? error.message : String(error);
+    const resp = { success: false, message: 'Error obteniendo laboratorio', details: isDev ? errorMessage : undefined };
     res.status(500).json(resp);
   }
 });
@@ -225,7 +226,7 @@ router.post('/institutions/:id/laboratories', authenticateToken, requireRole(['a
     }
 
     // validar que la institución existe para evitar violaciones de FK
-    const [instRows]: any = await connection.query('SELECT id FROM institutions WHERE id = ?', [id]);
+    const [instRows] = await connection.query<RowDataPacket[]>('SELECT id FROM institutions WHERE id = ?', [id]);
     if (instRows.length === 0) {
       connection.release();
       return res.status(404).json({ success: false, message: 'Institución no encontrada' });
@@ -237,7 +238,7 @@ router.post('/institutions/:id/laboratories', authenticateToken, requireRole(['a
 
     // Crear usuario director (lab manager) si se entregan credenciales
     if (adminEmail && adminPassword) {
-      const [existingUsers]: any = await connection.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+      const [existingUsers] = await connection.query<RowDataPacket[]>('SELECT id FROM users WHERE email = ?', [adminEmail]);
       if (existingUsers.length > 0) {
         await connection.rollback();
         connection.release();
@@ -246,18 +247,18 @@ router.post('/institutions/:id/laboratories', authenticateToken, requireRole(['a
 
       const password_hash = await bcrypt.hash(adminPassword, 10);
       // Intentar insertar incluyendo `created_via`. Si la columna no existe (ER_BAD_FIELD_ERROR), reintentar sin ella.
-      let userResult: any;
+      let userResult: ResultSetHeader;
       try {
-        const [r]: any = await connection.query(
+        const [r] = await connection.query<ResultSetHeader>(
           'INSERT INTO users (email, password_hash, first_name, last_name, created_via) VALUES (?, ?, ?, ?, ?)',
           [adminEmail, password_hash, adminFirstName || '', adminLastName || '', 'admin']
         );
         userResult = r;
-      } catch (insertErr) {
+      } catch (insertErr: unknown) {
         // Si la columna created_via no existe, reintentar sin ella
-        if ((insertErr as any)?.code === 'ER_BAD_FIELD_ERROR' && ((insertErr as any)?.sqlMessage || '').includes('created_via')) {
+        if (isMySQLError(insertErr) && insertErr.code === 'ER_BAD_FIELD_ERROR' && (insertErr.sqlMessage || '').includes('created_via')) {
           console.warn('Columna `created_via` no encontrada. Reintentando insert sin esa columna.');
-          const [r2]: any = await connection.query(
+          const [r2] = await connection.query<ResultSetHeader>(
             'INSERT INTO users (email, password_hash, first_name, last_name) VALUES (?, ?, ?, ?)',
             [adminEmail, password_hash, adminFirstName || '', adminLastName || '']
           );
@@ -269,13 +270,13 @@ router.post('/institutions/:id/laboratories', authenticateToken, requireRole(['a
       directorId = userResult.insertId;
 
       // obtener role_id para lab_manager; crear si no existe
-      const [roleRows]: any = await connection.query('SELECT id FROM roles WHERE name = ?', ['lab_manager']);
+      const [roleRows] = await connection.query<RowDataPacket[]>('SELECT id FROM roles WHERE name = ?', ['lab_manager']);
       let roleId: number;
       if (roleRows.length === 0) {
-        const [r]: any = await connection.query('INSERT INTO roles (name, description) VALUES (?, ?)', ['lab_manager', 'Laboratory manager']);
+        const [r] = await connection.query<ResultSetHeader>('INSERT INTO roles (name, description) VALUES (?, ?)', ['lab_manager', 'Laboratory manager']);
         roleId = r.insertId;
       } else {
-        roleId = roleRows[0].id;
+        roleId = roleRows[0].id as number;
       }
 
       // limpiar asignaciones automáticas y asignar esta institución al usuario como lab_manager
@@ -286,31 +287,29 @@ router.post('/institutions/:id/laboratories', authenticateToken, requireRole(['a
     // Insertar laboratorio
     const insertQuery = `INSERT INTO laboratories (name, description, institution_id, director_id, location, contact_email, website, research_areas)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    const [result]: any = await connection.query(insertQuery,
+    const [result] = await connection.query<ResultSetHeader>(insertQuery,
       [name, description, id, directorId, location, contact_email, website, research_areas]
     );
 
     await connection.commit();
 
     res.json({ success: true, id: result.insertId, message: 'Laboratorio creado correctamente' });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Error creando laboratorio:', error);
     // Loguear campos MySQL útiles para diagnóstico
-    try {
-      console.error('MySQL error code:', (error as any)?.code, 'errno:', (error as any)?.errno, 'sqlMessage:', (error as any)?.sqlMessage);
-    } catch (logErr) {
-      console.error('Error al loggear detalles del error:', logErr);
+    if (isMySQLError(error)) {
+      console.error('MySQL error code:', error.code, 'errno:', error.errno, 'sqlMessage:', error.sqlMessage);
     }
     try { await connection.rollback(); } catch (rollbackErr) { console.error('❌ Error al hacer rollback:', rollbackErr); }
     connection.release();
     const mapped = mapMysqlError(error);
-    const resp: any = { success: false, message: mapped.message || 'Error creando laboratorio' };
-    if (isDev) {
+    const resp: { success: boolean; message: string; details?: unknown } = { success: false, message: mapped.message || 'Error creando laboratorio' };
+    if (isDev && isMySQLError(error)) {
       resp.details = {
-        code: (error as any)?.code,
-        errno: (error as any)?.errno,
-        sqlMessage: (error as any)?.sqlMessage,
-        message: (error as any)?.message || String(error)
+        code: error.code,
+        errno: error.errno,
+        sqlMessage: error.sqlMessage,
+        message: error.message
       };
     }
     res.status(mapped.status || 500).json(resp);
@@ -371,7 +370,7 @@ router.put('/laboratories/:id', authenticateToken, requireRole(['admin']), async
       return res.status(400).json({ success: false, message: 'El nombre y la descripción son obligatorios.' });
     }
 
-    const [result]: any = await pool.query(
+    const [result] = await pool.query<ResultSetHeader>(
       `UPDATE laboratories SET name = ?, description = ?, location = ?, contact_email = ?, website = ?, research_areas = ? WHERE id = ?`,
       [name, description, location, contact_email, website, research_areas, id]
     );
@@ -381,10 +380,10 @@ router.put('/laboratories/:id', authenticateToken, requireRole(['admin']), async
     }
 
     res.json({ success: true, message: 'Laboratorio actualizado correctamente' });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Error actualizando laboratorio:', error);
-    const resp: any = { success: false, message: 'Error actualizando laboratorio' };
-    if (isDev) resp.details = (error as any)?.message || String(error);
+    const errorMessage = hasMessage(error) ? error.message : String(error);
+    const resp = { success: false, message: 'Error actualizando laboratorio', details: isDev ? errorMessage : undefined };
     res.status(500).json(resp);
   }
 });
@@ -415,17 +414,17 @@ router.delete('/laboratories/:id', authenticateToken, requireRole(['admin']), as
   try {
     const { id } = req.params;
 
-    const [result]: any = await pool.query('DELETE FROM laboratories WHERE id = ?', [id]);
+    const [result] = await pool.query<ResultSetHeader>('DELETE FROM laboratories WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Laboratorio no encontrado' });
     }
 
     res.json({ success: true, message: 'Laboratorio eliminado correctamente' });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Error eliminando laboratorio:', error);
-    const resp: any = { success: false, message: 'Error eliminando laboratorio' };
-    if (isDev) resp.details = (error as any)?.message || String(error);
+    const errorMessage = hasMessage(error) ? error.message : String(error);
+    const resp = { success: false, message: 'Error eliminando laboratorio', details: isDev ? errorMessage : undefined };
     res.status(500).json(resp);
   }
 });
